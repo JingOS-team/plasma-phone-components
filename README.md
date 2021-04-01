@@ -19,8 +19,10 @@ To start the phone homescreen in a window, run:
 QT_QPA_PLATFORM=wayland dbus-run-session kwin_wayland --xwayland "plasmashell -p org.kde.plasma.phone"
 ```
 
-# Jing-plasma-phone-components <width="40"/>
-Jing-plasma-phone-components is based on plasma-phone-components , a beautifully designed clock that conforms to the JingOS style and has a compatible `pad / desktop`  experience.
+
+# Jing-plasma-phone-components
+
+Jing-plasma-phone-components is based on plasma-phone-components , a beautifully designed launcher that conforms to the JingOS style and has a compatible `pad / desktop`  experience.
 
 
 ## Links
