@@ -1,6 +1,9 @@
 set(homescreen_SRCS
     homescreen.cpp
     applicationlistmodel.cpp
+    basemodel.cpp
+    listmodelmanager.cpp
+    launcheritem.cpp
 )
 
 add_library(plasma_containment_phone_homescreen MODULE ${homescreen_SRCS})
@@ -17,10 +20,18 @@ target_link_libraries(plasma_containment_phone_homescreen
                       KF5::KIOGui
                       KF5::Notifications
                       KF5::WaylandClient
+                      KF5::Solid
+                      KF5::ConfigCore
+                      KF5::ConfigGui
+                      KF5::KIOCore
+                      KF5::KIOWidgets
+                      KF5::KIOFileWidgets
 )
 
 
 install(TARGETS plasma_containment_phone_homescreen DESTINATION ${KDE_INSTALL_PLUGINDIR}/plasma/applets)
+
+
 
 plasma_install_package(package org.kde.phone.homescreen)
 

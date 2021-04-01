@@ -1,5 +1,6 @@
 /*
  *   Copyright 2014 Marco Martin <notmart@gmail.com>
+ *   Copyright 2021 Wang Rui <wangrui@jingos.com>
  *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU Library General Public License as
@@ -23,6 +24,7 @@ import QtQuick.Window 2.2
 import org.kde.plasma.core 2.0 as PlasmaCore
 import org.kde.plasma.components 3.0 as PlasmaComponents
 import org.kde.plasma.private.nanoshell 2.0 as NanoShell
+import QtGraphicalEffects 1.12
 
 NanoShell.FullScreenOverlay {
     id: window
@@ -31,7 +33,8 @@ NanoShell.FullScreenOverlay {
     property int openThreshold
     property bool userInteracting: false
     readonly property bool wideScreen: width > height || width > units.gridUnit * 45
-    readonly property int drawerWidth: wideScreen ? contentItem.implicitWidth : width
+    property int drawerWidth:  wideScreen ? width / 3 : width
+    property int drawerHeight
     property int drawerX: 0
     property alias fixedArea: mainScope
     property alias flickable: mainFlickable
@@ -42,15 +45,17 @@ NanoShell.FullScreenOverlay {
 
     signal closed
 
-    //width: Screen.width
-    //height: Screen.height
-
     enum MovementDirection {
         None = 0,
         Up,
         Down
     }
     property int direction: SlidingPanel.MovementDirection.None
+
+    function stopAnim() {
+        openAnim.stop();
+        closeAnim.stop();
+    }
 
     function open() {
         window.showFullScreen();
@@ -85,13 +90,6 @@ NanoShell.FullScreenOverlay {
             close();
         }
     }
-    /*onVisibleChanged: {
-        if (visible) {
-            window.width = Screen.width;
-            window.height = Screen.height;
-            window.requestActivate();
-        }
-    }*/
 
     SequentialAnimation {
         id: closeAnim
@@ -101,7 +99,7 @@ NanoShell.FullScreenOverlay {
             easing.type: Easing.InOutQuad
             properties: "offset"
             from: window.offset
-            to: -headerHeight
+            to: -headerHeight * 2
         }
         ScriptAction {
             script: {
@@ -119,50 +117,6 @@ NanoShell.FullScreenOverlay {
         from: window.offset
         to: contentArea.height
     }
-
-    Rectangle {
-        anchors {
-            left: parent.left
-            right: parent.right
-            bottom: parent.bottom
-        }
-        height: parent.height - headerHeight // don't layer on top panel indicators (area is darkened separately)
-        color: "black"
-        opacity: 0.6 * Math.min(1, offset/contentArea.height)
-    
-        Rectangle {
-            height: headerHeight
-            anchors {
-                left: parent.left
-                right: parent.right
-                bottom: parent.top
-            }
-            color: "black"
-            opacity: 0.2
-        }
-        Rectangle {
-            height: units.smallSpacing
-            anchors {
-                left: parent.left
-                right: parent.right
-                top: parent.top
-            }
-            gradient: Gradient {
-                GradientStop {
-                    position: 1.0
-                    color: Qt.rgba(0, 0, 0, 0.0)
-                }
-                GradientStop {
-                    position: 0.5
-                    color: Qt.rgba(0, 0, 0, 0.4)
-                }
-                GradientStop {
-                    position: 1.0
-                    color: "transparent"
-                }
-            }
-        }
-    }
     PlasmaCore.ColorScope {
         id: mainScope
         anchors.fill: parent
@@ -179,7 +133,7 @@ NanoShell.FullScreenOverlay {
                 value: -window.offset + contentArea.height
                 when: !mainFlickable.moving && !mainFlickable.dragging && !mainFlickable.flicking
             }
-            //no loop as those 2 values compute to exactly the same
+
             onContentYChanged: {
                 if (contentY === oldContentY) {
                     window.direction = SlidingPanel.MovementDirection.None;
@@ -215,6 +169,7 @@ NanoShell.FullScreenOverlay {
                     z: 1
                     x: drawerX
                     width: drawerWidth
+                    height: window.drawerHeight
                 }
             }
         }

@@ -1,5 +1,6 @@
 /***************************************************************************
  *   Copyright (C) 2015 Marco Martin <mart@kde.org>                        *
+ *   Copyright (C) 2021 Rui Wang <wangrui@jingos.com>
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
@@ -166,6 +167,7 @@ void TaskPanel::updateActiveWindow()
     m_activeWindow = m_windowManagement->activeWindow();
 
     if (m_activeWindow) {
+        setActiveWindowDesktopName(m_activeWindow->appId());
         connect(m_activeWindow.data(), &KWayland::Client::PlasmaWindow::closeableChanged, this, &TaskPanel::hasCloseableActiveWindowChanged);
         connect(m_activeWindow.data(), &KWayland::Client::PlasmaWindow::unmapped,
                 this, &TaskPanel::forgetActiveWindow);
@@ -178,10 +180,9 @@ void TaskPanel::updateActiveWindow()
             break;
         }
     }
-    if (newAllMinimized != m_allMinimized) {
-        m_allMinimized = newAllMinimized;
-        emit allMinimizedChanged();
-    }
+
+    m_allMinimized = newAllMinimized;
+    emit allMinimizedChanged();
     // TODO: connect to closeableChanged, not needed right now as KWin doesn't provide this changeable
     emit hasCloseableActiveWindowChanged();
 }

@@ -1,5 +1,6 @@
 /*
  *   Copyright 2015 Marco Martin <notmart@gmail.com>
+ *   Copyright 2021 Rui Wang <wangrui@jingos.com>
  *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU Library General Public License as
@@ -23,123 +24,109 @@ import org.kde.plasma.core 2.0 as PlasmaCore
 import org.kde.plasma.components 3.0 as PlasmaComponents
 import org.kde.kirigami 2.12 as Kirigami
 import org.kde.plasma.private.nanoshell 2.0 as NanoShell
+import QtGraphicalEffects 1.6
 
-ColumnLayout {
+Rectangle {
     id: delegateRoot
+    anchors.fill: parent
+    color: "#f0f0f0"
+    radius: 30
     property bool toggled: model.enabled
-    spacing: units.smallSpacing
     signal closeRequested
     signal panelClosed
 
+    opacity: 1
+
     Rectangle {
-        Layout.preferredWidth: units.iconSizes.large + units.smallSpacing
-        Layout.minimumHeight: width
-        Layout.alignment: Qt.AlignHCenter
-        radius: units.smallSpacing
-        border.color: toggled ? 
-            Qt.darker(Kirigami.ColorUtils.adjustColor(PlasmaCore.ColorScope.highlightColor, {}), 1.25) :
-            Kirigami.ColorUtils.adjustColor(PlasmaCore.ColorScope.textColor, {"alpha": 0.2*255})
-        color: {
-            if (toggled) {
-                return Kirigami.ColorUtils.adjustColor(PlasmaCore.ColorScope.highlightColor, {"alpha": iconMouseArea.pressed ? 0.5*255 : 0.3*255});
-            } else {
-                if (iconMouseArea.pressed) {
-                    return Qt.darker(Kirigami.ColorUtils.adjustColor(PlasmaCore.ColorScope.backgroundColor, {"alpha": 0.9*255}), 1.25);
-                } else {
-                    return Kirigami.ColorUtils.adjustColor(PlasmaCore.ColorScope.backgroundColor, {"alpha": 0.3*255});
-                }
-            }
+        id: stateRectangle
+        anchors.fill: parent
+        color: "#000000"
+        radius: delegateRoot.radius
+        opacity: 0
+    }
+
+    Behavior on opacity {
+        NumberAnimation { duration: 100 }
+    }
+    
+    // DropShadow {
+    //     anchors.fill: delegateRoot
+    //     horizontalOffset: 0
+    //     verticalOffset: 1
+    //     radius: 1.0
+    //     samples: 10
+    //     cached: true
+    //     color: Qt.rgba(0, 0, 0, 0.1)
+    //     source: delegateRoot
+    //     visible: true
+    // }
+
+    MouseArea {
+        id: iconMouseArea
+        anchors.fill: parent
+        hoverEnabled: true
+
+        onEntered: {
+            if(!model.active)
+                return;
+            stateRectangle.opacity = 0.2
         }
 
-        PlasmaCore.IconItem {
-            id: icon
-            colorGroup: PlasmaCore.ColorScope.colorGroup
-            anchors {
-                fill: parent
-                margins: units.smallSpacing
+        onExited: {
+            stateRectangle.opacity = 0
+        }
+
+        onPressed: {
+            if(!model.active)
+                return;
+            stateRectangle.opacity = 0.4
+        }
+        onReleased: {
+            stateRectangle.opacity = 0
+        }
+        onCanceled: {
+            stateRectangle.opacity = 0
+        }
+
+        onClicked: {
+            if(!model.active)
+                return;
+            if (delegateRoot.toggle) {
+                delegateRoot.toggle();
+            } else if (model.toggleFunction) {
+                root[model.toggleFunction]();
+            } else if (model.settingsCommand) {
+                plasmoid.nativeInterface.executeCommand(model.settingsCommand);
+                root.closeRequested();
             }
-            source: model.icon
-            MouseArea {
-                id: iconMouseArea
-                anchors.fill: parent
-                onClicked: {
-                    if (delegateRoot.toggle) {
-                        delegateRoot.toggle();
-                    } else if (model.toggleFunction) {
-                        root[model.toggleFunction]();
-                    } else if (model.settingsCommand) {
-                        NanoShell.StartupFeedback.open(
-                            model.icon,
-                            model.text,
-                            icon.Kirigami.ScenePosition.x + icon.width/2,
-                            icon.Kirigami.ScenePosition.y + icon.height/2,
-                            Math.min(icon.width, icon.height))
-                        plasmoid.nativeInterface.executeCommand(model.settingsCommand);
-                        root.closeRequested();
-                    }
-                }
-                onPressAndHold: {
-                    if (model.settingsCommand) {
-                        NanoShell.StartupFeedback.open(
-                            model.icon,
-                            model.text,
-                            icon.Kirigami.ScenePosition.x + icon.width/2,
-                            icon.Kirigami.ScenePosition.y + icon.height/2,
-                            Math.min(icon.width, icon.height))
-                        closeRequested();
-                    } else if (model.toggleFunction) {
-                        root[model.toggleFunction]();
-                    }
-                }
+        }
+        onPressAndHold: {
+            if(!model.active)
+                return;
+            if (model.settingsCommand) {
+                plasmoid.nativeInterface.executeCommand(model.settingsCommand);
+                root.closeRequested();
+            } else if (model.toggleFunction) {
+                root[model.toggleFunction]();
             }
         }
     }
     
-    PlasmaComponents.Label {
-        id: label
+    Image {
+        id: imgIcon
 
-        Layout.maximumWidth: parent.width
-        Layout.alignment: Qt.AlignHCenter
+        anchors.centerIn: parent
+        visible: false
+        // smooth: true
+        antialiasing: true
+        source:  "file:///usr/share/icons/jing/jing/settings/" + model.icon + ".svg"
+    }
 
-        text: model.text
-        bottomPadding: units.smallSpacing * 2
-        horizontalAlignment: Text.AlignHCenter
-        font.pixelSize: theme.defaultFont.pixelSize * 0.8
-        elide: Text.ElideRight
-        verticalAlignment: Text.AlignVCenter
-
-        PlasmaCore.SvgItem {
-            anchors {
-                left: parent.right
-                verticalCenter: parent.verticalCenter
-                verticalCenterOffset: -units.smallSpacing
-            }
-            visible: model.settingsCommand
-            width: units.iconSizes.small/2
-            height: width
-            elementId: "down-arrow"
-            svg: PlasmaCore.Svg {
-                imagePath: "widgets/arrows"
-            }
-        }
-        MouseArea {
-            id: labelMouseArea
-            anchors.fill: parent
-            onClicked: {
-                if (model.settingsCommand) {
-                    NanoShell.StartupFeedback.open(
-                        model.icon,
-                        model.text,
-                        icon.Kirigami.ScenePosition.x + icon.width/2,
-                        icon.Kirigami.ScenePosition.y + icon.height/2,
-                        Math.min(icon.width, icon.height))
-                    //plasmoid.nativeInterface.executeCommand(model.settingsCommand);
-                    closeRequested();
-                } else if (model.toggleFunction) {
-                    root[model.toggleFunction]();
-                }
-            }
-        }
+    ColorOverlay {
+        anchors.fill: imgIcon
+        source: imgIcon
+        color: delegateRoot.toggled ? "#ffffff" : "#000000"
+        opacity: model.active ? 0.8 : 0.3
+        antialiasing: true
     }
 }
-

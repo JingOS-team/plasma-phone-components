@@ -1,7 +1,6 @@
 /***************************************************************************
- *   Copyright (C) 2015 Marco Martin <mart@kde.org>                        *
- *   Copyright (C) 2021 Wang Rui <wangrui@jingos.com>
- *
+ *   Copyright (C) 2021 Rui Wang <wangrui@jingos.com>                      *
+ *                                                                         *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
@@ -19,37 +18,30 @@
  *   51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA .        *
  ***************************************************************************/
 
-#ifndef HOMESCREEN_H
-#define HOMESCREEN_H
+#ifndef BASEMODEL_P_H
+#define BASEMODEL_P_H
 
+#include <QMutex>
 
-#include <Plasma/Containment>
+#include "basemodel.h"
 
-class QQuickItem;
-class ListModelManager;
+namespace Internal {
 
-class HomeScreen : public Plasma::Containment
+class BaseModelPrivate
 {
-    Q_OBJECT
-    Q_PROPERTY(ListModelManager *listModelManager READ listModelManager CONSTANT)
+    Q_DECLARE_PUBLIC(BaseModel)
 
 public:
-    HomeScreen( QObject *parent, const QVariantList &args );
-    ~HomeScreen() override;
-
-    void configChanged() override;
-
-    ListModelManager *listModelManager();
-
-    Q_INVOKABLE void stackBefore(QQuickItem *item1, QQuickItem *item2);
-    Q_INVOKABLE void stackAfter(QQuickItem *item1, QQuickItem *item2);
+    BaseModelPrivate();
+    virtual ~BaseModelPrivate();
+protected:
+    BaseModel *q_ptr;
 
 protected:
-   // void configChanged() override;
-
-private:
-    ListModelManager *m_listModelManager = nullptr;
-
+    bool countEnabled;
+    int  count;
 };
 
-#endif
+} // namespace Internal
+
+#endif // BASEMODEL_P_H

@@ -1,5 +1,6 @@
 /*
 Copyright (C) 2019 Nicolas Fella <nicolas.fella@gmx.de>
+Copyright (C) 2021 Rui Wang <wangrui@jingos.com>
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -29,14 +30,14 @@ ColumnLayout {
     spacing: units.gridUnit
     
     Label {
-        text: Qt.formatTime(timeSource.data["Local"]["DateTime"], "h:mm ap")
+        text: Qt.formatTime(timeSource.data["Local"]["DateTime"], root.is24HourTime ? "h:mm" : "h:mm AP")
         color: ColorScope.textColor
         style: softwareRendering ? Text.Outline : Text.Normal
         styleColor: softwareRendering ? ColorScope.backgroundColor : "transparent" // no outline, doesn't matter
         
         Layout.alignment: alignment
         font.weight: Font.Light // this font weight may switch to regular on distros that don't have a light variant
-        font.pointSize: 36
+        font.pointSize: theme.defaultFont.pointSize + 80
         layer.enabled: true
         layer.effect: DropShadow {
             verticalOffset: 1
@@ -52,7 +53,7 @@ ColumnLayout {
         styleColor: softwareRendering ? ColorScope.backgroundColor : "transparent" // no outline, doesn't matter
         
         Layout.alignment: alignment
-        font.pointSize: 10
+        font.pointSize: theme.defaultFont.pointSize + 6
         layer.enabled: true
         layer.effect: DropShadow {
             verticalOffset: 1

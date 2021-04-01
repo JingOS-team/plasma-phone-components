@@ -1,7 +1,6 @@
 /***************************************************************************
- *   Copyright (C) 2015 Marco Martin <mart@kde.org>                        *
- *   Copyright (C) 2021 Wang Rui <wangrui@jingos.com>
- *
+ *   Copyright (C) 2021 Rui Wang <wangrui@jingos.com>                      *
+ *                                                                         *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
@@ -19,37 +18,34 @@
  *   51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA .        *
  ***************************************************************************/
 
-#ifndef HOMESCREEN_H
-#define HOMESCREEN_H
+#ifndef TYPE_H
+#define TYPE_H
 
+class QString;
 
-#include <Plasma/Containment>
-
-class QQuickItem;
-class ListModelManager;
-
-class HomeScreen : public Plasma::Containment
+namespace KWayland
 {
-    Q_OBJECT
-    Q_PROPERTY(ListModelManager *listModelManager READ listModelManager CONSTANT)
+    namespace Client
+    {
+        class PlasmaWindowManagement;
+        class PlasmaWindow;
+    }
+}
 
-public:
-    HomeScreen( QObject *parent, const QVariantList &args );
-    ~HomeScreen() override;
-
-    void configChanged() override;
-
-    ListModelManager *listModelManager();
-
-    Q_INVOKABLE void stackBefore(QQuickItem *item1, QQuickItem *item2);
-    Q_INVOKABLE void stackAfter(QQuickItem *item1, QQuickItem *item2);
-
-protected:
-   // void configChanged() override;
-
-private:
-    ListModelManager *m_listModelManager = nullptr;
-
+enum LauncherLocation {
+    Grid = 0,
+    Favorites,
+    Desktop
 };
 
-#endif
+struct ApplicationData {
+    QString name;
+    QString icon;
+    QString storageId;
+    QString entryPath;
+    LauncherLocation location = LauncherLocation::Grid;
+    bool startupNotify = true;
+    KWayland::Client::PlasmaWindow *window = nullptr;
+};
+
+#endif // TYPE_H

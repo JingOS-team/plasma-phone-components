@@ -25,7 +25,7 @@ import org.kde.plasma.core 2.0 as PlasmaCore
 import org.kde.plasma.components 2.0 as PlasmaComponents
 import org.kde.kquickcontrolsaddons 2.0
 import org.kde.kirigami 2.10 as Kirigami
-import org.kde.plasma.private.containmentlayoutmanager 1.0 as ContainmentLayoutManager 
+import org.kde.plasma.private.containmentlayoutmanager 1.0 as ContainmentLayoutManager
 
 import org.kde.plasma.private.nanoshell 2.0 as NanoShell
 
@@ -92,4 +92,5 @@ LauncherContainer {
         }
     }
 }
+
 

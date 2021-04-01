@@ -1,5 +1,6 @@
 /*
  *  Copyright 2020 Marco Martin <mart@kde.org>
+ *  Copyright (C) 2021 Wang Rui <wangrui@jingos.com>
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -32,4 +33,6 @@ QtObject {
     property QtObject homeScreenWindow
     property bool homeScreenVisible: true
     property bool taskSwitcherVisible: false
+    property string activeWindowDesktopName
+    property bool isSystemApp
 }

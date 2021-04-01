@@ -1,5 +1,6 @@
 /*
  *   Copyright 2015 Marco Martin <notmart@gmail.com>
+ *   Copyright 2021 Rui Wang <wangrui@jingos.com>
  *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU Library General Public License as
@@ -23,11 +24,12 @@ import QtQuick.Window 2.2
 import org.kde.taskmanager 0.1 as TaskManager
 import org.kde.plasma.core 2.0 as PlasmaCore
 import org.kde.plasma.components 3.0 as PlasmaComponents
+import QtQuick 2.14
 
 Item {
     id: delegate
-    width: window.width/2
-    height: window.height/2
+    width: tasksView.width
+    height: tasksView.height
 
     //Workaround
     property bool active: model.IsActive
@@ -46,12 +48,7 @@ Item {
           //  tasksModel.requestPublishDelegateGeometry(tasksModel.index(model.index, 0), Qt.rect(pos.x, pos.y, delegate.width, delegate.height), dummyWindowTask);
         }
     }
-    Connections {
-        target: tasksView
-        onContentYChanged: {
-            syncDelegateGeometry();
-        }
-    }
+
     Connections {
         target: window
         function onVisibleChanged() {
@@ -62,55 +59,55 @@ Item {
     Component.onCompleted: syncDelegateGeometry();
 
     Item {
-        anchors {
-            fill: parent
-            margins: units.smallSpacing
+        width: parent.width 
+        height: parent.height 
+
+        x: index !== tasksView.currentIndex ? tasksView.currentMargins : 0
+
+        Behavior on x {
+            PropertyAnimation {duration: tasksView.animationNum }
+        }
+        Behavior on y {
+            PropertyAnimation {duration: tasksView.animationNum }
         }
 
         SequentialAnimation {
             id: slideAnim
             property alias to: internalSlideAnim.to
+
             NumberAnimation {
                 id: internalSlideAnim
                 target: background
-                properties: "x"
+                properties: "y"
                 duration: units.longDuration
                 easing.type: Easing.InOutQuad
             }
             ScriptAction {
                 script: {
-                    if (background.x != 0) {
+                    if (background.y != 0) {
                         tasksModel.requestClose(tasksModel.index(model.index, 0));
                     }
                 }
             }
         }
-        Rectangle {
+
+        Item {
             id: background
 
             width: parent.width
             height: parent.height
-            radius: units.smallSpacing
-            color: theme.backgroundColor
-            opacity: 1 * (1-Math.abs(x)/width)
 
             MouseArea {
                 anchors.fill: parent
                 drag {
                     target: background
-                    axis: Drag.XAxis
+                    axis: Drag.YAxis
                 }
-                onPressed: delegate.z = 10;
-                onClicked: {
-                    window.setSingleActiveWindow(model.index, delegate);
-                    if (!model.IsMinimized) {
-                        window.visible = false;
-                    }
-                }
-                onReleased: {
+
+                function recovery() {
                     delegate.z = 0;
-                    if (Math.abs(background.x) > background.width/2) {
-                        slideAnim.to = background.x > 0 ? background.width*2 : -background.width*2;
+                    if ( -background.y > background.height/5) {
+                        slideAnim.to = -background.height*2;
                         slideAnim.running = true;
                     } else {
                         slideAnim.to = 0;
@@ -118,49 +115,26 @@ Item {
                     }
                 }
 
-                ColumnLayout {
-                    anchors {
-                        fill: parent
-                        margins: units.smallSpacing
-                    }
-                    
-                    RowLayout {
-                        z: 99
-                        Layout.fillWidth: true
-                        Layout.maximumHeight: units.gridUnit
-                        PlasmaCore.IconItem {
-                            Layout.fillHeight: true
-                            Layout.preferredWidth: height
-                            usesPlasmaTheme: false
-                            source: model.decoration
-                        }
-                        PlasmaComponents.Label {
-                            Layout.fillWidth: true
-                            horizontalAlignment: Text.AlignHCenter
-                            elide: Text.ElideRight
-                            text: model.display
-                            color: theme.textColor
-                        }
-                        PlasmaComponents.ToolButton {
-                            z: 99
-                            icon.name: "window-close"
-                            icon.width: units.iconSizes.medium
-                            icon.height: units.iconSizes.medium
-                            onClicked: {
-                                slideAnim.to = -background.width*2;
-                                slideAnim.running = true;
-                            }
-                        }
-                    }
-                    Loader {
-                        id: pipeWireLoader
-                        Layout.fillWidth: true
-                        Layout.fillHeight: true
-                        source: Qt.resolvedUrl("./Thumbnail.qml")
-                        onStatusChanged: {
-                            if (status === Loader.Error) {
-                                source = Qt.resolvedUrl("./TaskIcon.qml");
-                            }
+                onPressed: delegate.z = 10;
+                onClicked: {
+                    window.setSingleActiveWindow(model.index, delegate);
+                    window.hideTask()
+                }
+                onReleased: {
+                   recovery()
+                }
+
+                onCanceled:  {
+                    recovery()
+                }
+
+                Loader {
+                    id: pipeWireLoader
+                    anchors.fill:parent
+                    source: Qt.resolvedUrl("./Thumbnail.qml")
+                    onStatusChanged: {
+                        if (status === Loader.Error) {
+                            source = Qt.resolvedUrl("./TaskIcon.qml");
                         }
                     }
                 }

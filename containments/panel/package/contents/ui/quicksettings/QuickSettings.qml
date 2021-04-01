@@ -1,5 +1,6 @@
 /*
  *   Copyright 2015 Marco Martin <notmart@gmail.com>
+ *  Copyright 2021 Rui Wang <wangrui@jingos.com>
  *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU Library General Public License as
@@ -17,31 +18,44 @@
  *   51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
-import QtQuick 2.1
+import QtQuick 2.14
 import QtQuick.Layouts 1.1
 import org.kde.plasma.core 2.0 as PlasmaCore
 import org.kde.plasma.components 2.0 as PlasmaComponents
 import org.kde.plasma.networkmanagement 0.2 as PlasmaNM
+import org.kde.bluezqt 1.0 as BluezQt
+
+import "../indicators" as Indicators
 
 Item {
     id: root
-
-    implicitWidth: flow.implicitWidth + units.smallSpacing * 6
-    implicitHeight: flow.implicitHeight + units.smallSpacing * 6
 
     signal closeRequested
     signal closed
 
     property bool screenshotRequested: false
+    property bool deviceConnected : false 
+  
+    signal plasmoidTriggered(var applet, var id)
+    Layout.minimumHeight: flow.implicitHeight + units.largeSpacing*2
 
-    PlasmaNM.Handler {
-        id: nmHandler
+    property int screenBrightness                                            
+    property bool disableBrightnessUpdate: true
+    readonly property int maximumScreenBrightness: pmSource.data["PowerDevil"] ? pmSource.data["PowerDevil"]["Maximum Screen Brightness"] || 0 : 0
+
+    function updateBlueZStatus()
+    {
+        var connectedDevices = [];
+
+        for (var i = 0; i < BluezQt.Manager.devices.length; ++i) {
+            var device = BluezQt.Manager.devices[i];
+            if (device.connected) {
+                connectedDevices.push(device);
+            }
+        }
+        deviceConnected = connectedDevices.length > 0;
     }
-
-    PlasmaNM.EnabledConnections {
-        id: enabledConnections
-    }
-
+        
     function toggleAirplane() {
         print("toggle airplane mode")
     }
@@ -52,18 +66,28 @@ Item {
 
     function toggleWifi() {
         nmHandler.enableWireless(!enabledConnections.wirelessEnabled)
-        settingsModel.get(1).enabled = !enabledConnections.wirelessEnabled
+        settingsModel.get(0).enabled = !enabledConnections.wirelessEnabled
     }
 
     function toggleWwan() {
         nmHandler.enableWwan(!enabledConnections.wwanEnabled)
-        settingsModel.get(2).enabled = !enabledConnections.wwanEnabled
+        settingsModel.get(4).enabled = !enabledConnections.wwanEnabled
     }
 
     function toggleRotation() {
         const enable = !plasmoid.nativeInterface.autoRotateEnabled
         plasmoid.nativeInterface.autoRotateEnabled = enable
-        settingsModel.get(8).enabled = enable
+        settingsModel.get(9).enabled = enable
+    }
+
+    function toggleBluetooth() {
+        const enable = !BluezQt.Manager.bluetoothOperational
+        BluezQt.Manager.setBluetoothBlocked(enable)
+        settingsModel.get(2).enabled = enable
+    }
+
+    function toggleFlightMode() {
+
     }
 
     function requestShutdown() {
@@ -83,18 +107,19 @@ Item {
                               "toggleFunction": ""});
     }
 
-    signal plasmoidTriggered(var applet, var id)
-    Layout.minimumHeight: flow.implicitHeight + units.largeSpacing*2
+    function toggleRinger(num) {
+        volumeHandle.setVolume(num);
+    }
 
-    property int screenBrightness
-    property bool disableBrightnessUpdate: true
-    readonly property int maximumScreenBrightness: pmSource.data["PowerDevil"] ? pmSource.data["PowerDevil"]["Maximum Screen Brightness"] || 0 : 0
+    function toggleBright(num) {
+        root.screenBrightness = num;
+    }
 
     onScreenBrightnessChanged: {
         if(!disableBrightnessUpdate) {
             var service = pmSource.serviceForSource("PowerDevil");
             var operation = service.operationDescription("setBrightness");
-            operation.brightness = screenBrightness;
+            operation.brightness = screenBrightness <= 8 ? 8 : screenBrightness;
             operation.silent = true
             service.startOperationCall(operation);
         }
@@ -110,6 +135,15 @@ Item {
             plasmoid.nativeInterface.takeScreenshot();
             screenshotRequested = false;
         }
+    }
+
+
+    PlasmaNM.Handler {
+        id: nmHandler
+    }
+
+    PlasmaNM.EnabledConnections {
+        id: enabledConnections
     }
 
     PlasmaCore.DataSource {
@@ -134,89 +168,219 @@ Item {
     }
     Component.onCompleted: {
         //NOTE: add all in javascript as the static decl of listelements can't have scripts
-        settingsModel.append({
-            "text": i18n("Settings"),
-            "icon": "configure",
-            "enabled": false,
-            "settingsCommand": "plasma-settings",
-            "toggleFunction": "",
-            "delegate": "",
-            "enabled": false,
-            "applet": null
-        });
+        BluezQt.Manager.deviceAdded.connect(updateBlueZStatus);
+        BluezQt.Manager.deviceRemoved.connect(updateBlueZStatus);
+        BluezQt.Manager.deviceChanged.connect(updateBlueZStatus);
+        BluezQt.Manager.bluetoothBlockedChanged.connect(updateBlueZStatus);
+        BluezQt.Manager.bluetoothOperationalChanged.connect(updateBlueZStatus);
+
+        updateBlueZStatus();
+
         settingsModel.append({
             "text": i18n("Wifi"),
-            "icon": "network-wireless-signal",
-            "settingsCommand": "plasma-settings -m kcm_mobile_wifi",
+            "icon": "wifi",
+            "settingsCommand": "plasma-settings -m wifi",
             "toggleFunction": "toggleWifi",
-            "delegate": "",
+            "delegate": "BigBtnDelegate",
             "enabled": enabledConnections.wirelessEnabled,
-            "applet": null
+            "active": true,
+            "row": 0,
+            "column": 0,
+            "rowSpan": 1,
+            "columnSpan": 3
+        });
+        settingsModel.append({
+            "text": i18n("MediaPlayer"),
+            "icon": "",
+            "settingsCommand": "",
+            "toggleFunction": "",
+            "delegate": "MediaPlayer",
+            "enabled": true,
+            "active": true,            
+            "row": 0,
+            "column": 3,
+            "rowSpan": 3,
+            "columnSpan": 3
+        });
+        settingsModel.append({
+            "text": i18n("Bluetooth"),
+            "icon": "bluetooth",
+            "settingsCommand": "plasma-settings -m bluetooth",
+            "toggleFunction": "toggleBluetooth",
+            "delegate": "BigBtnDelegate",
+            "enabled": BluezQt.Manager.bluetoothOperational,
+            "active": true,
+            "row": 1,
+            "column": 0,
+            "rowSpan": 1,
+            "columnSpan": 3
+        });
+        settingsModel.append({
+            "text": i18n("Flight Mode"),
+            "icon": "flight-mode",
+            "settingsCommand": "",
+            "toggleFunction": "toggleFlightMode",
+            "delegate": "Delegate",
+            "enabled": false,
+            "active": false,
+            "row": 2,
+            "column": 0,
+            "rowSpan": 1,
+            "columnSpan": 1
         });
         settingsModel.append({
             "text": i18n("Mobile Data"),
             "icon": "network-modem",
             "settingsCommand": "plasma-settings -m kcm_mobile_broadband",
             "toggleFunction": "toggleWwan",
-            "delegate": "",
-            "enabled": enabledConnections.wwanEnabled,
-            "applet": null
+            "delegate": "Delegate",
+            "enabled":false, // enabledConnections.wwanEnabled,
+            "active": false,
+            "row": 2,
+            "column": 1,
+            "rowSpan": 1,
+            "columnSpan": 1
         });
         settingsModel.append({
-            "text": i18n("Battery"),
-            "icon": "battery-full",
-            "enabled": false,
-            "settingsCommand": "plasma-settings -m kcm_mobile_power",
-            "toggleFunction": "",
-            "delegate": "",
-            "enabled": false,
-            "applet": null
-        });
-        settingsModel.append({
-            "text": i18n("Sound"),
-            "icon": "audio-speakers-symbolic",
-            "enabled": false,
-            "settingsCommand": "plasma-settings -m kcm_pulseaudio",
-            "toggleFunction": "",
-            "delegate": "",
-            "enabled": false,
-            "applet": null
-        });
-        settingsModel.append({
-            "text": i18n("Flashlight"),
-            "icon": "flashlight-on",
-            "enabled": false,
+            "text": i18n("Sleep Mode"),
+            "icon": "sleep-mode",
             "settingsCommand": "",
-            "toggleFunction": "toggleTorch",
-            "applet": null
+            "toggleFunction": "toggleSleepMode",
+            "delegate": "Delegate",
+            "enabled": false,
+            "active": false,
+            "row": 2,
+            "column": 2,
+            "rowSpan": 1,
+            "columnSpan": 1
+        });
+        settingsModel.append({
+            "text": i18n("Ringer"),
+            "icon": "audio-speakers-symbolic",
+            "settingsCommand": "",
+            "toggleFunction": "toggleRinger",
+            "delegate": "SliderBtnDelegate",
+            "enabled": false,
+            "active": true,
+            "row": 3,
+            "column": 0,
+            "rowSpan": 2,
+            "columnSpan": 3
+        });
+        settingsModel.append({
+            "text": i18n("Bright"),
+            "icon": "bright",
+            "settingsCommand": "",
+            "toggleFunction": "toggleBright",
+            "delegate": "SliderBtnDelegate",
+            "enabled": false,
+            "active": true,
+            "row": 3,
+            "column": 3,
+            "rowSpan": 2,
+            "columnSpan": 3
+        });
+        settingsModel.append({
+            "text": i18n("Hotspot"),
+            "icon": "hotspot",
+            "settingsCommand": "",
+            "toggleFunction": "toggleHotspot",
+            "delegate": "Delegate",
+            "enabled": false,
+            "active": false,
+            "row": 5,
+            "column": 0,
+            "rowSpan": 1,
+            "columnSpan": 1
+        });
+        settingsModel.append({
+            "text": i18n("Auto-rotate"),
+            "icon": "rotation-allowed",
+            "enabled": false ,//plasmoid.nativeInterface.autoRotateEnabled,
+            "active": false,
+            "settingsCommand": "",
+            "toggleFunction": "toggleRotation",
+            "row": 5,
+            "column": 1,
+            "rowSpan": 1,
+            "columnSpan": 1,
+            "delegate": "Delegate"
+        });
+        settingsModel.append({
+            "text": i18n("Screenshot"),
+            "icon": "screenshot",
+            "enabled": false,
+            "active": true,
+            "settingsCommand": "",
+            "toggleFunction": "requestScreenshot",
+            "row": 5,
+            "column": 2,
+            "rowSpan": 1,
+            "columnSpan": 1,
+            "delegate": "Delegate"
         });
         settingsModel.append({
             "text": i18n("Location"),
             "icon": "gps",
             "enabled": false,
+            "active": false,
             "settingsCommand": "",
-            "applet": null
+            "row": 5,
+            "column": 3,
+            "rowSpan": 1,
+            "columnSpan": 1,
+            "delegate": "Delegate"
         });
         settingsModel.append({
-            "text": i18n("Screenshot"),
-            "icon": "spectacle",
+            "text": i18n("Settings"),
+            "icon": "settings",
             "enabled": false,
-            "settingsCommand": "",
-            "toggleFunction": "requestScreenshot",
-            "applet": null
+            "active": true,
+            "settingsCommand": "plasma-settings -m wifi",
+            "toggleFunction": "",
+            "row": 5,
+            "column": 4,
+            "rowSpan": 1,
+            "columnSpan": 1,
+            "delegate": "Delegate"
         });
         settingsModel.append({
-            "text": i18n("Auto-rotate"),
-            "icon": "rotation-allowed",
-            "enabled": plasmoid.nativeInterface.autoRotateEnabled,
-            "settingsCommand": "",
-            "toggleFunction": "toggleRotation",
-            "applet": null
+            "text": i18n("Sound"),
+            "icon": "audio-speakers-symbolic",
+            "enabled": false,
+            "active": true,
+            "settingsCommand": "plasma-settings -m sound",
+            "toggleFunction": "",
+            "row": 5,
+            "column": 5,
+            "rowSpan": 1,
+            "columnSpan": 1,
+            "delegate": "Delegate"
         });
 
-        brightnessSlider.moved.connect(function() {
-            root.screenBrightness = brightnessSlider.value;
-        });
+        // settingsModel.append({
+        //     "text": i18n("Battery"),
+        //     "icon": "battery-full",
+        //     "enabled": false,
+        //     "settingsCommand": "plasma-settings -m kcm_mobile_power",
+        //     "toggleFunction": "",
+        //     "delegate": "",
+        //     "enabled": false,
+        //     "applet": null
+        // });
+
+        // settingsModel.append({
+        //     "text": i18n("Flashlight"),
+        //     "icon": "flashlight-on",
+        //     "enabled": false,
+        //     "settingsCommand": "",
+        //     "toggleFunction": "toggleTorch",
+        //     "applet": null
+        // });
+
+        // brightnessSlider.moved.connect(function() {
+        //     root.screenBrightness = brightnessSlider.value;
+        // });
         disableBrightnessUpdate = false;
     }
 
@@ -224,45 +388,43 @@ Item {
         id: settingsModel
     }
 
-    Flow {
-        id: flow
+    GridLayout {
+        id: flow 
         anchors {
             fill: parent
-            margins: units.smallSpacing
+            margins: units.smallSpacing * 2.5
         }
-        readonly property real cellSizeHint: units.iconSizes.large + units.smallSpacing * 6
-        readonly property real columnWidth: Math.floor(width / Math.floor(width / cellSizeHint))
-        spacing: 0
+        rows: 6
+        columns: 6
+        readonly property real cellSizeHint: columnWidth // units.iconSizes.large + units.smallSpacing * 5
+        readonly property real columnWidth: parent.width / 7 //Math.floor(width / Math.floor(width / cellSizeHint))
+        readonly property real columnHeight: columnWidth //Math.floor(width / Math.floor(width / cellSizeHint))
+
         Repeater {
             model: settingsModel
-            delegate: Loader {
-                id: loader
-                //FIXME: why this is needed?
-                width: flow.columnWidth
-                height: item ? item.implicitHeight : 0
-                source: Qt.resolvedUrl((model.delegate ? model.delegate : "Delegate") + ".qml")
-                Connections {
-                    target: loader.item
-                    onCloseRequested: root.closeRequested();
-                }
-                Connections {
-                    target: root
-                    onClosed: loader.item.panelClosed();
-                }
-            }
-        }
 
-        BrightnessItem {
-            id: brightnessSlider
-            width: flow.width
-            icon: "video-display-brightness"
-            label: i18n("Display Brightness")
-            value: root.screenBrightness
-            maximumValue: root.maximumScreenBrightness
-            Connections {
-                target: root
-                onScreenBrightnessChanged: brightnessSlider.value = root.screenBrightness
-            }
+            Item {
+                Layout.row: model.row
+                Layout.column: model.column
+                Layout.columnSpan: model.columnSpan
+                Layout.rowSpan: model.rowSpan
+
+                Layout.fillWidth: true
+                Layout.fillHeight: true
+                Layout.preferredWidth: Layout.columnSpan
+                Layout.preferredHeight: Layout.rowSpan
+
+                property bool toggled: model.enabled
+                // spacing: 0// units.smallSpacing
+
+                Loader {
+                    id: loader
+
+                    anchors.fill: parent
+                    anchors.margins: 3
+                    source: Qt.resolvedUrl((model.delegate ? model.delegate : "Delegate") + ".qml")
+                }
+            } 
         }
     }
 }

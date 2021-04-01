@@ -1,6 +1,7 @@
 /***************************************************************************
  *   Copyright (C) 2015 Marco Martin <mart@kde.org>                        *
  *   Copyright (C) 2018 Bhushan Shah <bshah@kde.org>                       *
+ *   Copyright 2021 Rui Wang <wangrui@jingos.com>
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
@@ -20,6 +21,13 @@
 
 #include "phonepanel.h"
 
+#include <qplatformdefs.h>
+#include <fcntl.h>
+#include <unistd.h>
+
+#include <KLocalizedString>
+#include <KConfigGroup>
+
 #include <QDateTime>
 #include <QDBusPendingReply>
 #include <QFile>
@@ -28,15 +36,41 @@
 #include <QProcess>
 #include <QtConcurrent/QtConcurrent>
 #include <QScreen>
+#include <QQmlEngine> 
+#include <QtQml>
+#include <QDebug>
+#include <QDBusConnection>
+
+#include "mediamanager.h"
+#define FORMAT24H "HH:mm:ss"
 
 constexpr int SCREENSHOT_DELAY = 200;
 
 PhonePanel::PhonePanel(QObject *parent, const QVariantList &args)
     : Plasma::Containment(parent, args)
 {
-    //setHasConfigurationInterface(true);
+    qmlRegisterType<MediaManager>("org.kde.phone.jingos.MediaManager", 1, 0, "MediaManager");
+
     m_kscreenInterface = new org::kde::KScreen(QStringLiteral("org.kde.kded5"), QStringLiteral("/modules/kscreen"), QDBusConnection::sessionBus(), this);
     m_screenshotInterface = new org::kde::kwin::Screenshot(QStringLiteral("org.kde.KWin"), QStringLiteral("/Screenshot"), QDBusConnection::sessionBus(), this);
+    
+    m_localeConfig = KSharedConfig::openConfig(QStringLiteral("kdeglobals"), KConfig::SimpleConfig);
+    m_localeConfigWatcher = KConfigWatcher::create(m_localeConfig);
+
+    QDBusConnection::sessionBus().connect(QString(), QString("/org/kde/kcmshell_clock"),
+        QString("org.kde.kcmshell_clock"), QString("clockUpdated"), this,
+        SLOT(kcmClockUpdated()));
+    
+    // watch for changes to locale config, to update 12/24 hour time
+    connect(m_localeConfigWatcher.data(), &KConfigWatcher::configChanged, 
+            this, [this](const KConfigGroup &group, const QByteArrayList &names) -> void {
+                qWarning() << group.name();
+                if (group.name() == "Locale") {
+                    // we have to reparse for new changes (from system settings)
+                    m_localeConfig->reparseConfiguration();
+                    Q_EMIT isSystem24HourFormatChanged();
+                }
+            });
 }
 
 PhonePanel::~PhonePanel() = default;
@@ -151,6 +185,20 @@ void PhonePanel::takeScreenshot()
             watcher->deleteLater();
         });
     });
+}
+
+bool PhonePanel::isSystem24HourFormat()
+{
+    KConfigGroup localeSettings = KConfigGroup(m_localeConfig, "Locale");
+    
+    QString timeFormat = localeSettings.readEntry("TimeFormat", QStringLiteral(FORMAT24H));
+    return timeFormat == QStringLiteral(FORMAT24H);
+}
+
+void PhonePanel::kcmClockUpdated()
+{
+    m_localeConfig->reparseConfiguration();
+    Q_EMIT isSystem24HourFormatChanged();
 }
 
 K_EXPORT_PLASMA_APPLET_WITH_JSON(quicksettings, PhonePanel, "metadata.json")

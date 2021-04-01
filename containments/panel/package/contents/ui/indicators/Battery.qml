@@ -1,5 +1,6 @@
 /*
  *  Copyright 2019 Marco Martin <mart@kde.org>
+ *  Copyright 2021 Rui Wang <wangrui@jingos.com>
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -36,7 +37,7 @@ RowLayout {
         pluggedIn: pmSource.data["AC Adapter"] ? pmSource.data["AC Adapter"]["Plugged in"] : false
 
         height: batteryLabel.height
-        width: batteryLabel.height
+        width: batteryLabel.height * 1.2
 
         PlasmaCore.DataSource {
             id: pmSource
@@ -51,6 +52,7 @@ RowLayout {
         Layout.alignment: Qt.AlignVCenter
 
         color: PlasmaCore.ColorScope.textColor
-        font.pixelSize: parent.height / 2
+        // font.pixelSize: parent.height / 2
+        font.pointSize: parent.height / 2
     }
 }

@@ -1,6 +1,7 @@
 /*
     Copyright 2019 Aditya Mehra <Aix.m@outlook.com>
     Copyright 2014-2015 Harald Sitter <sitter@kde.org>
+    Copyright 2021 Rui Wang <wangrui@jingos.com>
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Lesser General Public
@@ -34,6 +35,8 @@ PlasmaCore.IconItem {
     property int maxVolumeValue: Math.round(100 * PulseAudio.NormalVolume / 100.0)
     property int volumeStep: Math.round(5 * PulseAudio.NormalVolume / 100.0)
     readonly property string dummyOutputName: "auto_null"
+    readonly property int currentVolume: paSinkModel.preferredSink.volume
+
     source: paSinkModel.preferredSink && !isDummyOutput(paSinkModel.preferredSink)
         ? iconName(paSinkModel.preferredSink.volume, paSinkModel.preferredSink.muted)
         : iconName(0, true)
@@ -96,7 +99,6 @@ PlasmaCore.IconItem {
         paSinkModel.preferredSink.volume = volume;
         osd.show(percent);
         playFeedback();
-
     }
 
     function decreaseVolume() {
@@ -112,8 +114,6 @@ PlasmaCore.IconItem {
         playFeedback();
     }
 
-
-
     function muteVolume() {
         if (!paSinkModel.preferredSink || isDummyOutput(paSinkModel.preferredSink)) {
             return;
@@ -126,6 +126,19 @@ PlasmaCore.IconItem {
             playFeedback();
         }
     }
+
+    function setVolume(num) {
+        if (!paSinkModel.preferredSink || isDummyOutput(paSinkModel.preferredSink)) {
+            return;
+        }
+
+        var volume = boundVolume(num);
+        var percent = volumePercent(volume, maxVolumeValue);
+        paSinkModel.preferredSink.muted = percent == 0;
+        paSinkModel.preferredSink.volume = volume;
+        playFeedback();
+    }
+
 
     SinkModel {
         id: paSinkModel

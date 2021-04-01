@@ -1,6 +1,7 @@
 /*
  *  Copyright 2019 Marco Martin <mart@kde.org>
  *            2020 Devin Lin <espidev@gmail.com>
+ *            2021 Rui Wang <wangrui@jingos.com>
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -66,21 +67,23 @@ PlasmaCore.ColorScope {
         }
     }
     
-    Loader {
-        id: strengthLoader
-        height: parent.height
-        width: item ? item.width : 0
-        source: Qt.resolvedUrl("indicators/SignalStrength.qml")
-    }
+    // Loader {
+    //     id: strengthLoader
+    //     height: parent.height
+    //     width: item ? item.width : 0
+    //     source: Qt.resolvedUrl("indicators/SignalStrength.qml")
+    // }
 
     PlasmaComponents.Label {
         id: clock
-        anchors.fill: parent
-        text: Qt.formatTime(timeSource.data.Local.DateTime, "hh:mm")
+        anchors.left: parent.left
+        anchors.leftMargin: height / 2
+        height: parent.height
+        text: Qt.formatTime(timeSource.data.Local.DateTime, root.is24HourTime ? "hh:mm" : "hh:mm ap")
         color: PlasmaCore.ColorScope.textColor
         horizontalAlignment: Qt.AlignHCenter
         verticalAlignment: Qt.AlignVCenter
-        font.pixelSize: height / 2
+        font.pixelSize: height - height / 4
     }
 
     RowLayout {
@@ -102,7 +105,7 @@ PlasmaCore.ColorScope {
         }
         Indicators.Bluetooth {}
         Indicators.Wifi {}
-        Indicators.Volume {}
+//        Indicators.Volume {}
         Indicators.Battery {}
     }
 }

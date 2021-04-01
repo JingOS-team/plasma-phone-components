@@ -1,5 +1,6 @@
 /*
  *  Copyright 2015 Marco Martin <mart@kde.org>
+ *  Copyright 2021 Rui Wang <wangrui@jingos.com>
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -28,7 +29,6 @@ import org.kde.plasma.components 2.0 as PlasmaComponents
 import org.kde.kquickcontrolsaddons 2.0
 
 import org.kde.plasma.private.nanoshell 2.0 as NanoShell
-
 import org.kde.plasma.private.mobileshell 1.0 as MobileShell
 
 PlasmaCore.ColorScope {
@@ -39,29 +39,76 @@ PlasmaCore.ColorScope {
 
     Plasmoid.backgroundHints: PlasmaCore.Types.NoBackground
 
+    Rectangle {
+        id: taskHandle
+        anchors.centerIn: parent
+
+        width: parent.width / 6
+        height: parent.height / 2
+        color: "#d8d8d8"
+        radius:  height / 2
+        z: 255
+        visible: !MobileShell.HomeScreenControls.homeScreenVisible
+
+        Behavior on scale {
+            NumberAnimation { duration: 100 }
+        }
+
+        MouseArea {
+            anchors.fill: parent
+            hoverEnabled: true
+            acceptedButtons: Qt.LeftButton
+
+            onClicked: {
+                if(mouse.button == Qt.LeftButton) {
+                    minimizeAll();
+                }
+            }
+
+            onEntered: {
+                taskHandle.scale = 1.2          
+            }
+
+            onExited: {
+                taskHandle.scale = 1
+            }
+
+            onCanceled: {
+                taskHandle.scale = 1
+            }
+        }
+    }
+
     readonly property color backgroundColor: NanoShell.StartupFeedback.visible ? NanoShell.StartupFeedback.backgroundColor : PlasmaCore.ColorScope.backgroundColor
     readonly property bool showingApp: !plasmoid.nativeInterface.allMinimized
 
     readonly property bool hasTasks: tasksModel.count > 0
 
-    property QtObject taskSwitcher: taskSwitcherLoader.item ? taskSwitcherLoader.item : null
-    Loader {
-        id: taskSwitcherLoader
-    }
-    //FIXME: why it crashes on startup if TaskSwitcher is loaded immediately?
+    // property QtObject taskSwitcher: taskSwitcherLoader.item ? taskSwitcherLoader.item : null
+
+    // Loader {
+    //     id: taskSwitcherLoader
+    //     onLoaded: {
+    //         // taskSwitcher.offset = -taskSwitcher.height;
+    //     }
+    // }
+
     Connections {
         target: plasmoid.nativeInterface
-        function onAllMinimizedChanged() {
+
+        onAllMinimizedChanged: {
+            MobileShell.HomeScreenControls.activeWindowDesktopName = plasmoid.nativeInterface.activeWindowDesktopName
             MobileShell.HomeScreenControls.homeScreenVisible = plasmoid.nativeInterface.allMinimized
         }
     }
-    Timer {
-        running: true
-        interval: 200
-        onTriggered: {
-            taskSwitcherLoader.setSource(Qt.resolvedUrl("TaskSwitcher.qml"), {"model": tasksModel});
-        }
-    }
+
+    // Timer {
+    //     running: true
+    //     interval: 200
+    //     onTriggered: {
+    //         taskSwitcherLoader.setSource(Qt.resolvedUrl("TaskSwitcher.qml"), {"model": tasksModel});
+    //     }
+    // }
 
     function minimizeAll() {
         for (var i = 0 ; i < tasksModel.count; i++) {
@@ -90,7 +137,7 @@ PlasmaCore.ColorScope {
 
         virtualDesktop: virtualDesktopInfo.currentDesktop
         activity: activityInfo.currentActivity
-        //FIXME: workaround
+
         Component.onCompleted: tasksModel.countChanged();
     }
 
@@ -100,155 +147,5 @@ PlasmaCore.ColorScope {
 
     TaskManager.ActivityInfo {
         id: activityInfo
-    }
-
-    MouseArea {
-        id: mainMouseArea
-        anchors.fill: parent
-        property int oldMouseY: 0
-        property int startMouseY: 0
-        property bool isDragging: false
-        property bool opening: false
-        drag.filterChildren: true
-        property Button activeButton
-
-        onPressed: {
-            startMouseY = oldMouseY = mouse.y;
-            taskSwitcher.offset = -taskSwitcher.height;
-            activeButton = icons.childAt(mouse.x, mouse.y);
-        }
-        onPositionChanged: {
-            let newButton = icons.childAt(mouse.x, mouse.y);
-            if (newButton != activeButton) {
-                activeButton = null;
-            }
-            if (!isDragging && Math.abs(startMouseY - oldMouseY) < root.height) {
-                oldMouseY = mouse.y;
-                return;
-            } else {
-                isDragging = true;
-            }
-
-            taskSwitcher.offset = taskSwitcher.offset - (mouse.y - oldMouseY);
-            opening = oldMouseY > mouse.y;
-
-            if (taskSwitcher.visibility == Window.Hidden && taskSwitcher.offset > -taskSwitcher.height + units.gridUnit && taskSwitcher.tasksCount) {
-                activeButton = null;
-                taskSwitcher.showFullScreen();
-            //no tasks, let's scroll up the homescreen instead
-            } else if (taskSwitcher.tasksCount === 0) {
-                MobileShell.HomeScreenControls.requestHomeScreenPosition(MobileShell.HomeScreenControls.homeScreenPosition - (mouse.y - oldMouseY));
-            }
-            oldMouseY = mouse.y;
-        }
-        onReleased: {
-            if (taskSwitcher.visibility == Window.Hidden) {
-                if (taskSwitcher.tasksCount === 0) {
-                    MobileShell.HomeScreenControls.snapHomeScreenPosition();
-                }
-
-                if (activeButton) {
-                    activeButton.clicked();
-                }
-                return;
-            }
-
-            if (!isDragging) {
-                return;
-            }
-
-            if (opening) {
-                taskSwitcher.show();
-            } else {
-                taskSwitcher.hide();
-            }
-        }
-
-        DropShadow {
-            anchors.fill: icons
-            visible: !showingApp
-            cached: true
-            horizontalOffset: 0
-            verticalOffset: 1
-            radius: 4.0
-            samples: 17
-            color: Qt.rgba(0,0,0,0.8)
-            source: icons
-        }
-        Item {
-            id: icons
-            anchors.fill: parent
-
-            visible: plasmoid.configuration.PanelButtonsVisible
-
-            Rectangle {
-                anchors.fill: parent
-                gradient: Gradient {
-                    GradientStop {
-                        position: 0
-                        color: showingApp ? root.backgroundColor : "transparent"
-                    }
-                    GradientStop {
-                        position: 1
-                        color: showingApp ? root.backgroundColor : Qt.rgba(0, 0, 0, 0.1)
-                    }
-                }
-            }
-
-            Button {
-                anchors.left: parent.left
-                height: parent.height
-                width: parent.width/3
-                mouseArea: mainMouseArea
-                enabled: root.hasTasks
-                iconSource: "box"
-                onClicked: {
-                    if (!enabled) {
-                        return;
-                    }
-                    plasmoid.nativeInterface.showDesktop = false;
-                    taskSwitcher.visible ? taskSwitcher.hide() : taskSwitcher.show();
-                }
-            }
-
-            Button {
-                id: showDesktopButton
-                height: parent.height
-                width: parent.width/3
-                anchors.horizontalCenter: parent.horizontalCenter
-                mouseArea: mainMouseArea
-                iconSource: "start-here-kde"
-                enabled: !taskSwitcher.visible && (root.showingApp || MobileShell.HomeScreenControls.homeScreenPosition != 0)
-                onClicked: {
-                    if (!enabled) {
-                        return;
-                    }
-                    root.minimizeAll();
-                    MobileShell.HomeScreenControls.resetHomeScreenPosition();
-                    plasmoid.nativeInterface.allMinimizedChanged();
-                }
-            }
-
-            Button {
-                height: parent.height
-                width: parent.width/3
-                anchors.right: parent.right
-                mouseArea: mainMouseArea
-                iconSource: "paint-none"
-                enabled: plasmoid.nativeInterface.hasCloseableActiveWindow && !taskSwitcher.visible
-                onClicked: {
-                    if (!enabled) {
-                        return;
-                    }
-                    if (!plasmoid.nativeInterface.hasCloseableActiveWindow) {
-                        return;
-                    }
-                    var index = taskSwitcher.model.activeTask;
-                    if (index) {
-                        taskSwitcher.model.requestClose(index);
-                    }
-                }
-            }
-        }
     }
 }

@@ -1,5 +1,6 @@
 /***************************************************************************
  *   Copyright (C) 2015 Marco Martin <mart@kde.org>                        *
+ *   Copyright (C) 2021 Rui Wang <wangrui@jingos.com>
  *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -45,7 +46,8 @@ class TaskPanel : public Plasma::Containment
     Q_PROPERTY(bool allMinimized READ allMinimized NOTIFY allMinimizedChanged)
     Q_PROPERTY(bool hasCloseableActiveWindow READ hasCloseableActiveWindow NOTIFY hasCloseableActiveWindowChanged)
     Q_PROPERTY(QWindow *panel READ panel WRITE setPanel NOTIFY panelChanged)
-
+    Q_PROPERTY(QString activeWindowDesktopName READ activeWindowDesktopName WRITE setActiveWindowDesktopName NOTIFY activeWindowDesktopNameChanged)
+    
 public:
     TaskPanel( QObject *parent, const QVariantList &args );
     ~TaskPanel() override;
@@ -65,6 +67,18 @@ public:
     }
     bool hasCloseableActiveWindow() const;
 
+
+    QString activeWindowDesktopName() {
+        return m_activeWindowDesktopName;
+    }
+    QString setActiveWindowDesktopName(const QString &activeWindowDesktopName) {
+        if(m_activeWindowDesktopName == activeWindowDesktopName)
+            return m_activeWindowDesktopName;
+        m_activeWindowDesktopName = activeWindowDesktopName;
+        emit activeWindowDesktopNameChanged();
+        return m_activeWindowDesktopName;
+    }
+
 public Q_SLOTS:
     void forgetActiveWindow();
 
@@ -73,6 +87,7 @@ Q_SIGNALS:
     void hasCloseableActiveWindowChanged();
     void panelChanged();
     void allMinimizedChanged();
+    void activeWindowDesktopNameChanged();
 
 private:
     void initWayland();
@@ -80,6 +95,7 @@ private:
     void updatePanelVisibility();
     bool m_showingDesktop = false;
     bool m_allMinimized = true;
+    QString m_activeWindowDesktopName;
     QWindow *m_panel = nullptr;
     KWayland::Client::PlasmaShellSurface *m_shellSurface = nullptr;
     KWayland::Client::Surface *m_surface = nullptr;

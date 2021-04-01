@@ -34,6 +34,7 @@ find_package(KF5 ${KF5_MIN_VERSION} REQUIRED COMPONENTS
     PlasmaQuick
     Service
     Notifications
+    Config
 )
 find_package(KF5Wayland CONFIG)
 set_package_properties(KF5Wayland PROPERTIES
@@ -44,6 +45,7 @@ set_package_properties(KF5Wayland PROPERTIES
 find_package(GStreamer 1.1.90 REQUIRED)
 find_package(GLIB2 REQUIRED)
 find_package(GObject REQUIRED)
+find_package(KF5 REQUIRED COMPONENTS Package)
 
 include(CheckIncludeFiles)
 

@@ -1,5 +1,6 @@
 /***************************************************************************
  *   Copyright (C) 2015 Marco Martin <mart@kde.org>                        *
+ *   Copyright (C) 2021 Wang Rui <wangrui@jingos.com>                      *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
@@ -18,7 +19,7 @@
  ***************************************************************************/
 
 #include "homescreen.h"
-#include "applicationlistmodel.h"
+#include "listmodelmanager.h"
 
 #include <QtQml>
 #include <QDebug>
@@ -27,7 +28,7 @@
 HomeScreen::HomeScreen(QObject *parent, const QVariantList &args)
     : Plasma::Containment(parent, args)
 {
-    qmlRegisterUncreatableType<ApplicationListModel>("org.kde.phone.homescreen", 1, 0, "ApplicationListModel", QStringLiteral("Cannot create item of type ApplicationListModel"));
+    qmlRegisterUncreatableType<ListModelManager>("org.kde.phone.homescreen", 1, 0, "ListModelManager", QStringLiteral("Cannot create item of type ApplicationListModel"));
 
     setHasConfigurationInterface(true);
 }
@@ -36,18 +37,18 @@ HomeScreen::~HomeScreen() = default;
 
 void HomeScreen::configChanged()
 {
-    Plasma::Containment::configChanged();
-    if (m_applicationListModel) {
-        m_applicationListModel->loadSettings();
-    }
+    // Plasma::Containment::configChanged();
+    // if (m_listModelManager) {
+    //     m_listModelManager->loadSettings();
+    // }
 }
 
-ApplicationListModel *HomeScreen::applicationListModel()
+ListModelManager *HomeScreen::listModelManager()
 {
-    if (!m_applicationListModel) {
-        m_applicationListModel = new ApplicationListModel(this);
+    if (!m_listModelManager) {
+        m_listModelManager = new ListModelManager(this);
     }
-    return m_applicationListModel;
+    return m_listModelManager;
 }
 
 void HomeScreen::stackBefore(QQuickItem *item1, QQuickItem *item2)
