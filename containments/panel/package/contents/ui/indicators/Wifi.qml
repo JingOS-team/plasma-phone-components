@@ -1,6 +1,7 @@
 /*
     Copyright 2019 MArco MArtni <mart@kde.org>
     Copyright 2013-2017 Jan Grulich <jgrulich@redhat.com>
+    Copyright 2021 Bangguo Liu <liubangguo@jingos.com>
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Lesser General Public
@@ -20,27 +21,47 @@
 */
 
 import QtQuick 2.2
+import QtGraphicalEffects 1.6
 import QtQuick.Layouts 1.4
 import org.kde.plasma.core 2.0 as PlasmaCore
 import org.kde.plasma.components 2.0 as PlasmaComponents
 import org.kde.plasma.networkmanagement 0.2 as PlasmaNM
+import org.kde.plasma.private.mobileshell 1.0 as MobileShell
 
-PlasmaCore.IconItem {
-    id: connectionIcon
+Item{
+    Layout.alignment: Qt.AlignVCenter
 
-    source: connectionIconProvider.connectionIcon
-    colorGroup: PlasmaCore.ColorScope.colorGroup
+    width:13
+    height:10
 
-    Layout.fillHeight: true
-    Layout.preferredWidth: height
+    Image{
+        property bool showingApp: !MobileShell.HomeScreenControls.homeScreenVisible
+        id:imgIcon
 
-    PlasmaComponents.BusyIndicator {
-        id: connectingIndicator
+        source: wifiIcon()
+        sourceSize.width: parent.width
+        sourceSize.height: parent.height
+        antialiasing: true
+        opacity:1.0
 
-        anchors.fill: parent
-        running: connectionIconProvider.connecting
-        visible: running
+        visible: showingApp
     }
+
+    ColorOverlay {
+                anchors.fill: imgIcon
+                source: imgIcon
+                color: showingApp ?  "#000000" : "#ffffff"
+                antialiasing: true
+                opacity:1.0
+    }
+
+//    PlasmaComponents.BusyIndicator {
+//        id: connectingIndicator
+
+//        anchors.fill: parent
+//        running: connectionIconProvider.connecting
+//        visible: running
+//    }
 
     PlasmaNM.NetworkStatus {
         id: networkStatus
@@ -57,4 +78,32 @@ PlasmaCore.IconItem {
     PlasmaNM.ConnectionIcon {
         id: connectionIconProvider
     }
+
+    function wifiIcon()
+    {
+        var icon = "file:///usr/share/icons/jing/jing/settings/wifi_disconnected.svg";
+        if(connectionIconProvider.connectionIcon.indexOf("network-wireless") != -1)
+        {
+            var prefix = "network-wireless-";
+            var volume = parseInt(connectionIconProvider.connectionIcon.substring(prefix.length));
+            if(volume > 75)
+                icon = "file:///usr/share/icons/jing/jing/settings/wifi_volume_100.svg";
+            else if(volume > 50)
+                icon = "file:///usr/share/icons/jing/jing/settings/wifi_volume_75.svg";
+            else if(volume > 25)
+                icon = "file:///usr/share/icons/jing/jing/settings/wifi_volume_25.svg";
+            else
+                icon = "file:///usr/share/icons/jing/jing/settings/wifi_disconnected.svg";
+        }
+        else if(connectionIconProvider.connectionIcon.indexOf("network-wired-activated") != -1)
+        {
+            icon = "file:///usr/share/icons/jing/jing/settings/network_wired.svg";
+        }
+
+        else{
+            icon = "file:///usr/share/icons/jing/jing/settings/wifi_closed.svg";
+        }
+        return icon;
+    }
+
 }

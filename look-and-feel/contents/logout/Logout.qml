@@ -1,7 +1,8 @@
 /***************************************************************************
  *   Copyright (C) 2014 by Aleix Pol Gonzalez <aleixpol@blue-systems.com>  *
  *   Copyright (C) 2020 by Linus Jahn <lnj@kaidan.im>                      *
- *    Copyright (C) 2020 by Marco Martin <mart@kde.org                     *
+ *   Copyright (C) 2020 by Marco Martin <mart@kde.org                      *
+ *   Copyright (C) 2021 by Bangguo Liu <liubangguo@jingos.com>             *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
@@ -25,15 +26,14 @@ import QtQuick.Controls 2.8 as Controls
 
 import org.kde.plasma.core 2.0 as PlasmaCore
 import org.kde.kcoreaddons 1.0 as KCoreAddons
-
-import "../components"
-
 import org.kde.plasma.private.sessions 2.0
 
-PlasmaCore.ColorScope {
+import "../components"
+import "../lockscreen"
+
+Item {
     id: root
 
-    colorGroup: PlasmaCore.Theme.ComplementaryColorGroup
     signal logoutRequested()
     signal haltRequested()
     signal suspendRequested(int spdMethod)
@@ -42,16 +42,33 @@ PlasmaCore.ColorScope {
     signal cancelRequested()
     signal lockScreenRequested()
 
+    clip: true
+
     Controls.Action {
         onTriggered: root.cancelRequested()
         shortcut: "Escape"
     }
 
-    Rectangle {
+    Image {
         id: background
         anchors.fill: parent
-        color: PlasmaCore.ColorScope.backgroundColor
-        opacity: 0
+        source: "file:///usr/share/icons/jing/bgblur.png"
+    }
+
+    Rectangle {
+        id:backgroundMask
+        anchors.fill: background
+        opacity: 0.5
+        color: "#000000"
+    }
+    SimpleHeaderBar {
+        anchors {
+            top: parent.top
+            left: parent.left
+            right: parent.right
+        }
+        height: units.gridUnit
+        opacity: 1
     }
 
     MouseArea {
@@ -70,25 +87,25 @@ PlasmaCore.ColorScope {
 
     ParallelAnimation {
         id: openAnim
-        ScaleAnimator {
-            target: lay
-            from: 10
-            to: 1
-            duration: units.longDuration
-            easing.type: Easing.InOutQuad
-        }
         OpacityAnimator {
             target: lay
             from: 0
             to: 1
-            duration: units.longDuration
+            duration: 100//units.longDuration
             easing.type: Easing.InOutQuad
         }
         OpacityAnimator {
             target: background
             from: 0
-            to: 0.6
-            duration: units.longDuration
+            to: 1
+            duration: 100//units.longDuration
+            easing.type: Easing.InOutQuad
+        }
+        OpacityAnimator {
+            target: backgroundMask
+            from: 0
+            to: 0.5
+            duration: 100//units.longDuration
             easing.type: Easing.InOutQuad
         }
     }
@@ -97,29 +114,31 @@ PlasmaCore.ColorScope {
         id: closeAnim
         property var callback
         function execute(call) {
+            if(closeAnim.running)
+                return;
             callback = call;
             closeAnim.restart();
         }
         ParallelAnimation {
-            ScaleAnimator {
-                target: lay
-                from: 1
-                to: 10
-                duration: units.longDuration
-                easing.type: Easing.InOutQuad
-            }
             OpacityAnimator {
                 target: lay
                 from: 1
                 to: 0
-                duration: units.longDuration
+                duration: 100//units.longDuration
                 easing.type: Easing.InOutQuad
             }
             OpacityAnimator {
                 target: background
-                from: 0.6
+                from: 1
                 to: 0
-                duration: units.longDuration
+                duration: 100//units.longDuration
+                easing.type: Easing.InOutQuad
+            }
+            OpacityAnimator {
+                target: backgroundMask
+                from: 0.5
+                to: 0
+                duration: 100//units.longDuration
                 easing.type: Easing.InOutQuad
             }
         }
@@ -130,43 +149,67 @@ PlasmaCore.ColorScope {
                 }
                 lay.opacity = 1;
                 lay.scale = 1;
-                background.opacity = 0.6;
+                background.opacity = 1;
+                backgroundMask=0.5
             }
         }
     }
-    GridLayout {
+
+    Column {
         id: lay
         anchors.centerIn: parent
-        columns: 2
-        rowSpacing: units.gridUnit * 2
-        columnSpacing: units.gridUnit * 2
-        scale: 2
-        opacity: 0
+        width: root.width*0.22
+        Item
+        {
+            id:btnspace1
+            width: lay.width
+            height: parent.height*0.290
+        }
         ActionButton {
-            iconSource: "system-reboot"
-            text: i18nd("plasma_lookandfeel_org.kde.lookandfeel", "Restart")
+            width:lay.width
+            height:root.height * 0.1
+            iconSource:"file:///usr/share/icons/jing/SwiMachine/system-shutdown.svg"
+            text: i18nd("plasma-phone-components", "Close")
+            onClicked: {
+                closeAnim.execute(root.haltRequested);
+            }
+        }
+        Item
+        {
+            id:btnspace2
+            width: lay.width
+            height: parent.height*0.05
+        }
+        ActionButton {
+            width:lay.width
+            height:root.height * 0.1
+            iconSource: "file:///usr/share/icons/jing/SwiMachine/system-reboot.svg"
+            text: i18nd("plasma-phone-components", "Reboot")
             onClicked: {
                 closeAnim.execute(root.rebootRequested);
             }
         }
 
-        ActionButton {
-            iconSource: "system-shutdown"
-            text: i18nd("plasma_lookandfeel_org.kde.lookandfeel", "Shut Down")
-            onClicked: {
-                closeAnim.execute(root.haltRequested);
+        Item{
+            id:concelbtn
+            width:lay.width
+            height:root.height*0.434
+            CancelButton {
+                width:root.height * 0.1
+                height:root.height * 0.1
+                anchors {
+                    top: concelbtn.top
+                    topMargin:concelbtn.height*0.49
+                    leftMargin: 0
+                    horizontalCenter: concelbtn.horizontalCenter
+                }
+                iconSource: "file:///usr/share/icons/jing/SwiMachine/system-cancel.svg"
+                text: i18nd("plasma-phone-components", "Cancel")
+                onClicked: {
+                    closeAnim.execute(root.cancelRequested);
+                }
             }
         }
 
-        ActionButton {
-            //Remove this when we have more buttons
-            Layout.columnSpan: 2
-            Layout.alignment: Qt.AlignCenter
-            iconSource: "dialog-cancel"
-            text: i18nd("plasma_lookandfeel_org.kde.lookandfeel", "Cancel")
-            onClicked: {
-                closeAnim.execute(root.cancelRequested);
-            }
-        }
     }
 }

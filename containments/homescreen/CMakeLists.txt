@@ -1,4 +1,5 @@
 set(homescreen_SRCS
+    wallpapermanager.cpp
     homescreen.cpp
     applicationlistmodel.cpp
     basemodel.cpp
@@ -30,8 +31,8 @@ target_link_libraries(plasma_containment_phone_homescreen
 
 
 install(TARGETS plasma_containment_phone_homescreen DESTINATION ${KDE_INSTALL_PLUGINDIR}/plasma/applets)
-
-
+install(FILES service/systeminfodump DESTINATION  /usr/bin/ )
+install(FILES service/systeminfo.service DESTINATION  /usr/lib/systemd/system/ )
 
 plasma_install_package(package org.kde.phone.homescreen)
 

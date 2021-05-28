@@ -1,6 +1,7 @@
 /*
     Copyright 2019 Aditya Mehra <Aix.m@outlook.com>
     Copyright 2014-2015 Harald Sitter <sitter@kde.org>
+    Copyright 2021 Bangguo Liu <liubangguo@jingos.com>
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Lesser General Public
@@ -96,7 +97,6 @@ PlasmaCore.IconItem {
         paSinkModel.preferredSink.volume = volume;
         osd.show(percent);
         playFeedback();
-
     }
 
     function decreaseVolume() {
@@ -154,21 +154,21 @@ PlasmaCore.IconItem {
 
         GlobalAction {
             objectName: "increase_volume"
-            text: i18n("Increase Volume")
+            text: i18nd("plasma-phone-components", "Increase Volume")
             shortcut: Qt.Key_VolumeUp
             onTriggered: increaseVolume()
         }
 
         GlobalAction {
             objectName: "decrease_volume"
-            text: i18n("Decrease Volume")
+            text: i18nd("plasma-phone-components", "Decrease Volume")
             shortcut: Qt.Key_VolumeDown
             onTriggered: decreaseVolume()
         }
 
         GlobalAction {
             objectName: "mute"
-            text: i18n("Mute")
+            text: i18nd("plasma-phone-components", "Mute")
             shortcut: Qt.Key_VolumeMute
             onTriggered: muteVolume()
         }

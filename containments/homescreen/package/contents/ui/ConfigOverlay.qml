@@ -99,7 +99,7 @@ ContainmentLayoutManager.ConfigOverlayWithHandles {
                 id: closeButton
                 svg: configIconsSvg
                 elementId: "delete"
-                mainText: i18n("Remove")
+                mainText: i18nd("plasma-phone-components", "Remove")
                 iconSize: overlay.iconSize
                 visible: {
                     if (!applet) {

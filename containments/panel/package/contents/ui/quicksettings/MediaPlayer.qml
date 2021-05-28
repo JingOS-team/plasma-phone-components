@@ -20,13 +20,14 @@
 import QtQuick 2.1
 import QtQuick.Layouts 1.1
 import org.kde.plasma.core 2.0 as PlasmaCore
-import org.kde.phone.jingos.MediaManager 1.0
+import org.kde.phone.jingos.mediamanager 1.0
 import QtGraphicalEffects 1.6
 
 Rectangle {
     anchors.fill: parent
     color: "#f0f0f0"
-    radius: 30
+    radius: height / 9
+
     property bool toggled: model.enabled
     signal closeRequested
     signal panelClosed
@@ -44,14 +45,15 @@ Rectangle {
     ColumnLayout {
         id: mediaplayDelegateRoot
         anchors.fill:parent
+
         Item {
             Layout.preferredWidth: mediaplayDelegateRoot.width
             Layout.preferredHeight: mediaplayDelegateRoot.height / 16
         }
+
         Item {
             Layout.preferredWidth: mediaplayDelegateRoot.width
             Layout.preferredHeight: mediaplayDelegateRoot.height / 4
-
 
             Image {
                 id: albumImage
@@ -66,29 +68,7 @@ Rectangle {
                         albumImage.source = "file:///usr/share/icons/jing/album.png"
                     }
                 }
-
             }
-        }
-
-        Item {
-            Layout.preferredWidth: mediaplayDelegateRoot.width
-            Layout.preferredHeight: mediaplayDelegateRoot.height / 5
-
-            Text {
-                id: titleText
-                anchors.fill: parent
-                anchors.leftMargin: 20
-                anchors.rightMargin: 20
-
-                horizontalAlignment : Text.AlignHCenter
-                verticalAlignment : Text.AlignVCenter
-
-                font.pointSize: parent.height / 3
-                elide: Text.ElideRight
-                wrapMode: Text.WordWrap
-                text: "No audio playback"
-                opacity: 0.8
-            } 
         }
 
         Item {
@@ -96,19 +76,40 @@ Rectangle {
             Layout.preferredHeight: mediaplayDelegateRoot.height / 6
 
             Text {
+                id: titleText
+                anchors.fill: parent
+                anchors.leftMargin: 10
+                anchors.rightMargin: 10
+
+                horizontalAlignment : Text.AlignHCenter
+                verticalAlignment : Text.AlignVCenter
+
+                font.pixelSize: parent.height / 3
+                elide: Text.ElideRight
+                wrapMode: Text.WordWrap
+                text: i18nd("plasma-phone-components", "No audio playback")
+                opacity: 0.8
+            } 
+        }
+
+        Item {
+            Layout.preferredWidth: mediaplayDelegateRoot.width
+            Layout.preferredHeight: mediaplayDelegateRoot.height / 7
+
+            Text {
                 id: artistText
 
                 anchors.fill: parent
-                anchors.leftMargin: 20
-                anchors.rightMargin: 20
+                anchors.leftMargin: 10
+                anchors.rightMargin: 10
 
                 horizontalAlignment : Text.AlignHCenter
                 verticalAlignment : Text.AlignTop
 
-                font.pointSize: parent.height / 3.5
+                font.pixelSize: parent.height / 3.5
                 elide: Text.ElideRight
                 wrapMode: Text.WordWrap
-                text: "No audio playback"
+                text: i18nd("plasma-phone-components", "No audio playback")
                 opacity: 0.8
             } 
         }

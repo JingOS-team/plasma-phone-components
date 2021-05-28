@@ -20,6 +20,7 @@
 
 #include "homescreen.h"
 #include "listmodelmanager.h"
+#include "wallpapermanager.h"
 
 #include <QtQml>
 #include <QDebug>
@@ -29,6 +30,7 @@ HomeScreen::HomeScreen(QObject *parent, const QVariantList &args)
     : Plasma::Containment(parent, args)
 {
     qmlRegisterUncreatableType<ListModelManager>("org.kde.phone.homescreen", 1, 0, "ListModelManager", QStringLiteral("Cannot create item of type ApplicationListModel"));
+    WallpaperManager::instance();
 
     setHasConfigurationInterface(true);
 }

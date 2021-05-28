@@ -1,6 +1,7 @@
 /*
  *   Copyright 2014 Aaron Seigo <aseigo@kde.org>
  *   Copyright 2014 Marco Martin <mart@kde.org>
+ *   Copyright (C) 2021 by Bangguo Liu <liubangguo@jingos.com>
  *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU Library General Public License as
@@ -113,12 +114,12 @@ PlasmaCore.ColorScope {
                 verticalAlignment: Qt.AlignVCenter
                 text: {
                     switch (simManager.pinRequired) {
-                    case OfonoSimManager.NoPin: return i18n("No pin (error)");
-                    case OfonoSimManager.SimPin: return i18n("Enter Sim PIN");
-                    case OfonoSimManager.SimPin2: return i18n("Enter Sim PIN 2");
-                    case OfonoSimManager.SimPuk: return i18n("Enter Sim PUK");
-                    case OfonoSimManager.SimPuk2: return i18n("Enter Sim PUK 2");
-                    default: return i18n("Unknown PIN type: %1", simManager.pinRequired);
+                    case OfonoSimManager.NoPin: return i18nd("plasma-phone-components", "No pin (error)");
+                    case OfonoSimManager.SimPin: return i18nd("plasma-phone-components", "Enter Sim PIN");
+                    case OfonoSimManager.SimPin2: return i18nd("plasma-phone-components", "Enter Sim PIN 2");
+                    case OfonoSimManager.SimPuk: return i18nd("plasma-phone-components", "Enter Sim PUK");
+                    case OfonoSimManager.SimPuk2: return i18nd("plasma-phone-components", "Enter Sim PUK 2");
+                    default: return i18nd("plasma-phone-components", "Unknown PIN type: %1", simManager.pinRequired);
                     }
                 }
             }
@@ -187,7 +188,7 @@ PlasmaCore.ColorScope {
                     top: pad.bottom
                     horizontalCenter: parent.horizontalCenter
                 }
-                text: i18n("OK")
+                text: i18nd("plasma-phone-components", "OK")
                 onClicked: {
                     simManager.enterPin(simManager.pinRequired, pinLabel.text)
                     pinLabel.text = "";

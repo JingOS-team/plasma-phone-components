@@ -36,6 +36,10 @@
 #define DEFULT_STR            "No audio playback"
 #define DEFULT_PATH            "file:///usr/share/icons/jing/album.png"
 
+const QString KWIN_DEBUS_SERVICE = "org.kde.KWin";
+const QString KWIN_DEBUS_PATH = "/KWin";
+const QString KWIN_DEBUS_INTERFACE = "org.kde.KWin";
+
 MediaManager::MediaManager(QObject *parent)
     : QObject(parent),
     mDbusConnect(false),
@@ -51,6 +55,15 @@ void MediaManager::initDBusWatcher()
 
     QObject::connect(serviceWatcher, &QDBusServiceWatcher::serviceRegistered, this,  &MediaManager::onServiceRegistered);
     QObject::connect(serviceWatcher, &QDBusServiceWatcher::serviceUnregistered, this,  &MediaManager::onServiceUnregistered);
+
+
+    QDBusServiceWatcher *kwinWatcher = new QDBusServiceWatcher(KWIN_DEBUS_SERVICE, QDBusConnection::sessionBus(),
+                                       QDBusServiceWatcher::WatchForOwnerChange);
+    QObject::connect(kwinWatcher, &QDBusServiceWatcher::serviceRegistered, this,  &MediaManager::onKWinServiceRegistered);
+    QObject::connect(kwinWatcher, &QDBusServiceWatcher::serviceUnregistered, this,  &MediaManager::onKWinServiceUnregistered);
+
+    QDBusConnection::sessionBus().connect(KWIN_DEBUS_SERVICE, KWIN_DEBUS_PATH, KWIN_DEBUS_INTERFACE, "mouseOnTopLeftConer", this, SLOT(onMouseOnTopLeftConer()));
+    QDBusConnection::sessionBus().connect(KWIN_DEBUS_SERVICE, KWIN_DEBUS_PATH, KWIN_DEBUS_INTERFACE, "mouseOnTopRightConer", this, SLOT(onMouseOnTopRightConer()));
 }
 
 void MediaManager::onServiceRegistered(const QString &serviceName)
@@ -77,7 +90,20 @@ void MediaManager::onServiceUnregistered(const QString &serviceName)
     emit mediaInfoChanged(DEFULT_PATH,
                           DEFULT_STR,
                           DEFULT_STR,
-                          DEFULT_STR);                                            
+                          DEFULT_STR);
+}
+
+void MediaManager::onKWinServiceRegistered(const QString &serviceName)
+{
+    QDBusConnection::sessionBus().connect(KWIN_DEBUS_SERVICE, KWIN_DEBUS_PATH, KWIN_DEBUS_INTERFACE, "mouseOnTopLeftConer", this, SLOT(onMouseOnTopLeftConer()));
+    QDBusConnection::sessionBus().connect(KWIN_DEBUS_SERVICE, KWIN_DEBUS_PATH, KWIN_DEBUS_INTERFACE, "mouseOnTopRightConer", this, SLOT(onMouseOnTopRightConer()));
+}
+
+void MediaManager::onKWinServiceUnregistered(const QString &serviceName)
+{
+    QDBusConnection::sessionBus().disconnect(KWIN_DEBUS_SERVICE, KWIN_DEBUS_PATH, KWIN_DEBUS_INTERFACE, "mouseOnTopLeftConer", this, SLOT(onMouseOnTopLeftConer()));
+
+    QDBusConnection::sessionBus().disconnect(KWIN_DEBUS_SERVICE, KWIN_DEBUS_PATH, KWIN_DEBUS_INTERFACE, "mouseOnTopRightConer", this, SLOT(onMouseOnTopRightConer()));
 }
 
 void MediaManager::getUpdateTracksState(const QString &imagePath,
@@ -168,4 +194,14 @@ int MediaManager::setPlayState(const int &playState)
     mPlayState = playState;
     emit playStateChanged();
     return mPlayState;
+}
+
+void MediaManager::onMouseOnTopLeftConer()
+{
+    emit mouseOnTopLeftConer();
+}
+
+void MediaManager::onMouseOnTopRightConer()
+{
+    emit mouseOnTopRightConer();
 }

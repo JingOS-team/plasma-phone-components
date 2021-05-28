@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="20px" height="22px" viewBox="0 0 20 22" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <title>编组备份 10</title>
+    <defs>
+        <polygon id="path-1" points="0 0 19.9346399 0 19.9346399 22 0 22"></polygon>
+    </defs>
+    <g id="页面-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="状态栏" transform="translate(-1889.000000, -613.000000)">
+            <g id="编组-14" transform="translate(332.000000, 612.000000)">
+                <g id="编组备份-10" transform="translate(1557.000000, 1.000000)">
+                    <mask id="mask-2" fill="white">
+                        <use xlink:href="#path-1"></use>
+                    </mask>
+                    <g id="Clip-2"></g>
+                    <path d="M19.2133066,1.03568063 L0.342936202,8.18679174 C-0.125952687,8.36456952 -0.110397131,9.03345841 0.367380647,9.1897547 L8.50812139,11.8438288 C8.75849176,11.9253103 8.95478805,12.1216066 9.03775102,12.3719769 L11.7429362,20.5771621 C11.8999732,21.0527177 12.5673806,21.0675325 12.7458992,20.5986436 L19.8992325,1.72160655 C20.0621955,1.29271767 19.6414547,0.873458406 19.2133066,1.03568063" id="Fill-1" fill="#FFFFFF" mask="url(#mask-2)"></path>
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>

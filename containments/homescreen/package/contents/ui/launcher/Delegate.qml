@@ -88,7 +88,7 @@ ContainmentLayoutManager.ItemContainer {
             // Must be 0, 0 as at this point dragCenterX and dragCenterY are on the drag before"
             launcherDragManager.startDrag(delegate);
             launcherDragManager.currentlyDraggedDelegate = delegate;
-        } else {
+        } else { 
             launcherDragManager.dropItem(delegate, dragCenterX, dragCenterY);
             plasmoid.editMode = false;
             editMode = false;
@@ -140,16 +140,47 @@ ContainmentLayoutManager.ItemContainer {
             }
             spacing: 0
 
-            PlasmaCore.IconItem {
+        //    PlasmaCore.IconItem {
+        //        id: icon
+
+        //        Layout.alignment: Qt.AlignHCenter | Qt.AlignTop
+        //        Layout.fillWidth: true
+        //        Layout.minimumHeight: parent.height - root.reservedSpaceForLabel
+        //        Layout.preferredHeight: Layout.minimumHeight
+
+        //        usesPlasmaTheme: false
+        //        source: modelData ? modelData.applicationIcon : ""
+
+        //        Rectangle {
+        //            anchors {
+        //                horizontalCenter: parent.horizontalCenter
+        //                bottom: parent.bottom
+        //            }
+        //            visible: model.applicationRunning
+        //            radius: width
+        //            width: units.smallSpacing
+        //            height: width
+        //            color: theme.highlightColor
+        //        }
+        //    }
+
+            Image {
                 id: icon
+                width: 106
+                height: 106
 
                 Layout.alignment: Qt.AlignHCenter | Qt.AlignTop
                 Layout.fillWidth: true
                 Layout.minimumHeight: parent.height - root.reservedSpaceForLabel
                 Layout.preferredHeight: Layout.minimumHeight
 
-                usesPlasmaTheme: false
-                source: modelData ? modelData.applicationIcon : ""
+                source: "file:///usr/share/home_icons/" + model.applicationName + ".png"
+
+                onStatusChanged:  {
+                    if(status === Image.Error) {
+                        icon.source = "file:///usr/share/home_icons/defult.png"
+                    }
+                }
 
                 Rectangle {
                     anchors {
@@ -173,6 +204,7 @@ ContainmentLayoutManager.ItemContainer {
                 wrapMode: Text.WordWrap
                 Layout.leftMargin: -parent.anchors.leftMargin + units.smallSpacing
                 Layout.rightMargin: -parent.anchors.rightMargin + units.smallSpacing
+                Layout.topMargin: units.smallSpacing + 5
                 horizontalAlignment: Text.AlignHCenter
                 verticalAlignment: Text.AlignTop
                 maximumLineCount: 2
@@ -181,7 +213,7 @@ ContainmentLayoutManager.ItemContainer {
                 text:  model.applicationName
 
                 //FIXME: export smallestReadableFont
-                font.pointSize: theme.defaultFont.pointSize * 0.9
+                font.pointSize: theme.defaultFont.pointSize * 0.9 + 3
                 color: "white"//model.applicationLocation == ApplicationListModel.Desktop ? "white" : theme.textColor
 
                 layer.enabled: true//model.applicationLocation == ApplicationListModel.Desktop

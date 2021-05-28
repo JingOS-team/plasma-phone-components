@@ -1,0 +1,2 @@
+#!/bin/bash
+/usr/sbin/dmidecode -t system | tee /etc/systemInformation

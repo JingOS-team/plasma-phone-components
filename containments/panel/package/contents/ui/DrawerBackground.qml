@@ -25,6 +25,8 @@ import org.kde.plasma.core 2.0 as PlasmaCore
 import org.kde.kirigami 2.12 as Kirigami
 import QtGraphicalEffects 1.6
 
+import QtGraphicalEffects 1.12
+
 QQC2.Control {
     id: root
     leftPadding: 1// units.smallSpacing
@@ -39,15 +41,16 @@ QQC2.Control {
         
         Rectangle {
             id: container
-            color: "#ffffff" // Kirigami.ColorUtils.adjustColor(PlasmaCore.ColorScope.backgroundColor, {"alpha": 255})
+            // color: "#ffffff" // Kirigami.ColorUtils.adjustColor(PlasmaCore.ColorScope.backgroundColor, {"alpha": 255})
+            color: Qt.rgba(255, 255, 255, 0.2)
             anchors {
                 fill: parent
-                leftMargin: 1//PlasmaCore.Units.smallSpacing
-                rightMargin: 1//PlasmaCore.Units.smallSpacing
-                topMargin: 1//PlasmaCore.Units.smallSpacing
-                bottomMargin: 1//PlasmaCore.Units.smallSpacing
+                leftMargin: 0//PlasmaCore.Units.smallSpacing
+                rightMargin: 0//PlasmaCore.Units.smallSpacing
+                topMargin: 0//PlasmaCore.Units.smallSpacing
+                bottomMargin: 0//PlasmaCore.Units.smallSpacing
             }
-            radius: PlasmaCore.Units.smallSpacing * 7
+            radius: 19
         }
 
         DropShadow {

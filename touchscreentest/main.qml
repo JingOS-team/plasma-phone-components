@@ -6,7 +6,7 @@ ApplicationWindow {
     visible: true
     width: 640
     height: 480
-    title: qsTr("Hello World")
+    title: i18nd("plasma-phone-components", "Hello World")
 
     property real startX
     property real startY

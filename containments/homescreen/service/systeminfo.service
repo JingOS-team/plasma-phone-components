@@ -1,0 +1,13 @@
+[Unit]
+Description=echo the systeminfo
+After=sddm.target
+
+[Service]
+EnvironmentFile=-/etc/default/locale
+ExecStart=/usr/bin/systeminfodump
+KillMode=process
+Type=oneshot
+User=root
+
+[Install]
+WantedBy=multi-user.target

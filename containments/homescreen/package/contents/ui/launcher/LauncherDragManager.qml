@@ -26,7 +26,6 @@ import org.kde.phone.homescreen 1.0
 Item {
     id: root
 
-    property ContainmentLayoutManager.AppletsLayout appletsLayout
     property LauncherGrid launcherGrid
     property FavoriteStrip favoriteStrip
     property Delegate currentlyDraggedDelegate
@@ -58,14 +57,6 @@ Item {
             plasmoid.nativeInterface.applicationListModel.moveItem(delegate.modelData.index, newRow);
 
         // Put it on desktop
-        } else if (newContainer == appletsLayout) {
-            var pos = appletsLayout.mapFromItem(delegate, 0, 0);
-            //plasmoid.nativeInterface.applicationListModel.setLocation(delegate.modelData.index, ApplicationListModel.Desktop);
-
-            internal.showSpacer(delegate, dragCenterX, dragCenterY);
-            return;
-    
-        // Put it in the general view
         } else {
             var pos = launcherGrid.flow.mapFromItem(delegate, 0, 0);
             newRow = Math.floor(newContainer.flow.width / delegate.width) * Math.floor((pos.y + dragCenterY) / delegate.height) + Math.round((pos.x + dragCenterX) / delegate.width) + favoriteStrip.count;
@@ -87,14 +78,9 @@ Item {
         function raiseContainer(container) {
             container.z = 1;
 
-            if (container == appletsLayout) {
-                launcherGrid.z = 0;
-                favoriteStrip.z = 0;
-            } else if (container == favoriteStrip) {
-                appletsLayout.z = 0;
+            if (container == favoriteStrip) {
                 launcherGrid.z = 0;
             } else {
-                appletsLayout.z = 0;
                 favoriteStrip.z = 0;
             } 
         }
@@ -103,8 +89,6 @@ Item {
             if (favoriteStrip.contains(Qt.point(0,favoriteStrip.frame.mapFromItem(item, dragCenterX, dragCenterY).y))
                 && plasmoid.nativeInterface.applicationListModel.favoriteCount < plasmoid.nativeInterface.applicationListModel.maxFavoriteCount) {
                 return favoriteStrip;
-            } else if (appletsLayout.contains(appletsLayout.mapFromItem(item, dragCenterX, dragCenterY))) {
-                return appletsLayout;
             } else {
                 return launcherGrid;
             }
@@ -121,11 +105,7 @@ Item {
         function putInContainerLayout(item, container) {
             var pos = container.flow.mapFromItem(item, 0, 0);
 
-            if (container == appletsLayout) {
-                item.parent = container;
-            } else {
-                item.parent = container.flow;
-            }
+            item.parent = container.flow;
 
             item.x = pos.x;
             item.y = pos.y;
@@ -172,17 +152,6 @@ Item {
 
             raiseContainer(container);
 
-            appletsLayout.hidePlaceHolder();
-
-            if (container == appletsLayout) {
-                spacer.visible = false;
-                appletsLayout.releaseSpace(item);
-                putItemInDragSpace(item);
-                var pos = appletsLayout.mapFromItem(item, 0, 0);
-                appletsLayout.showPlaceHolderAt(Qt.rect(pos.x, pos.y, item.width, item.height));
-                return;
-            }
-
             var child = nearestChild(item, dragCenterX, dragCenterY, container);
 
             if (!child) {
@@ -212,17 +181,7 @@ Item {
 
             raiseContainer(container);
 
-            if (container == appletsLayout) {
-                plasmoid.nativeInterface.applicationListModel.setLocation(item.modelData.index, ApplicationListModel.Desktop);
-                var pos = appletsLayout.mapFromItem(item, 0, 0);
-                item.parent = appletsLayout;
-                item.x = pos.x;
-                item.y = pos.y;
-                appletsLayout.hidePlaceHolder();
-                appletsLayout.positionItem(item);
-                
-                return;
-            } else if (container == favoriteStrip) {
+            if (container == favoriteStrip) {
                 plasmoid.nativeInterface.applicationListModel.setLocation(item.modelData.index, ApplicationListModel.Favorites);
             } else {
                 plasmoid.nativeInterface.applicationListModel.setLocation(item.modelData.index, ApplicationListModel.Grid);

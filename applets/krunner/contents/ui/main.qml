@@ -62,7 +62,7 @@ Item {
             }
             PlasmaExtras.Heading {
                 level: 2
-                text: i18n("Search...")
+                text: i18nd("plasma-phone-components", "Search...")
             }
         }
         MouseArea {

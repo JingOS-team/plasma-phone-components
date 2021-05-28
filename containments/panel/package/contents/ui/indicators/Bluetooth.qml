@@ -1,6 +1,7 @@
 /*
     Copyright 2019 MArco MArtni <mart@kde.org>
     Copyright 2013-2017 Jan Grulich <jgrulich@redhat.com>
+    Copyright 2021 Bangguo Liu <liubangguo@jingos.com>
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Lesser General Public
@@ -20,23 +21,40 @@
 */
 
 import QtQuick 2.2
+import QtGraphicalEffects 1.6
 import QtQuick.Layouts 1.4
 import org.kde.plasma.core 2.0 as PlasmaCore
 import org.kde.plasma.components 2.0 as PlasmaComponents
 import org.kde.bluezqt 1.0 as BluezQt
+import org.kde.plasma.private.mobileshell 1.0 as MobileShell
 
-PlasmaCore.IconItem {
-    id: connectionIcon
 
-    property bool deviceConnected : false
+Item{
+    Layout.alignment: Qt.AlignVCenter
+    width:6
+    height:10
 
-    source: deviceConnected ? "preferences-system-bluetooth-activated" : "preferences-system-bluetooth";
-    colorGroup: PlasmaCore.ColorScope.colorGroup
+    Image{
+        property bool showingApp: !MobileShell.HomeScreenControls.homeScreenVisible
+        id:imgIcon
 
-    visible: BluezQt.Manager.bluetoothOperational
+        source: "file:///usr/share/icons/jing/jing/settings/Bluetooth.svg"
+        sourceSize.width: parent.width
+        sourceSize.height: parent.height
+        antialiasing: true
 
-    Layout.fillHeight: true
-    Layout.preferredWidth: height
+        visible:BluezQt.Manager.bluetoothOperational && showingApp
+    }
+
+    ColorOverlay {
+                anchors.fill: imgIcon
+                source: imgIcon
+                color: showingApp ?  "#000000" : "#ffffff"
+                antialiasing: true
+                visible: BluezQt.Manager.bluetoothOperational
+                opacity:1.0
+    }
+
     function updateStatus()
     {
         var connectedDevices = [];
@@ -47,7 +65,7 @@ PlasmaCore.IconItem {
                 connectedDevices.push(device);
             }
         }
-        deviceConnected = connectedDevices.length > 0;
+  //      deviceConnected = connectedDevices.length > 0;
     }
 
     Component.onCompleted: {
@@ -59,4 +77,6 @@ PlasmaCore.IconItem {
 
         updateStatus();
     }
+
 }
+

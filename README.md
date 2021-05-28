@@ -1,32 +1,41 @@
-plasma-phone-components
-=======================
+# plasma-phone-components
+## Introduction
 
-UI components for Plasma Phone
+UI components for Plasma Phone.
+It provids Status-panel Quick-settings Lock-Screen and Home-Screen
 
-Test on a development machine
-=======================
 
-Dependencies:
-* KDE Frameworks 5 setup (plasma-framework and its dependencies)
-* oFono https://git.kernel.org/cgit/network/ofono/ofono.git
-* libqofono https://git.merproject.org/mer-core/libqofono
-* ofono-phonesim https://git.kernel.org/cgit/network/ofono/phonesim.git/
+## Dependencies:
+* KDE Frameworks 5
+* oFono
+* libqofono
+* ofono-phonesim
+* CMake
+* Qt5
+* GStreamer
+* GLIB2
+* GObject
+* ECM
 
-If you want to test some part specific to telephony, set up ofono-phonesim according to https://docs.plasma-mobile.org/Ofono.html
+## Building and Installing
 
-To start the phone homescreen in a window, run:
+```sh
+mkdir build
+cd build
+cmake -DCMAKE_INSTALL_PREFIX=/path/to/prefix ..
+make
+make install # use sudo if necessary
+```
+
+Replace `/path/to/prefix` to your installation prefix.
+Default is `/usr/local`.
+
+
+
+##Usage
 ```
 QT_QPA_PLATFORM=wayland dbus-run-session kwin_wayland --xwayland "plasmashell -p org.kde.plasma.phone"
 ```
-
-
-
-
-# Jing-plasma-phone-components
-
-Jing-plasma-phone-components is based on plasma-phone-components , a beautifully designed launcher that conforms to the JingOS style and has a compatible `pad / desktop`  experience.
-
-
 ## Links
 * Home: www.jingos.com
 * Project page: https://github.com/JingOS-team/jing-plasma-phone-components

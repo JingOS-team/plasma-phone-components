@@ -1,5 +1,6 @@
 set(taskpanel_SRCS
     taskpanel.cpp
+    eventfilter.cpp
 )
 
 add_library(plasma_containment_phone_taskpanel MODULE ${taskpanel_SRCS})

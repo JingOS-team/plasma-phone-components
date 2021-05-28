@@ -22,7 +22,7 @@
 #ifndef PHONEPANEL_H
 #define PHONEPANEL_H
 
-
+#include <QFutureWatcher>
 #include <Plasma/Containment>
 
 #include <KSharedConfig>
@@ -31,11 +31,14 @@
 #include "kscreeninterface.h"
 #include "screenshotinterface.h"
 
+
 class PhonePanel : public Plasma::Containment
 {
     Q_OBJECT
     Q_PROPERTY(bool autoRotateEnabled READ autoRotate WRITE setAutoRotate NOTIFY autoRotateChanged);
     Q_PROPERTY(bool isSystem24HourFormat READ isSystem24HourFormat NOTIFY isSystem24HourFormatChanged);
+    Q_PROPERTY(bool udiskInserted READ udiskInserted NOTIFY udiskInsertChanged);
+    Q_PROPERTY(bool alarmVisible READ alarmVisible NOTIFY alarmStatusChanged);
 public:
     PhonePanel( QObject *parent, const QVariantList &args );
     ~PhonePanel() override;
@@ -50,23 +53,42 @@ public Q_SLOTS:
     
     bool isSystem24HourFormat();
 
+    bool udiskInserted();
+
     void kcmClockUpdated();
+    void handleFinished();
+    bool alarmVisible();
+    void alarmVisibleChanged(bool);
+
+    void slotDeviceAdded(QString);
+    void slotDeviceRemoved(QString);
 
 signals:
     void autoRotateChanged(bool value);
     void isSystem24HourFormatChanged();
+    void udiskInsertChanged(bool);
+    void alarmStatusChanged(bool);
 
 private:
     GstElement* m_pipeline;
     GstElement* m_sink;
     GstElement* m_source;
     bool m_running = false;
+    bool m_udiskInsert = false;
+    bool m_alarmVisible = false;
     
     KConfigWatcher::Ptr m_localeConfigWatcher;
     KSharedConfig::Ptr m_localeConfig;
 
     org::kde::KScreen *m_kscreenInterface;
     org::kde::kwin::Screenshot *m_screenshotInterface;
+
+    QFutureWatcher<void> futureWatcher;
+    QFuture<void> m_future;
+
+    QString m_strScreenShot;
+    bool m_initWatcherFlag;
+
 };
 
 #endif

@@ -18,6 +18,7 @@
  */
 
 import QtQuick 2.14
+import QtQml 2.12
 import QtQuick.Layouts 1.1
 import org.kde.plasma.core 2.0 as PlasmaCore
 import org.kde.plasma.components 2.0 as PlasmaComponents
@@ -26,6 +27,13 @@ import org.kde.bluezqt 1.0 as BluezQt
 
 import org.kde.notificationmanager 1.1 as Notifications
 import org.kde.kquickcontrolsaddons 2.0 as KQCAddons
+import org.kde.plasma.private.digitalclock 1.0 as DC
+
+import QtQuick.Controls 2.14 as Controls
+import QtQuick.Window 2.14
+
+import org.kde.kirigami 2.15
+import "jingos" as Jingos
 
 Item {
     id: root
@@ -36,12 +44,15 @@ Item {
     property bool screenshotRequested: false
     property bool deviceConnected : false 
 
+    property real listViewContentHeight: listView.contentHeight
+    property real listViewCount: listView.count
+
+    signal cleanAll();
+    signal backAll();
+    signal backOther(int closeIndex);
+
     function requestScreenshot() {
         root.closeRequested();
-    }
-
-    Notifications.WatchedNotificationsModel {
-        id: notifyModel
     }
 
     Item {
@@ -49,35 +60,69 @@ Item {
         anchors.top: parent.top
         anchors.left: parent.left
         width: listView.width
-        height: 100
+        height: 60
 
         Text {
+            id: notificationTitle
+
             anchors.verticalCenter: parent.verticalCenter
             anchors.left: parent.left
-            anchors.leftMargin: 30
-            text: "Notification Center"
-            font.pointSize: theme.defaultFont.pointSize + 11
-            color: "#000000"
+            anchors.leftMargin: 19
+            text: i18nd("plasma-phone-components", "Notification Center")
+            font.pixelSize: 20
+            color: Qt.rgba(0, 0, 0, 0.7)
+        }
+
+        JIconButton {
+            id: closeAllButton
+
+            width:  appWidthRatio * 54 
+            height: appWidthRatio * 54
+            anchors.right: parent.right
+            anchors.rightMargin: appWidthRatio * 40
+            anchors.verticalCenter: notificationTitle.verticalCenter
+            visible: listView.count !== 0
+            
+            source: "file:///usr/share/icons/jing/cleaningAll.svg"
+            backgroundColor : "transparent"
+            
+            onClicked: {
+                cleanAll()
+                cleanTimer.restart()
+            }
+        }
+
+        Timer {
+            id: cleanTimer
+            running: false
+            repeat: false
+
+            interval: 150
+            onTriggered :{
+                notifyModel.clearExpired()
+                root.requestScreenshot()
+            }
         }
     }
 
     ListView {
         id: listView
+
+        anchors.top: headerItem.bottom
+        anchors.bottom: parent.bottom
+        anchors.bottomMargin: PlasmaCore.Units.smallSpacing * 3
         anchors.left: parent.left
         anchors.right: parent.right
-        anchors.bottom: parent.bottom
-        anchors.bottomMargin: PlasmaCore.Units.smallSpacing * 4
-        anchors.top: headerItem.bottom
-
-        spacing: 8
+        spacing: 4
         clip: true
         model: notifyModel
+        highlightFollowsCurrentItem: true
 
         Text {
             anchors.centerIn: listView
-            text: "No Notifications"
-            font.pointSize: theme.defaultFont.pointSize
-            color: "#000000"
+            text: i18nd("plasma-phone-components", "No Notifications")
+            font.pixelSize: 14
+            color: Qt.rgba(0, 0, 0, 0.5)
             visible : listView.count > 0 ? false : true
         }
         
@@ -90,37 +135,103 @@ Item {
         }
 
         delegate: Item {
+
             id: itemHandle
+
+            property bool isOpen: false
+
             width: listView.width
-            height: rectangleBg.height + 4
-            clip: true
+            height: rectangleBg.height + 3
+
+            property bool isEnterMouse: false
+            
+            Connections {
+                target: root
+
+                onCleanAll: {
+                    itemCloseAnim.restart()
+                }
+                onBackOther: {
+                    if(closeIndex !== index) {
+                        if(isOpen) {
+                            closeAnim.restart()
+                        }
+                    }
+                }
+                onBackAll: {
+                    closeAnim.restart()
+                }
+            }
+
+            Rectangle {
+                id: deleteBg
+                anchors.top: parent.top
+
+                height: column.implicitHeight + 10
+                width: parent.width - 20
+                x: 10
+                color: Qt.rgba(255 / 255, 255 / 255, 255 / 255, 0.4)
+                radius: 8
+                MouseArea {
+                    anchors.fill: parent
+                    onClicked: {
+                    mouse.accepted = true
+                    // itemCloseAnim.restart()
+                    }
+                }
+                RowLayout {
+                    width: parent.width / 3
+                    height: parent.height
+                    anchors.right: parent.right
+                    anchors.rightMargin: 0
+                    Label {
+                        // Layout.alignment: Qt.AlignRight
+                        Layout.fillWidth: true
+                        text: i18nd("plasma-phone-components", "Delete")
+                        color: Qt.rgba(0, 0, 0, 0.3)
+                        font.pixelSize: 14
+                        horizontalAlignment: Text.AlignHCenter
+                        verticalAlignment: Text.AlignVCenter
+                        font.weight: Font.Bold
+                        MouseArea {
+                            id: deleteBgMouse
+                            anchors.fill: parent
+                            enabled: isOpen
+                            onClicked: {
+                                mouse.accepted = true
+                                itemCloseAnim.restart()
+                            }
+                        }
+                    }
+                }
+            }
 
             Rectangle {
                 id: rectangleBg
                 anchors.top: parent.top
 
-                height: column.implicitHeight
-                width: parent.width - 24
-                x: 12
-                color: "#f0f0f0"
+                height: column.implicitHeight + 10
+                width: parent.width - 20
+                x: 10
+                color: Qt.rgba(248 / 255, 248 / 255, 248 / 255, 1)
                 clip: true
 
-                radius: 20
-                
+                radius: 8
+
                 Column {
                     id: column
-                    spacing: 8
+                    spacing: 3
 
                     Item {
                         width: rectangleBg.width
-                        height:  titleText.implicitHeight > iconItem.height ? titleText.implicitHeight + 20 : iconItem.height + 20
+                        height:  titleText.implicitHeight > iconItem.height ? titleText.implicitHeight + 10 : iconItem.height + 10
 
                         PlasmaCore.IconItem {
                             id: iconItem
                             anchors.top:parent.top
-                            anchors.topMargin: 20
+                            anchors.topMargin: 10
                             anchors.left: parent.left
-                            anchors.leftMargin: 20
+                            anchors.leftMargin: 10
 
                             height: 25
                             width: 25
@@ -135,11 +246,9 @@ Item {
                                 if (typeof icon !== "string") { // displayed by QImageItem below
                                     return "";
                                 }
-
                                 if (icon === "dialog-information") {
                                     return "";
                                 }
-
                                 return icon;
                             }
                         }
@@ -158,12 +267,12 @@ Item {
                             id: titleText
                             anchors.verticalCenter: iconItem.verticalCenter
                             anchors.left: iconItem.right
-                            anchors.leftMargin: 12
+                            anchors.leftMargin: 6
                             anchors.right: timeText.left
-                            anchors.rightMargin: 12
+                            anchors.rightMargin: 6
                             text: model.applicationName
                             elide: Text.ElideRight
-                            font.pointSize: 20
+                            font.pixelSize: 13
                             opacity: 0.6
                             color: "#000000"
                         }
@@ -172,19 +281,39 @@ Item {
                             id: timeText
                             anchors.verticalCenter: iconItem.verticalCenter
                             anchors.right: parent.right
-                            anchors.rightMargin: 20
-                            
-                            font.pointSize: 17
+                            anchors.rightMargin: 10
+                            visible: !isEnterMouse
+                            font.pixelSize: 11
                             opacity: 0.6
                             color: "#000000"
 
                             Component.onCompleted:  {
-                                timeText.text = Qt.formatDateTime(model.created, "hh:mm:ss")
+                                timeText.text = getLocalTimeString(model.created)
+                                // Qt.formatDateTime(model.created, "hh:mm:ss")
+                            }
+                        }
+
+                        Image {
+                            anchors.verticalCenter: iconItem.verticalCenter
+                            anchors.right: parent.right
+                            anchors.rightMargin: 10
+                            visible: isEnterMouse
+                            width: 22
+                            height: 22
+                            source: "file:///usr/share/icons/jing/close.svg"
+
+                            MouseArea {
+                                anchors.fill: parent
+                                onClicked: {
+                                    itemCloseAnim.restart()
+                                    mouse.accepted = true
+                                }
                             }
                         }
                     }
 
                     Item {
+
                         id: summaryItem
                         width: rectangleBg.width
                         height: summaryText.implicitHeight
@@ -193,14 +322,14 @@ Item {
                             id: summaryText
                             anchors.top: parent.top
                             anchors.left: parent.left
-                            anchors.leftMargin: 20
+                            anchors.leftMargin: 10
                             anchors.right: parent.right
-                            anchors.rightMargin: 20
+                            anchors.rightMargin: 10
                             text: model.summary
-                            font.pointSize: 22
+                            font.pixelSize: 14
                             color: "#000000"            
                             font.bold: true
-                            wrapMode:Text.WordWrap
+                            wrapMode: Text.WordWrap
                             elide: Text.ElideRight
                         }
                     }
@@ -208,47 +337,124 @@ Item {
                     Item {
                         id: bodyItem
                         width: rectangleBg.width
-                        height: bodyText.implicitHeight + 22
-
+                        height: bodyText.implicitHeight
                         Text {
                             id: bodyText
                             anchors.top: parent.top
                             anchors.left: parent.left
-                            anchors.leftMargin: 20
+                            anchors.leftMargin: 10
                             anchors.right: parent.right
-                            anchors.rightMargin: 20
+                            anchors.rightMargin: 10
                             text: model.body
-                            font.pointSize: 21
+                            font.pixelSize: 14
                             color: "#000000"
-                            wrapMode:Text.WordWrap
+                            wrapMode: Text.WrapAnywhere
                             elide: Text.ElideRight
                         }
                     }
                 }
-                
+
                 MouseArea {
                     id: dismissSwipe
+
                     anchors.fill: parent
                     drag.axis: Drag.XAxis
                     drag.target: rectangleBg
+                    drag.minimumX: -parent.width
+                    drag.maximumX: 10
+                    propagateComposedEvents: true
+                    hoverEnabled: true
 
-                    onReleased: {
-                        if (Math.abs(rectangleBg.x) > width / 4) {
-                            notifyModel.close(model.notificationId);
-                        } else {
-                            slideAnim.restart();
-                        }
+                    onClicked: {
+                        mouse.accepted = false
                     }
 
+                    onEntered: {
+                        isEnterMouse = true
+                    }
+                    
+                    onExited: {
+                        isEnterMouse = false
+                    }
+
+                    onReleased: {
+                        if (rectangleBg.x < -rectangleBg.width / 2) {
+                            itemCloseAnim.restart()
+                        } else if (rectangleBg.x < -rectangleBg.width / 4) {
+                            openAnim.restart();
+                            backOther(index)
+                            isOpen = true
+                        } else {
+                           closeAnim.restart();
+                           isOpen = false
+                        }
+                    }
+                    
                     NumberAnimation {
-                        id: slideAnim
+                        id: openAnim
                         target: rectangleBg
                         property: "x"
-                        to: 12
+                        to: -rectangleBg.width / 3
                         duration: 300
-                    }                       
+                        easing.type: "OutBack"
+                    }
+                    NumberAnimation {
+                        id: closeAnim
+                        target: rectangleBg
+                        property: "x"
+                        to: 10
+                        duration: 300
+                        easing.type: "OutBack"
+                    }
+                }
+
+                ParallelAnimation {
+                    id: itemCloseAnim
+
+                    PropertyAnimation {
+                        target: rectangleBg
+                        duration: 150
+                        easing.type: Easing.InOutQuad
+                        properties: "x"
+                        from: rectangleBg.x
+                        to: -rectangleBg.width
+                    }
+                    PropertyAnimation {
+                         target: deleteBg
+                         duration: 150
+                         easing.type: Easing.InOutQuad
+                         properties: "x"
+                         from: deleteBg.x
+                         to: -deleteBg.width
+                     }
+                    onFinished: {
+                        notifyModel.close(model.notificationId);
+                    }
                 }
             }
         }
+    }
+
+    DC.TimeZoneFilterProxy{
+        id:timezoneProxy
+    }
+
+    function getLocalTimeString(timeFormat){
+        var timeStr = String(timeFormat);
+        var isChinaLocal = (timeStr.indexOf("GMT+0800") != -1)
+        timeStr = Qt.formatTime(timeFormat, timezoneProxy.isSystem24HourFormat ? "h:mm:ss" : "h:mm:ss AP");
+        if(isChinaLocal){
+            if(timeStr.search("AM") != -1)
+                timeStr = timeStr.replace("AM","上午");
+            if(timeStr.search("PM") != -1)
+                timeStr = timeStr.replace("PM","下午");
+        } else {
+            if(timeStr.search("上午") != -1)
+                timeStr = timeStr.replace("上午","AM");
+            if(timeStr.search("下午") != -1)
+                timeStr = timeStr.replace("下午","PM");
+        }
+
+        return timeStr;
     }
 }

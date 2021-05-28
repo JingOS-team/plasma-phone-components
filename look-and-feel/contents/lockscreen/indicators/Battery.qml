@@ -28,31 +28,73 @@ import org.kde.plasma.workspace.components 2.0 as PW
 RowLayout {
     visible: pmSource.data["Battery"]["Has Cumulative"]
 
-    PW.BatteryIcon {
-        id: battery
-        Layout.preferredWidth: height
-        Layout.fillHeight: true
-        hasBattery: true
-        percent: pmSource.data["Battery"]["Percent"]
-        pluggedIn: pmSource.data["AC Adapter"] ? pmSource.data["AC Adapter"]["Plugged in"] : false
-
-        height: batteryLabel.height
-        width: batteryLabel.height * 1.2
-
-        PlasmaCore.DataSource {
-            id: pmSource
-            engine: "powermanagement"
-            connectedSources: ["Battery", "AC Adapter"]
-        }
-    }
-
     PlasmaComponents.Label {
         id: batteryLabel
-        text: i18n("%1%", battery.percent)
+        text: i18nd("plasma-phone-components", "%1%", pmSource.data["Battery"]["Percent"])
         Layout.alignment: Qt.AlignVCenter
 
         color: PlasmaCore.ColorScope.textColor
         // font.pixelSize: parent.height / 2
-        font.pointSize: parent.height / 2
+        font.pointSize: 9
+    }
+
+    Item{
+        id: battery
+        width: 14
+        height: 8
+
+        Image{
+            id: batteryImg
+            width: 14
+            height: 8
+            source: "file:///usr/share/icons/jing/jing/settings/Battery_rect_white.svg"
+        }
+
+
+
+        Rectangle{
+            id: batteryVolumeRect
+            property int maxWidth: 11
+            anchors.verticalCenter: parent.verticalCenter
+            anchors.left: parent.left
+            anchors.leftMargin: 1
+
+            width:maxWidth * pmSource.data["Battery"]["Percent"]/100
+            height:6
+            color: isPlugInsert() ? "#6DD400" :"white"
+        }
+
+
+
+        Image{
+            id:batteryCharging
+            anchors.centerIn: parent
+            width:3
+            height:6
+
+            source:"file:///usr/share/icons/jing/jing/settings/Battery_charge_white.svg"
+            visible: isPlugInsert()
+        }
+
+
+
+
+
+    }
+
+
+    PlasmaCore.DataSource {
+        id: pmSource
+        engine: "powermanagement"
+        connectedSources: ["Battery", "AC Adapter"]
+    }
+
+    function isPlugInsert()
+    {
+        if(!pmSource.data["AC Adapter"])
+            return fase;
+        return pmSource.data["AC Adapter"]["Plugged in"];
     }
 }
+
+

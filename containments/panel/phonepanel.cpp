@@ -28,6 +28,8 @@
 #include <KLocalizedString>
 #include <KConfigGroup>
 
+#include <QFuture>
+
 #include <QDateTime>
 #include <QDBusPendingReply>
 #include <QFile>
@@ -40,6 +42,12 @@
 #include <QtQml>
 #include <QDebug>
 #include <QDBusConnection>
+#include <KNotification>
+
+#include <solid/devicenotifier.h>
+#include <solid/device.h>
+#include <solid/deviceinterface.h>
+#include <solid/battery.h>
 
 #include "mediamanager.h"
 #define FORMAT24H "HH:mm:ss"
@@ -47,9 +55,9 @@
 constexpr int SCREENSHOT_DELAY = 200;
 
 PhonePanel::PhonePanel(QObject *parent, const QVariantList &args)
-    : Plasma::Containment(parent, args)
+    : Plasma::Containment(parent, args),m_initWatcherFlag(true)
 {
-    qmlRegisterType<MediaManager>("org.kde.phone.jingos.MediaManager", 1, 0, "MediaManager");
+    qmlRegisterType<MediaManager>("org.kde.phone.jingos.mediamanager", 1, 0, "MediaManager");
 
     m_kscreenInterface = new org::kde::KScreen(QStringLiteral("org.kde.kded5"), QStringLiteral("/modules/kscreen"), QDBusConnection::sessionBus(), this);
     m_screenshotInterface = new org::kde::kwin::Screenshot(QStringLiteral("org.kde.KWin"), QStringLiteral("/Screenshot"), QDBusConnection::sessionBus(), this);
@@ -60,6 +68,12 @@ PhonePanel::PhonePanel(QObject *parent, const QVariantList &args)
     QDBusConnection::sessionBus().connect(QString(), QString("/org/kde/kcmshell_clock"),
         QString("org.kde.kcmshell_clock"), QString("clockUpdated"), this,
         SLOT(kcmClockUpdated()));
+
+    //添加闹钟dbus响应
+    QDBusConnection::sessionBus().connect(QString(), QString("/jingos/alarm/statusbaricon"),
+        QString("jingos.alarm.statusbaricon"), QString("getVisible"), this,
+        SLOT(alarmVisibleChanged(bool)));
+
     
     // watch for changes to locale config, to update 12/24 hour time
     connect(m_localeConfigWatcher.data(), &KConfigWatcher::configChanged, 
@@ -71,6 +85,18 @@ PhonePanel::PhonePanel(QObject *parent, const QVariantList &args)
                     Q_EMIT isSystem24HourFormatChanged();
                 }
             });
+    connect(&futureWatcher, SIGNAL(finished()), this, SLOT(handleFinished()));
+
+    QList<Solid::Device> deviceList = Solid::Device::listFromType(Solid::DeviceInterface::StorageDrive);
+
+    if(deviceList.count() > 1){
+        m_udiskInsert=true;
+    }
+
+    connect(Solid::DeviceNotifier::instance(), &Solid::DeviceNotifier::deviceAdded,
+                this,                              &PhonePanel::slotDeviceAdded);
+        connect(Solid::DeviceNotifier::instance(), &Solid::DeviceNotifier::deviceRemoved,
+                this,                              &PhonePanel::slotDeviceRemoved);
 }
 
 PhonePanel::~PhonePanel() = default;
@@ -152,10 +178,14 @@ void PhonePanel::takeScreenshot()
 
             if (reply.isError()) {
                 qWarning() << "Creating the screenshot failed:" << reply.error().name() << reply.error().message();
+                m_strScreenShot=i18ndc("plasma-phone-components","Notification caption that a screenshot got saved to file","Creating the screenshot failed");
+                handleFinished();
             } else {
                 QString filePath = QStandardPaths::writableLocation(QStandardPaths::PicturesLocation);
                 if (filePath.isEmpty()) {
                     qWarning() << "Couldn't find a writable location for the screenshot! The screenshot is in /tmp.";
+                    m_strScreenShot=i18ndc("plasma-phone-components","Notification caption that a screenshot got saved to file","Couldn't find a writable location for the screenshot! The screenshot is in /tmp.");
+                    handleFinished();
                     return;
                 }
 
@@ -164,6 +194,8 @@ void PhonePanel::takeScreenshot()
                     qWarning() << "Couldn't create folder at"
                             << picturesDir.path() + QStringLiteral("/Screenshots")
                             << "to take screenshot.";
+                    m_strScreenShot=i18ndc("plasma-phone-components","Notification caption that a screenshot got saved to file","Couldn't create folder at Screenshots");
+                   handleFinished();
                     return;
                 }
 
@@ -171,21 +203,35 @@ void PhonePanel::takeScreenshot()
                                 .arg(QDateTime::currentDateTime().toString(QStringLiteral("yyyyMMdd_hhmmss")));
 
                 const QString currentPath = reply.argumentAt<0>();
-                QtConcurrent::run(QThreadPool::globalInstance(), [=]() {
+                m_future=QtConcurrent::run(QThreadPool::globalInstance(), [=]() {
                     QFile screenshotFile(currentPath);
                     if (!screenshotFile.rename(filePath)) {
                         qWarning() << "Couldn't move screenshot into Pictures folder:"
                                 << screenshotFile.errorString();
+                        m_strScreenShot=i18ndc("plasma-phone-components","Notification caption that a screenshot got saved to file","Couldn't move screenshot into Pictures folder");
                     }
-
+                    m_strScreenShot=i18ndc("plasma-phone-components","Notification caption that a screenshot got saved to file","Screenshot saved to: %1",filePath);
                     qDebug() << "Successfully saved screenshot at" << filePath;
                 });
-            }
+                futureWatcher.setFuture(m_future);
 
+            }
             watcher->deleteLater();
         });
     });
+
 }
+
+ void PhonePanel::handleFinished()
+ {
+     if(!m_strScreenShot.isEmpty()){
+         KNotification::event(KNotification::Notification,
+                              i18ndc("plasma-phone-components","Notification caption that a screenshot got saved to file", "Screenshot"),
+                              m_strScreenShot,
+                              QStringLiteral("spectacle"));
+         m_strScreenShot="";
+     }
+ }
 
 bool PhonePanel::isSystem24HourFormat()
 {
@@ -195,11 +241,45 @@ bool PhonePanel::isSystem24HourFormat()
     return timeFormat == QStringLiteral(FORMAT24H);
 }
 
+bool PhonePanel::udiskInserted()
+{
+    return m_udiskInsert;
+}
+
+void PhonePanel::slotDeviceAdded(QString message)
+{
+    if(message.contains("input") || message.contains("mouse"))
+        return;
+    m_udiskInsert = true;
+    Q_EMIT udiskInsertChanged(true);
+}
+
+void PhonePanel::slotDeviceRemoved(QString message)
+{
+    if(message.contains("input") || message.contains("mouse"))
+        return;
+    m_udiskInsert = false;
+    Q_EMIT udiskInsertChanged(false);
+}
+
 void PhonePanel::kcmClockUpdated()
 {
     m_localeConfig->reparseConfiguration();
     Q_EMIT isSystem24HourFormatChanged();
 }
+
+void PhonePanel::alarmVisibleChanged(bool visble)
+{
+    m_alarmVisible = visble;
+    Q_EMIT alarmStatusChanged(visble);
+}
+
+bool PhonePanel::alarmVisible()
+{
+    return m_alarmVisible;
+}
+
+
 
 K_EXPORT_PLASMA_APPLET_WITH_JSON(quicksettings, PhonePanel, "metadata.json")
 

@@ -25,18 +25,20 @@ import QtGraphicalEffects 1.12
 import org.kde.plasma.core 2.0 as PlasmaCore
 import org.kde.plasma.components 3.0 as PlasmaComponents
 import org.kde.plasma.workspace.components 2.0 as PW
-
+import org.kde.plasma.private.digitalclock 1.0 as DC
+import org.kde.plasma.private.mobileshell 1.0 as MobileShell
 import "indicators" as Indicators
 
 // a simple version of the task panel
 // in the future, it should share components with the existing task panel
 PlasmaCore.ColorScope {
+    id:icons
     colorGroup: PlasmaCore.Theme.ComplementaryColorGroup
     
     layer.enabled: true
     layer.effect: DropShadow {
         anchors.fill: icons
-        visible: !showingApp
+        visible: MobileShell.HomeScreenControls.homeScreenVisible
         cached: true
         horizontalOffset: 0
         verticalOffset: 1
@@ -79,11 +81,11 @@ PlasmaCore.ColorScope {
         anchors.left: parent.left
         anchors.leftMargin: height / 2
         height: parent.height
-        text: Qt.formatTime(timeSource.data.Local.DateTime, root.is24HourTime ? "hh:mm" : "hh:mm ap")
+        text: getLocalTimeString()//Qt.formatTime(timeSource.data.Local.DateTime, is24HourTime ? "hh:mm" : "hh:mm AP")
         color: PlasmaCore.ColorScope.textColor
         horizontalAlignment: Qt.AlignHCenter
         verticalAlignment: Qt.AlignVCenter
-        font.pixelSize: height - height / 4
+        font.pointSize: 9// height - height / 3
     }
 
     RowLayout {
@@ -103,9 +105,47 @@ PlasmaCore.ColorScope {
             right: parent.right
             rightMargin: units.smallSpacing
         }
-        Indicators.Bluetooth {}
-        Indicators.Wifi {}
+//        Indicators.Bluetooth {}
+//        Indicators.Wifi {}
 //        Indicators.Volume {}
         Indicators.Battery {}
+    }
+
+    RowLayout{
+        id:wirelessIndicatorsLayout
+
+        anchors.bottom: parent.bottom
+        anchors.left: clock.right
+        anchors.leftMargin: 5//units.smallSpacing
+
+        height: parent.height
+
+        Indicators.Wifi {}
+        Indicators.Bluetooth {}
+
+    }
+
+    DC.TimeZoneFilterProxy{
+        id:timezoneProxy
+    }
+
+
+    function getLocalTimeString(){
+        var timeStr = String(timeSource.data["Local"]["DateTime"]);
+        var isChinaLocal = (timeStr.indexOf("GMT+0800") != -1)
+        timeStr = Qt.formatTime(timeSource.data["Local"]["DateTime"], timezoneProxy.isSystem24HourFormat ? "h:mm" : "h:mm AP");
+        if(isChinaLocal){
+            if(timeStr.search("AM") != -1)
+                timeStr = timeStr.replace("AM","上午");
+            if(timeStr.search("PM") != -1)
+                timeStr = timeStr.replace("PM","下午");
+        }
+        else{
+            if(timeStr.search("上午") != -1)
+                timeStr = timeStr.replace("上午","AM");
+            if(timeStr.search("下午") != -1)
+                timeStr = timeStr.replace("下午","PM");
+        }
+        return timeStr;
     }
 }

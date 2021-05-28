@@ -25,7 +25,7 @@ include(ECMGenerateHeaders)
 include(GenerateExportHeader)
 include(FeatureSummary)
 
-find_package(Qt5 ${QT_MIN_VERSION} CONFIG REQUIRED Core Qml Quick)
+find_package(Qt5 ${QT_MIN_VERSION} CONFIG REQUIRED Core Qml Quick DBus)
 
 find_package(KF5 ${KF5_MIN_VERSION} REQUIRED COMPONENTS
     I18n
@@ -35,7 +35,10 @@ find_package(KF5 ${KF5_MIN_VERSION} REQUIRED COMPONENTS
     Service
     Notifications
     Config
+    DBusAddons
 )
+
+ki18n_install(po)
 find_package(KF5Wayland CONFIG)
 set_package_properties(KF5Wayland PROPERTIES
                        TYPE REQUIRED
@@ -56,6 +59,39 @@ install( DIRECTORY kwinmultitasking/ DESTINATION ${DATA_INSTALL_DIR}/kwin/script
 install( FILES kwinmultitasking/metadata.desktop DESTINATION ${SERVICES_INSTALL_DIR} RENAME kwin-script-org.kde.phone.multitasking.desktop )
 
 install( DIRECTORY components/ DESTINATION ${KDE_INSTALL_QMLDIR}/org/kde/plasma/private/mobileshell )
+
+install(FILES ./look-and-feel/contents/lockscreen/imgs/airBubbles.svg  DESTINATION  /usr/share/icons/jing/  )
+install(FILES ./look-and-feel/contents/lockscreen/imgs/lightning.svg  DESTINATION  /usr/share/icons/jing/  )
+install(FILES ./containments/panel/package/contents/ui/quicksettings/imgs/cleaningAll.svg  DESTINATION  /usr/share/icons/jing/  )
+install(FILES ./containments/panel/package/contents/ui/quicksettings/imgs/close.svg  DESTINATION  /usr/share/icons/jing/  )
+install(FILES ./containments/panel/package/contents/ui/icons/Bluetooth.svg DESTINATION /usr/share/icons/jing/jing/settings/ )
+install(FILES ./containments/panel/package/contents/ui/icons/Wifi.svg DESTINATION /usr/share/icons/jing/jing/settings/ )
+install(FILES ./containments/panel/package/contents/ui/icons/Battery_rect.svg DESTINATION /usr/share/icons/jing/jing/settings/ )
+install(FILES ./containments/panel/package/contents/ui/icons/Battery_rect_white.svg DESTINATION /usr/share/icons/jing/jing/settings/ )
+install(FILES ./containments/panel/package/contents/ui/icons/Battery_charge.svg DESTINATION /usr/share/icons/jing/jing/settings/ )
+install(FILES ./containments/panel/package/contents/ui/icons/Battery_charge_white.svg DESTINATION /usr/share/icons/jing/jing/settings/ )
+install(FILES ./containments/panel/package/contents/ui/icons/Headset.svg DESTINATION /usr/share/icons/jing/jing/settings/ )
+install(FILES ./containments/panel/package/contents/ui/icons/Location.svg DESTINATION /usr/share/icons/jing/jing/settings/ )
+install(FILES ./containments/panel/package/contents/ui/icons/Mute.svg DESTINATION /usr/share/icons/jing/jing/settings/ )
+install(FILES ./containments/panel/package/contents/ui/icons/Rotate.svg DESTINATION /usr/share/icons/jing/jing/settings/ )
+install(FILES ./containments/panel/package/contents/ui/icons/Udisk.svg DESTINATION /usr/share/icons/jing/jing/settings/ )
+install(FILES ./containments/panel/package/contents/ui/icons/Vpn.svg DESTINATION /usr/share/icons/jing/jing/settings/ )
+install(FILES ./containments/panel/package/contents/ui/icons/AlarmClock.svg DESTINATION /usr/share/icons/jing/jing/settings/ )
+install(FILES ./containments/panel/package/contents/ui/icons/Headset_white.svg DESTINATION /usr/share/icons/jing/jing/settings/ )
+install(FILES ./containments/panel/package/contents/ui/icons/Location_white.svg DESTINATION /usr/share/icons/jing/jing/settings/ )
+install(FILES ./containments/panel/package/contents/ui/icons/Mute_white.svg DESTINATION /usr/share/icons/jing/jing/settings/ )
+install(FILES ./containments/panel/package/contents/ui/icons/Rotate_white.svg DESTINATION /usr/share/icons/jing/jing/settings/ )
+install(FILES ./containments/panel/package/contents/ui/icons/Udisk_white.svg DESTINATION /usr/share/icons/jing/jing/settings/ )
+install(FILES ./containments/panel/package/contents/ui/icons/Vpn_white.svg DESTINATION /usr/share/icons/jing/jing/settings/ )
+install(FILES ./containments/panel/package/contents/ui/icons/AlarmClock_white.svg DESTINATION /usr/share/icons/jing/jing/settings/ )
+install(FILES ./containments/panel/package/contents/ui/icons/wifi_disconnected.svg DESTINATION /usr/share/icons/jing/jing/settings/ )
+install(FILES ./containments/panel/package/contents/ui/icons/wifi_closed.svg DESTINATION /usr/share/icons/jing/jing/settings/ )
+install(FILES ./containments/panel/package/contents/ui/icons/wifi_volume_100.svg DESTINATION /usr/share/icons/jing/jing/settings/ )
+install(FILES ./containments/panel/package/contents/ui/icons/wifi_volume_75.svg DESTINATION /usr/share/icons/jing/jing/settings/ )
+install(FILES ./containments/panel/package/contents/ui/icons/wifi_volume_50.svg DESTINATION /usr/share/icons/jing/jing/settings/ )
+install(FILES ./containments/panel/package/contents/ui/icons/wifi_volume_25.svg DESTINATION /usr/share/icons/jing/jing/settings/ )
+install(FILES ./containments/panel/package/contents/ui/icons/network_wired.svg DESTINATION /usr/share/icons/jing/jing/settings/ )
+
 
 add_subdirectory(bin)
 add_subdirectory(applets)

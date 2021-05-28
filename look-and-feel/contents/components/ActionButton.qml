@@ -1,5 +1,6 @@
 /*
  *   Copyright 2016 David Edmundson <davidedmundson@kde.org>
+ *   Copyright 2021 Bangguo Liu <liubangguo@jingos.com>
  *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU Library General Public License as
@@ -21,7 +22,7 @@ import QtQuick 2.8
 import org.kde.plasma.core 2.0 as PlasmaCore
 import org.kde.plasma.components 3.0 as PlasmaComponents3
 
-Item {
+Rectangle {
     id: root
     property alias text: label.text
     property alias iconSource: icon.source
@@ -36,79 +37,93 @@ Item {
 
     activeFocusOnTab: true
 
-    property int iconSize: units.gridUnit * 3
+    radius: root.height*0.2
 
-    implicitWidth: Math.max(iconSize + units.largeSpacing * 2, label.contentWidth)
-    implicitHeight: iconSize + units.smallSpacing + label.implicitHeight
-
-    opacity: activeFocus || containsMouse ? 1 : 0.85
-        Behavior on opacity {
-            PropertyAnimation { // OpacityAnimator makes it turn black at random intervals
-                duration: units.longDuration
-                easing.type: Easing.InOutQuad
-            }
+    color: activeFocus || containsMouse ?Qt.rgba(0.623,0.623,0.667,0.3):Qt.rgba(1.0,1.0,1.0,0.3)
+    Behavior on opacity {
+        PropertyAnimation { // OpacityAnimator makes it turn black at random intervals
+            duration: units.longDuration
+            easing.type: Easing.InOutQuad
+        }
     }
 
-    Rectangle {
-        id: iconCircle
-        anchors.centerIn: icon
-        width: iconSize + units.smallSpacing
-        height: width
-        radius: width / 2
-        color: softwareRendering ?  PlasmaCore.ColorScope.backgroundColor : PlasmaCore.ColorScope.textColor
-        opacity: activeFocus || containsMouse ? (softwareRendering ? 0.8 : 0.15) : (softwareRendering ? 0.6 : 0)
-        Behavior on opacity {
+    Item {
+        anchors.centerIn: root
+        width:  icon.implicitWidth + parent.height*0.32 + label.implicitWidth
+        height:  parent.height
+
+        Rectangle {
+            id: iconCircle
+            anchors.centerIn: icon
+            width: icon.width
+            height: width
+            radius: width / 2
+            opacity: 0
+            Behavior on opacity {
                 PropertyAnimation { // OpacityAnimator makes it turn black at random intervals
                     duration: units.longDuration
                     easing.type: Easing.InOutQuad
                 }
+            }
         }
-    }
 
-    Rectangle {
-        anchors.centerIn: iconCircle
-        width: iconCircle.width
-        height: width
-        radius: width / 2
-        scale: mouseArea.containsPress ? 1 : 0
-        color: PlasmaCore.ColorScope.textColor
-        opacity: 0.15
-        Behavior on scale {
+        Rectangle {
+            anchors.centerIn: iconCircle
+            width: iconCircle.width
+            height: width
+            radius: width / 2
+            scale: mouseArea.containsPress ? 1 : 0
+            color: PlasmaCore.ColorScope.textColor
+            opacity: 0.15
+            Behavior on scale {
                 PropertyAnimation {
                     duration: units.shortDuration
                     easing.type: Easing.InOutQuart
                 }
+            }
         }
-    }
 
-    PlasmaCore.IconItem {
-        id: icon
-        anchors {
-            top: parent.top
-            horizontalCenter: parent.horizontalCenter
+        Image {
+            id:icon
+            width: 30
+            height: 30
+            anchors {
+                left:parent.left
+                verticalCenter: parent.verticalCenter
+            }
         }
-        width: iconSize
-        height: iconSize
 
-        colorGroup: PlasmaCore.ColorScope.colorGroup
-        active: mouseArea.containsMouse || root.activeFocus
-    }
-
-    PlasmaComponents3.Label {
-        id: label
-        font.pointSize: Math.max(fontSize + 1,theme.defaultFont.pointSize + 1)
-        anchors {
-            top: icon.bottom
-            topMargin: (softwareRendering ? 1.5 : 1) * units.smallSpacing
-            left: parent.left
-            right: parent.right
+        ShaderEffect {
+            anchors.fill: icon
+            property variant src: icon
+            property color color: "white"
+            fragmentShader: "
+                varying highp vec2 qt_TexCoord0;
+                uniform sampler2D src;
+                uniform highp vec4 color;
+                uniform lowp float qt_Opacity;
+                void main() {
+                    lowp vec4 tex = texture2D(src, qt_TexCoord0);
+                    gl_FragColor = vec4(color.r * tex.a, color.g * tex.a, color.b * tex.a, tex.a) * qt_Opacity;
+                }"
         }
-        style: softwareRendering ? Text.Outline : Text.Normal
-        styleColor: softwareRendering ? PlasmaCore.ColorScope.backgroundColor : "transparent" //no outline, doesn't matter
-        horizontalAlignment: Text.AlignHCenter
-        verticalAlignment: Text.AlignTop
-        wrapMode: Text.WordWrap
-        font.underline: root.activeFocus
+
+        PlasmaComponents3.Label {
+            id: label
+            font.pixelSize: parent.height*0.25
+            font.family:"PingFangSC"
+            anchors.left: icon.right
+            anchors.leftMargin:parent.height*0.32
+            anchors.verticalCenter: icon.verticalCenter
+
+            style: softwareRendering ? Text.Outline : Text.Normal
+            styleColor: softwareRendering ? PlasmaCore.ColorScope.backgroundColor : "transparent" //no outline, doesn't matter
+            horizontalAlignment: Text.AlignLeft
+            verticalAlignment: Text.AlignVCenter
+            wrapMode: Text.WordWrap
+            font.underline: root.activeFocus
+            color:"#ffffff"
+        }
     }
 
     MouseArea {

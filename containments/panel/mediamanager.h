@@ -59,9 +59,18 @@ signals:
     void dbusConnectChanged();
     void playStateChanged();
 
+    void mouseOnTopLeftConer();
+    void mouseOnTopRightConer();
+
 public slots:
+    void onMouseOnTopLeftConer();
+    void onMouseOnTopRightConer();
+
     void onServiceRegistered(const QString &serviceName);
     void onServiceUnregistered(const QString &serviceName);
+
+    void onKWinServiceRegistered(const QString &serviceName);
+    void onKWinServiceUnregistered(const QString &serviceName);
     void getUpdateTracksState(const QString &imagePath,
                               const QString &title,
                               const QString &artist,

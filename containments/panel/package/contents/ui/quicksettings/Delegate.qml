@@ -1,6 +1,6 @@
 /*
  *   Copyright 2015 Marco Martin <notmart@gmail.com>
- *   Copyright 2021 Rui Wang <wangrui@jingos.com>
+ *   Copyright 2021 Bangguo Liu <liubangguo@jingos.com>
  *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU Library General Public License as
@@ -30,7 +30,7 @@ Rectangle {
     id: delegateRoot
     anchors.fill: parent
     color: "#f0f0f0"
-    radius: 30
+    radius: height / 4
     property bool toggled: model.enabled
     signal closeRequested
     signal panelClosed
@@ -116,8 +116,11 @@ Rectangle {
         id: imgIcon
 
         anchors.centerIn: parent
+        sourceSize.width: parent.height / 2; 
+        sourceSize.height: parent.height / 2;
+
         visible: false
-        // smooth: true
+        smooth: true
         antialiasing: true
         source:  "file:///usr/share/icons/jing/jing/settings/" + model.icon + ".svg"
     }
@@ -128,5 +131,13 @@ Rectangle {
         color: delegateRoot.toggled ? "#ffffff" : "#000000"
         opacity: model.active ? 0.8 : 0.3
         antialiasing: true
+    }
+
+
+    Connections {
+        target: root
+        onClosed: {
+            stateRectangle.opacity = 0
+        }
     }
 }

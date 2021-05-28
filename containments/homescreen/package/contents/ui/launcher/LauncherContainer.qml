@@ -33,7 +33,6 @@ Item {
     readonly property int reservedSpaceForLabel: metrics.height
     property int availableCellHeight: units.iconSizes.huge + reservedSpaceForLabel
 
-    property ContainmentLayoutManager.AppletsLayout appletsLayout
     property Item launcherGrid
     property Item favoriteStrip
 
@@ -71,11 +70,14 @@ Item {
         contentItem: MouseArea {
             implicitWidth: applicationsFlow.implicitWidth
             implicitHeight: applicationsFlow.implicitHeight
-            Flow {
+
+            Grid {
                 id: applicationsFlow
 
-                spacing: 0
                 anchors.fill: parent
+                columns: 6
+                columnSpacing:  115
+                rowSpacing: 40
 
                 move: Transition {
                     NumberAnimation {

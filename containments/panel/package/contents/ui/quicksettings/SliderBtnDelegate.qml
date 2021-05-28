@@ -25,7 +25,7 @@ import QtGraphicalEffects 1.6
 Rectangle {
     anchors.fill: parent
     color: "#f0f0f0"
-    radius: 30
+    radius: height / 6
     property bool toggled: model.enabled
     signal closeRequested
     signal panelCloseded
@@ -45,7 +45,9 @@ Rectangle {
                     id: imgIcon
                     anchors.verticalCenter: parent.verticalCenter
                     anchors.right: parent.right
-                    anchors.rightMargin: 10
+
+                    sourceSize.width: parent.height / 2; 
+                    sourceSize.height: parent.height / 2;
 
                     visible: false
                     source: "file:///usr/share/icons/jing/jing/settings/" + model.icon + ".svg" 
@@ -68,7 +70,7 @@ Rectangle {
                 Text {
                     anchors.verticalCenter: parent.verticalCenter
                     anchors.left: parent.left
-                    anchors.leftMargin: 20
+                    anchors.leftMargin: 10
 
                     text: model.text
                     font.pointSize: parent.height / 5
@@ -88,16 +90,18 @@ Rectangle {
             Rectangle {
                 id: bgRectangle
                 anchors.fill: parent
-                anchors.leftMargin: parent.height / 5
-                anchors.rightMargin: parent.height / 5
-                anchors.topMargin: parent.top
+                anchors.leftMargin: parent.height / 4
+                anchors.rightMargin: parent.height / 4
+                //anchors.topMargin: parent.top
                 anchors.bottomMargin: parent.height / 3
 
                 property int currentValue: model.icon == "bright" ? root.screenBrightness : volumeHandle.currentVolume
                 property int maxnumValue: model.icon == "bright" ? root.maximumScreenBrightness : volumeHandle.maxVolumeValue    
                 property double maxWidth: bgRectangle.width
                 property int moverRatio:  bgRectangle.maxnumValue / bgRectangle.maxWidth
-                property int radiusValue: 20
+                property int radiusValue:  bgRectangle.height / 4
+
+
 
                 color: "#d1d1d1"
                 radius: bgRectangle.radiusValue
@@ -166,8 +170,18 @@ Rectangle {
                     anchors.left: bgRectangle.left
                     radius: bgRectangle.radiusValue
                     width: sliderItem.value
-                    height: sliderItem.value < 20 ?  bgRectangle.height - (bgRectangle.radiusValue  - sliderItem.value) : bgRectangle.height + 2
+                    height: sliderItem.value < bgRectangle.radiusValue ?  bgRectangle.height - (bgRectangle.radiusValue  - sliderItem.value) : bgRectangle.height + 2
                     color: "#ffffff"
+                }
+
+                onMaxWidthChanged: {
+                    sliderItem.value = bgRectangle.currentValue / bgRectangle.moverRatio <= bgRectangle.maxWidth ? bgRectangle.currentValue / bgRectangle.moverRatio : bgRectangle.maxWidth;
+                }
+
+                onCurrentValueChanged: {
+
+                    sliderItem.value = bgRectangle.currentValue / bgRectangle.moverRatio <= bgRectangle.maxWidth ? bgRectangle.currentValue / bgRectangle.moverRatio : bgRectangle.maxWidth;
+
                 }
             }
         }

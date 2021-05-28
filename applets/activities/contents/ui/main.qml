@@ -27,7 +27,7 @@ ColumnLayout {
     PlasmaComponents.ToolButton {
         id: newButton
         Layout.fillWidth: true
-        text: i18n("New Activity...")
+        text: i18nd("plasma-phone-components", "New Activity...")
         onClicked: {
             newEdit.visible = true;
             newEdit.forceActiveFocus();

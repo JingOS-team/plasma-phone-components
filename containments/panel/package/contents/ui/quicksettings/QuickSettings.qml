@@ -24,6 +24,7 @@ import org.kde.plasma.core 2.0 as PlasmaCore
 import org.kde.plasma.components 2.0 as PlasmaComponents
 import org.kde.plasma.networkmanagement 0.2 as PlasmaNM
 import org.kde.bluezqt 1.0 as BluezQt
+import org.kde.plasma.private.bluetooth 1.0
 
 import "../indicators" as Indicators
 
@@ -39,23 +40,22 @@ Item {
     signal plasmoidTriggered(var applet, var id)
     Layout.minimumHeight: flow.implicitHeight + units.largeSpacing*2
 
-    property int screenBrightness                                            
+    property int screenBrightness: pmSource.data["PowerDevil"] ? pmSource.data["PowerDevil"]["Screen Brightness"] : 0;
     property bool disableBrightnessUpdate: true
     readonly property int maximumScreenBrightness: pmSource.data["PowerDevil"] ? pmSource.data["PowerDevil"]["Maximum Screen Brightness"] || 0 : 0
 
-    function updateBlueZStatus()
-    {
-        var connectedDevices = [];
+    property bool bluetoothDisConnected: BluezQt.Manager.bluetoothBlocked
+    property bool wirelessDisConnected: enabledConnections.wirelessEnabled
 
-        for (var i = 0; i < BluezQt.Manager.devices.length; ++i) {
-            var device = BluezQt.Manager.devices[i];
-            if (device.connected) {
-                connectedDevices.push(device);
-            }
-        }
-        deviceConnected = connectedDevices.length > 0;
+    onBluetoothDisConnectedChanged: {
+        settingsModel.get(2).enabled = !bluetoothDisConnected
     }
-        
+
+    onWirelessDisConnectedChanged: {
+        settingsModel.get(0).enabled = wirelessDisConnected
+
+    }
+
     function toggleAirplane() {
         print("toggle airplane mode")
     }
@@ -66,7 +66,8 @@ Item {
 
     function toggleWifi() {
         nmHandler.enableWireless(!enabledConnections.wirelessEnabled)
-        settingsModel.get(0).enabled = !enabledConnections.wirelessEnabled
+
+        //settingsModel.get(0).enabled = !enabledConnections.wirelessEnabled
     }
 
     function toggleWwan() {
@@ -81,9 +82,13 @@ Item {
     }
 
     function toggleBluetooth() {
-        const enable = !BluezQt.Manager.bluetoothOperational
-        BluezQt.Manager.setBluetoothBlocked(enable)
-        settingsModel.get(2).enabled = enable
+        const enable = !root.bluetoothDisConnected
+        BluezQt.Manager.bluetoothBlocked = enable
+
+        for (var i = 0; i < BluezQt.Manager.adapters.length; ++i) {
+            var adapter = BluezQt.Manager.adapters[i];
+            adapter.powered = enable;
+        }
     }
 
     function toggleFlightMode() {
@@ -137,6 +142,21 @@ Item {
         }
     }
 
+    DevicesProxyModel {
+        id: devicesProxyModel
+        sourceModel: devicesModel
+
+        onConnectedNameChanged:{
+
+            settingsModel.get(2).currentConnectedName = connectedName
+        }
+    }
+
+    BluezQt.DevicesModel { 
+        id:devicesModel
+    }
+
+
 
     PlasmaNM.Handler {
         id: nmHandler
@@ -144,6 +164,18 @@ Item {
 
     PlasmaNM.EnabledConnections {
         id: enabledConnections
+    }
+
+    PlasmaNM.KcmIdentityModel {
+        id: connectionModel    
+    }
+    PlasmaNM.EditorProxyModel {
+        id: editorProxyModel
+        sourceModel: connectionModel
+        onConnectedNameChanged:{
+
+            settingsModel.get(0).currentConnectedName = name
+        }
     }
 
     PlasmaCore.DataSource {
@@ -167,17 +199,8 @@ Item {
         id: nullApplet
     }
     Component.onCompleted: {
-        //NOTE: add all in javascript as the static decl of listelements can't have scripts
-        BluezQt.Manager.deviceAdded.connect(updateBlueZStatus);
-        BluezQt.Manager.deviceRemoved.connect(updateBlueZStatus);
-        BluezQt.Manager.deviceChanged.connect(updateBlueZStatus);
-        BluezQt.Manager.bluetoothBlockedChanged.connect(updateBlueZStatus);
-        BluezQt.Manager.bluetoothOperationalChanged.connect(updateBlueZStatus);
-
-        updateBlueZStatus();
-
         settingsModel.append({
-            "text": i18n("Wifi"),
+            "text": i18nd("plasma-phone-components", "WLAN"),
             "icon": "wifi",
             "settingsCommand": "plasma-settings -m wifi",
             "toggleFunction": "toggleWifi",
@@ -187,10 +210,11 @@ Item {
             "row": 0,
             "column": 0,
             "rowSpan": 1,
-            "columnSpan": 3
+            "columnSpan": 3,
+            "currentConnectedName": editorProxyModel.currentConnectedName
         });
         settingsModel.append({
-            "text": i18n("MediaPlayer"),
+            "text": i18nd("plasma-phone-components", "MediaPlayer"),
             "icon": "",
             "settingsCommand": "",
             "toggleFunction": "",
@@ -203,20 +227,21 @@ Item {
             "columnSpan": 3
         });
         settingsModel.append({
-            "text": i18n("Bluetooth"),
+            "text": i18nd("plasma-phone-components", "Bluetooth"),
             "icon": "bluetooth",
             "settingsCommand": "plasma-settings -m bluetooth",
             "toggleFunction": "toggleBluetooth",
             "delegate": "BigBtnDelegate",
-            "enabled": BluezQt.Manager.bluetoothOperational,
+            "enabled":  !root.bluetoothDisConnected,
             "active": true,
             "row": 1,
             "column": 0,
             "rowSpan": 1,
-            "columnSpan": 3
+            "columnSpan": 3,
+            "currentConnectedName": devicesProxyModel.connectedName
         });
         settingsModel.append({
-            "text": i18n("Flight Mode"),
+            "text": i18nd("plasma-phone-components", "Flight Mode"),
             "icon": "flight-mode",
             "settingsCommand": "",
             "toggleFunction": "toggleFlightMode",
@@ -229,7 +254,7 @@ Item {
             "columnSpan": 1
         });
         settingsModel.append({
-            "text": i18n("Mobile Data"),
+            "text": i18nd("plasma-phone-components", "Mobile Data"),
             "icon": "network-modem",
             "settingsCommand": "plasma-settings -m kcm_mobile_broadband",
             "toggleFunction": "toggleWwan",
@@ -242,7 +267,7 @@ Item {
             "columnSpan": 1
         });
         settingsModel.append({
-            "text": i18n("Sleep Mode"),
+            "text": i18nd("plasma-phone-components", "Sleep Mode"),
             "icon": "sleep-mode",
             "settingsCommand": "",
             "toggleFunction": "toggleSleepMode",
@@ -255,7 +280,7 @@ Item {
             "columnSpan": 1
         });
         settingsModel.append({
-            "text": i18n("Ringer"),
+            "text": i18nd("plasma-phone-components", "Voice"),
             "icon": "audio-speakers-symbolic",
             "settingsCommand": "",
             "toggleFunction": "toggleRinger",
@@ -268,7 +293,7 @@ Item {
             "columnSpan": 3
         });
         settingsModel.append({
-            "text": i18n("Bright"),
+            "text": i18nd("plasma-phone-components", "Bright"),
             "icon": "bright",
             "settingsCommand": "",
             "toggleFunction": "toggleBright",
@@ -281,7 +306,7 @@ Item {
             "columnSpan": 3
         });
         settingsModel.append({
-            "text": i18n("Hotspot"),
+            "text": i18nd("plasma-phone-components", "Hotspot"),
             "icon": "hotspot",
             "settingsCommand": "",
             "toggleFunction": "toggleHotspot",
@@ -294,7 +319,7 @@ Item {
             "columnSpan": 1
         });
         settingsModel.append({
-            "text": i18n("Auto-rotate"),
+            "text": i18nd("plasma-phone-components", "Auto-rotate"),
             "icon": "rotation-allowed",
             "enabled": false ,//plasmoid.nativeInterface.autoRotateEnabled,
             "active": false,
@@ -307,7 +332,7 @@ Item {
             "delegate": "Delegate"
         });
         settingsModel.append({
-            "text": i18n("Screenshot"),
+            "text": i18nd("plasma-phone-components", "Screenshot"),
             "icon": "screenshot",
             "enabled": false,
             "active": true,
@@ -320,7 +345,7 @@ Item {
             "delegate": "Delegate"
         });
         settingsModel.append({
-            "text": i18n("Location"),
+            "text": i18nd("plasma-phone-components", "Location"),
             "icon": "gps",
             "enabled": false,
             "active": false,
@@ -332,7 +357,7 @@ Item {
             "delegate": "Delegate"
         });
         settingsModel.append({
-            "text": i18n("Settings"),
+            "text": i18nd("plasma-phone-components", "Settings"),
             "icon": "settings",
             "enabled": false,
             "active": true,
@@ -345,7 +370,7 @@ Item {
             "delegate": "Delegate"
         });
         settingsModel.append({
-            "text": i18n("Sound"),
+            "text": i18nd("plasma-phone-components", "Sound"),
             "icon": "audio-speakers-symbolic",
             "enabled": false,
             "active": true,
@@ -392,7 +417,7 @@ Item {
         id: flow 
         anchors {
             fill: parent
-            margins: units.smallSpacing * 2.5
+            margins: 10
         }
         rows: 6
         columns: 6
@@ -414,14 +439,14 @@ Item {
                 Layout.preferredWidth: Layout.columnSpan
                 Layout.preferredHeight: Layout.rowSpan
 
-                property bool toggled: model.enabled
+                // property bool toggled: model.enabled
                 // spacing: 0// units.smallSpacing
 
                 Loader {
                     id: loader
 
                     anchors.fill: parent
-                    anchors.margins: 3
+                    // anchors.margins: 3
                     source: Qt.resolvedUrl((model.delegate ? model.delegate : "Delegate") + ".qml")
                 }
             } 

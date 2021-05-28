@@ -36,6 +36,8 @@ import QtGraphicalEffects 1.6
 import org.kde.kquickcontrolsaddons 2.0
 import org.kde.plasma.private.mobileshell 1.0 as MobileShell
 
+import org.kde.plasma.wallpapers.image 2.0 as Wallpaper
+
 Item {
     id: root
     anchors.fill: parent
@@ -46,13 +48,14 @@ Item {
     property alias scrollAnimHandle: scrollAnim
     property int dragIconPageIndex
 
+    property double iconWidth: (listView.width / 6 - 6) * 0.34
+
     Image {
         id: rootBgImage
         anchors.fill: parent
         smooth: true
-        source: "file:///usr/share/icons/jing/bg.png"
+        source: Wallpaper.Wallpaper.launcherWallpaper
     }
-
 
     Timer {
         id: scrollTimer
@@ -79,13 +82,13 @@ Item {
         anchors.fill: parent
         anchors.topMargin: parent.height / 10.1
         anchors.bottomMargin: footItem.height
-        anchors.leftMargin: root.width / 51
-        anchors.rightMargin: root.width / 51
+        anchors.leftMargin: root.width / 52
+        anchors.rightMargin: root.width / 52
 
         model: plasmoid.nativeInterface.listModelManager.launcherPageModel
         delegate: listDelegate
         focus: true
-        
+
         z: 100
         orientation: ListView.Horizontal
         snapMode: ListView.SnapOneItem
@@ -156,8 +159,7 @@ Item {
         }
 
         Row {
-            anchors.bottom: listView.bottom
-            anchors.bottomMargin: 40
+            anchors.top: listView.bottom
             anchors.horizontalCenter: parent.horizontalCenter
             
             visible: listView.count < 2 ? false : true
@@ -167,7 +169,7 @@ Item {
 
                 Item {
                     id: indexItem
-                    width: 30
+                    width: root.iconWidth / 10 * 3
                     height: width
 
                     MouseArea {
@@ -199,7 +201,7 @@ Item {
                     Rectangle {
                         id: indexRectangle
                         anchors.centerIn: parent
-                        width: 10
+                        width: root.iconWidth / 10
                         height: width
                         radius: width / 2
 
@@ -239,9 +241,9 @@ Item {
 
             Repeater {
                 id: repeaterHandle
-                model: plasmoid.nativeInterface.listModelManager.getMdoelFromPage(index)
+                model: modelData //plasmoid.nativeInterface.listModelManager.getMdoelFromPage(index)
 
-                delegate:  itemDelegate
+                delegate: itemDelegate
             }
         }
     }
@@ -251,8 +253,8 @@ Item {
 
         DropArea {
             id: delegate
-            width: model.modelData.location == 1 ? footItem.iconWidthAndHeight : listView.width / 6  //root.cellWidth
-            height: model.modelData.location == 1 ? footItem.iconWidthAndHeight : listView.height / 4  //root.cellHeight
+            width: model.modelData.location == 1 ? root.iconWidth  : listView.width / 6 - 1   //root.cellWidth
+            height: model.modelData.location == 1 ? root.iconWidth  : listView.height / 4 - 1  //root.cellHeight
 
             opacity: 1
 
@@ -345,8 +347,8 @@ Item {
                 anchors.horizontalCenter: parent.horizontalCenter
                 anchors.top: parent.top
 
-                width: icon.iconWidth
-                height: icon.iconWidth
+                width: root.iconWidth
+                height: root.iconWidth
 
                 property int visualIndex: index
                 property int visualAppInPageIndex: model.modelData.pageIndex
@@ -478,9 +480,11 @@ Item {
 
                 PlasmaCore.IconItem {
                     id: iconBgIcon
+                    anchors.centerIn: icon
 
-                    anchors.fill: parent
-                    
+                    width: root.iconWidth
+                    height: width
+
                     usesPlasmaTheme: false
                     source:  "file:///usr/share/icons/jing/iconBg.svg"
                     visible: !model.modelData.isSystemApp && icon.visible ? true : false
@@ -502,13 +506,10 @@ Item {
 
                 PlasmaCore.IconItem {
                     id: icon
-
-                    width: iconBgIcon.visible ? icon.iconWidth * 0.8 : icon.iconWidth
-                    height: iconBgIcon.visible ? icon.iconWidth * 0.8 : icon.iconWidth
-
                     anchors.centerIn: parent
 
-                    property int iconWidth: listView.width / 24
+                    width: iconBgIcon.visible ? iconBgIcon.width * 0.8 : iconBgIcon.width
+                    height: width
 
                     usesPlasmaTheme: false
                     source: model.modelData ? model.modelData.icon : "file:///usr/share/icons/jing/defult.png"
@@ -531,7 +532,7 @@ Item {
                         if(status === Image.Error) {
                             icon.source = "file:///usr/share/icons/jing/defult.svg"
                         }
-                    }
+                    } 
                 }
 
                 DropShadow {
@@ -549,31 +550,31 @@ Item {
 
             PlasmaComponents.Label {
                 id: label
-                visible: text.length > 0 && icon.visible
                 anchors.top: iconRootHandle.bottom
-                anchors.topMargin: units.smallSpacing * 2
+                anchors.topMargin: icon.width / 8
                 anchors.left: parent.left
-                anchors.leftMargin: units.smallSpacing * 2
+                anchors.leftMargin: parent.width / 9
                 anchors.right: parent.right
-                anchors.rightMargin: units.smallSpacing * 2
+                anchors.rightMargin: parent.width / 9
                 anchors.bottom: parent.bottom
-                anchors.bottomMargin: units.smallSpacing * 2
+                anchors.bottomMargin: icon.height / 20
+                visible: text.length > 0 && icon.visible && model.modelData.location !== 1
 
-                Layout.fillWidth: true
+                // Layout.fillWidth: true
                 // Layout.preferredHeight: delegate.reservedSpaceForLabel * 3
                         
-                wrapMode: Text.WordWrap
                 // anchors.horizontalCenter: icon.horizontalCenter
                 horizontalAlignment: Text.AlignHCenter
                 verticalAlignment: Text.AlignTop
-                maximumLineCount: 2
+                maximumLineCount: 3
                 elide: Text.ElideRight
+                wrapMode: Text.WordWrap
 
                 text: model.modelData.name
                 opacity: mouseAreaHandle.drag.active ? 0 : 1
 
                 //FIXME: export smallestReadableFont
-                font.pointSize: theme.defaultFont.pointSize - 2
+                font.pixelSize: 12
                 color: "white"//model.applicationLocation == ApplicationListModel.Desktop ? "white" : theme.textColor
 
                 layer.enabled: true//model.applicationLocation == ApplicationListModel.Desktop
@@ -597,24 +598,18 @@ Item {
         id: footItem
         anchors.bottom: parent.bottom
         width: root.width
-        height: footItem.iconWidthAndHeight  * 2
-
-        property int iconWidthAndHeight: listView.width / 24
+        height: root.iconWidth  * 2
 
         ShaderEffectSource {
             id: effectSource
-            anchors.top: footItem.top
-            anchors.bottom: footItem.bottom
-            anchors.bottomMargin: 40
-            anchors.horizontalCenter: footItem.horizontalCenter
+            anchors.centerIn: parent
             
-            property point mapPoint: effectSource.mapToItem(rootBgImage, effectSource.x, effectSource.y)
-
-            width: dockRepeater.count < 3 ? (footItem.iconWidthAndHeight * 3 + 140)  : favoriteAppRow.implicitWidth + 60
+            width: dockRepeater.count < 3 ? (root.iconWidth * 3 + favoriteAppRow.spacing * 4)  : favoriteAppRow.implicitWidth + favoriteAppRow.spacing * 2
+            height: root.iconWidth * 1.35
 
             sourceItem: rootBgImage
             sourceRect: Qt.rect(x,
-                                mapPoint.y, 
+                                rootBgImage.height - effectSource.height - (footItem.height - effectSource.height) / 2, 
                                 effectSource.width, 
                                 effectSource.height)
             visible: false
@@ -655,14 +650,14 @@ Item {
         Row {
             id: favoriteAppRow
             anchors.centerIn: dockBgRectangle
-            spacing: 40
+            spacing: root.iconWidth * 0.25
 
             Repeater {
                 id: dockRepeater
                 model:plasmoid.nativeInterface.listModelManager.getFavoriteAppMdoel()
 
                 z: 50
-                delegate:  itemDelegate
+                delegate: itemDelegate
             }
         }
     }

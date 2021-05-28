@@ -77,10 +77,11 @@ public:
     Q_INVOKABLE void loadApplications();
 
     QAbstractListModel* launcherPageModel() const;
-    void setLauncherPageModel(QString pageNum);
+    void setLauncherPageModel(BaseModel<LauncherItem*>* page);
 
     Q_INVOKABLE void addLauncherPage(int page);
     Q_INVOKABLE void refreshPageModel();
+    Q_INVOKABLE void reloadPageModel(int currentIndex);
 
     Q_INVOKABLE QAbstractListModel *getMdoelFromPage(int page);
     Q_INVOKABLE QAbstractListModel *getFavoriteAppMdoel();
@@ -97,6 +98,7 @@ public:
     Q_INVOKABLE int getDesktopMaxIconNum();
     Q_INVOKABLE int getFavoriteMaxIconNum();
     Q_INVOKABLE void refreshLocation(const int &page);
+    Q_INVOKABLE void refreshAllLocation();
 
 public Q_SLOTS:
     void sycocaDbChanged(const QStringList &change);
@@ -129,6 +131,7 @@ Q_SIGNALS:
     void favoriteCountChanged();
     void maxFavoriteCountChanged();
     void launcherPageModelChanged();
+    void refreshPage(int pageIndex);
 
 private:
     void initWayland();
@@ -141,7 +144,7 @@ private:
     void replaceIconPosition();
     void swapPosition(BaseModel<LauncherItem*>* listModel, int index);
    
-    void removeLauncherPageModel(QString pageNum);
+    void removeLauncherPageModel(BaseModel<LauncherItem*>* page);
     QUrl resolve(const QString& url);
 
     QList<ApplicationData> m_applicationList;
@@ -167,7 +170,7 @@ private:
 
     bool runAppActive;
     
-    BaseModel<QString> m_launcherPageModel;
+    BaseModel<BaseModel<LauncherItem*>* > m_launcherPageModel;
     KDirLister *m_dirLister;
 };
 

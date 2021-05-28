@@ -1,6 +1,7 @@
 /*
  *   Copyright 2014 Aaron Seigo <aseigo@kde.org>
  *   Copyright 2012 Marco Martin <notmart@gmail.com>
+ *   Copyright (C) 2021 by Bangguo Liu <liubangguo@jingos.com>
  *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU Library General Public License as

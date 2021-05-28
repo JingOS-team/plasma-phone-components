@@ -18,7 +18,6 @@
  *   51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
-
 // Self
 #include "listmodelmanager.h"
 
@@ -55,9 +54,10 @@
 
 constexpr int MAX_FAVOURITES = 8;
 constexpr int DESKTOP_MAX_ICON_NUM = 24;
-constexpr int FAVORITE_MAX_ICON_NUM = 15;
+constexpr int FAVORITE_MAX_ICON_NUM = 12;
 
 #define DESKTOP_DIR "/usr/share/applications/"
+QString TERMINAL_DESKTOP = QStringLiteral("org.kde.konsole.desktop");
 
 ListModelManager::ListModelManager(HomeScreen *parent)
     : QObject(parent),
@@ -344,7 +344,8 @@ void ListModelManager::loadApplications()
     for(int i = 0; i < model.size(); i++) {
         if(model.at(i) == -1)
             continue;
-        setLauncherPageModel(QString::number(model.at(i)));
+        BaseModel<LauncherItem*>* listModel =  applicationModelMap[model.at(i)];
+        setLauncherPageModel(listModel);
     }
 }
 
@@ -474,22 +475,22 @@ void ListModelManager::setMaxFavoriteCount(int count)
 
 QAbstractListModel* ListModelManager::launcherPageModel() const
 {
-    return const_cast<BaseModel<QString> *>(&m_launcherPageModel);
+    return const_cast<BaseModel<BaseModel<LauncherItem*>*> *>(&m_launcherPageModel);
 }
 
-void ListModelManager::setLauncherPageModel(QString pageNum)
+void ListModelManager::setLauncherPageModel(BaseModel<LauncherItem*>* page)
 {
-    if(m_launcherPageModel.contains(pageNum)) {
+    if(m_launcherPageModel.contains(page)) {
         return;
     }
-    m_launcherPageModel.append(pageNum);
+    m_launcherPageModel.append(page);
     emit launcherPageModelChanged();
 }
 
-void ListModelManager::removeLauncherPageModel(QString pageNum)
+void ListModelManager::removeLauncherPageModel(BaseModel<LauncherItem*>* page)
 {
-    if(m_launcherPageModel.contains(pageNum)) {
-        m_launcherPageModel.removeOne(pageNum);
+    if(m_launcherPageModel.contains(page)) {
+        m_launcherPageModel.removeOne(page);
         emit launcherPageModelChanged();
     }
 }
@@ -499,7 +500,8 @@ void ListModelManager::addLauncherPage(int page)
     if(!applicationModelMap.contains(page)) {
         BaseModel<LauncherItem*> *pageModel = new BaseModel<LauncherItem*>;
         applicationModelMap[page] = pageModel;
-        setLauncherPageModel(QString::number(page));
+
+        setLauncherPageModel(pageModel);
     }
 }
 
@@ -536,7 +538,7 @@ void ListModelManager::dragItemToModel(LauncherItem *item, int fromModel, int to
 
 void ListModelManager::addPlaceholderItem(int page)
 {
-    if(applicationModelMap.contains(page)) {
+    if(applicationModelMap.contains(page) && applicationModelMap[page] ) {
         int maxnum = page == -1 ? FAVORITE_MAX_ICON_NUM : DESKTOP_MAX_ICON_NUM;
         if(applicationModelMap[page]->size() >= maxnum) {
             removePlaceholderItem();
@@ -605,9 +607,8 @@ void ListModelManager::replacePlaceholderItemToAppItem(LauncherItem *item)
     if(placeholderitem->pageIndex() != appItem->pageIndex())
         refreshLocation(placeholderitem->pageIndex());
     removePlaceholderItem();
-    removeLauncherItem(item);
     writePositions(appItem->storageId(), appItem->pageIndex(), appItem->itemIndex());
-    refreshLocation(appItem->pageIndex());
+    removeLauncherItem(item);
 }
 
 void ListModelManager::removeLauncherItem(LauncherItem* item)
@@ -620,29 +621,72 @@ void ListModelManager::removeLauncherItem(LauncherItem* item)
         removePosition(item->storageId(), item->pageIndex());
         applicationModelMap[item->pageIndex()]->removeOne(item);
         showIconsMap.remove(item->storageId());
-        refreshPageModel();
         item->initData();
         item->deleteLater();
         item = nullptr;
+        refreshPageModel();
     }
 }
 
 void ListModelManager::refreshPageModel()
 {
+    reloadPageModel(0);
+
     QList<int> keysList = applicationModelMap.keys();
 
     for(int i = 0; i < keysList.size(); i++) {
         if(keysList.at(i) == -1)
             continue;
+
         if(applicationModelMap[keysList.at(i)]->size() == 0) {
             if(applicationModelMap[keysList.at(i)] != nullptr) {
+                removeLauncherPageModel(applicationModelMap[keysList.at(i)]);
                 applicationModelMap[keysList.at(i)]->deleteLater();
                 applicationModelMap[keysList.at(i)] = nullptr;
             }
-
-            applicationModelMap.remove(keysList.at(i));
-            removeLauncherPageModel(QString::number(keysList.at(i)));
+            applicationModelMap.remove(keysList.at(i)); 
         }
+    }
+
+    refreshAllLocation();
+}
+
+void ListModelManager::refreshAllLocation()
+{
+    for(int index = 0; index < m_launcherPageModel.size(); index++) {
+        BaseModel<LauncherItem*>* listModel =  m_launcherPageModel.at(index);
+
+        if(listModel == nullptr)
+            return;
+
+        for(int i = 0; i < listModel->size(); i++) {
+            listModel->at(i)->setItemIndex(i);
+            writePositions(listModel->at(i)->storageId(), index, i);
+        }
+    }
+}
+
+void ListModelManager::reloadPageModel(int currentIndex)
+{
+    if(applicationModelMap.contains(currentIndex) && applicationModelMap.contains(currentIndex + 1)) {
+        if(applicationModelMap[currentIndex]->size() == 0 && applicationModelMap[currentIndex + 1]->size() != 0) {
+
+            BaseModel<LauncherItem*>* listModel = applicationModelMap[currentIndex];
+
+            applicationModelMap[currentIndex] = applicationModelMap[currentIndex + 1];
+            for(int i = 0; i < applicationModelMap[currentIndex]->size(); i++) {
+                applicationModelMap[currentIndex]->at(i)->setPageIndex(currentIndex);
+                applicationModelMap[currentIndex]->at(i)->setLocation(currentIndex == -1 ? Favorites : Desktop);
+            }
+
+            applicationModelMap[currentIndex + 1] = listModel;
+            for(int i = 0; i < applicationModelMap[currentIndex + 1]->size(); i++) {
+                applicationModelMap[currentIndex + 1]->at(i)->setPageIndex(currentIndex + 1);
+                applicationModelMap[currentIndex + 1]->at(i)->setLocation((currentIndex + 1) == -1 ? Favorites : Desktop);
+            }
+        }
+
+        reloadPageModel(currentIndex + 1);
     }
 }
 
@@ -755,6 +799,8 @@ void ListModelManager::refreshLocation(const int &page)
         listModel->at(i)->setItemIndex(i);
         writePositions(listModel->at(i)->storageId(), page, i);
     }
+
+    emit launcherPageModelChanged();
 }
 
 void ListModelManager::replaceIconPosition()
@@ -917,8 +963,7 @@ void ListModelManager::onNewItems(const KFileItemList &fileItems)
                         listModel->at(j)->setStartupNotify(file.desktopGroup().readEntry("StartupNotify") == "true" ? true: false);
                         listModel->at(j)->setType(LauncherItem::App);
                         listModel->at(j)->setExecName(execPath.split("/").last());
-                        listModel->at(j)->setIsSystemApp(file.desktopGroup().readEntry("PanelBehavor").toInt() == 3);
-
+                        listModel->at(j)->setIsSystemApp((file.desktopGroup().readEntry("PanelBehavor").toInt() == 3 || fileItem.name() == TERMINAL_DESKTOP));
                         initFlag = true;
                         break;
                     }
@@ -940,7 +985,7 @@ void ListModelManager::onNewItems(const KFileItemList &fileItems)
             data->setType(LauncherItem::App);
             data->setLocation(Desktop);
             data->setExecName(execPath.split("/").last());
-            data->setIsSystemApp(file.desktopGroup().readEntry("PanelBehavor").toInt() == 3);
+            data->setIsSystemApp((file.desktopGroup().readEntry("PanelBehavor").toInt() == 3 || fileItem.name() == TERMINAL_DESKTOP));
 
             if(applicationModelMap.keys().size() == 1 && applicationModelMap.contains(-1)) {
                 BaseModel<LauncherItem*> *firstPageModel = new BaseModel<LauncherItem*>;
@@ -994,7 +1039,8 @@ void ListModelManager::onNewItems(const KFileItemList &fileItems)
     for(int i = 0; i < model.size(); i++) {
         if(model.at(i) == -1)
             continue;
-        setLauncherPageModel(QString::number(model.at(i)));
+        BaseModel<LauncherItem*>* listModel =  applicationModelMap[model.at(i)];
+        setLauncherPageModel(listModel);
     }
 }
 
