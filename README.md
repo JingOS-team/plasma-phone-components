@@ -36,8 +36,9 @@ Default is `/usr/local`.
 ```
 QT_QPA_PLATFORM=wayland dbus-run-session kwin_wayland --xwayland "plasmashell -p org.kde.plasma.phone"
 ```
+
 ## Links
 * Home: www.jingos.com
-* Project page: https://github.com/JingOS-team/jing-plasma-phone-components
-* File issues: https://github.com/JingOS-team/jing-plasma-phone-components/issues
+* Project page: https://github.com/JingOS-team/plasma-phone-components
+* File issues: https://github.com/JingOS-team/plasma-phone-components/issues
 * Development channel:  www.jingos.com
