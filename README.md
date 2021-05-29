@@ -1,4 +1,6 @@
 # plasma-phone-components
+plasma-phone-components is based on KDE/plasma-phone-components [gitlab](https://github.com/KDE/plasma-phone-components)
+
 ## Introduction
 
 UI components for Plasma Phone.
