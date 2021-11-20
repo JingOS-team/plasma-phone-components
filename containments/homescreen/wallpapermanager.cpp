@@ -1,19 +1,9 @@
 /*
- *  Copyright 2021 Rui Wang <wangrui@jingos.com>
+ * Copyright (C) 2021 Beijing Jingling Information System Technology Co., Ltd. All rights reserved.
+ * 
+ * Authors: 
+ * Liu Bangguo <liubangguo@jingos.com>
  *
- *  This program is free software; you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation; either version 2 of the License, or
- *  (at your option) any later version.
- *
- *  This program is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU General Public License for more details.
- *
- *  You should have received a copy of the GNU General Public License
- *  along with this program; if not, write to the Free Software
- *  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  2.010-1301, USA.
  */
 
 #include "wallpapermanager.h"
@@ -68,7 +58,7 @@ QString WallpaperManager::launcherWallpaper()
     KConfigGroup cfg(kdeglobals, "Wallpapers");
     QString path = cfg.readEntry("launcherWallpaper", QString());
     if(path.isEmpty() || path.isNull()) {
-       return cfg.readEntry("defaultLauncherWallpaper", QString());
+       return cfg.readEntry("defaultLauncherWallpaper", QString("file:///usr/share/wallpapers/jing/default.jpg"));
     } else {
         return path;
     }
@@ -90,7 +80,7 @@ QString WallpaperManager::lockscreenWallpaper()
     KConfigGroup cfg(kdeglobals, "Wallpapers");
     QString path = cfg.readEntry("lockscreenWallpaper", QString());
     if(path.isEmpty() || path.isNull()) {
-       return cfg.readEntry("defaultLockScreenWallpaper", QString());
+       return cfg.readEntry("defaultLockScreenWallpaper", QString("file:///usr/share/wallpapers/jing/default.jpg"));
     } else {
         return path;
     }

@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="44px" height="44px" viewBox="0 0 44 44" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <title>Interface, Essential/Calendar, Schedule, 31</title>
+    <defs>
+        <filter color-interpolation-filters="auto" id="filter-1">
+            <feColorMatrix in="SourceGraphic" type="matrix" values="0 0 0 0 0.235294 0 0 0 0 0.235294 0 0 0 0 0.262745 0 0 0 0.600000 0"></feColorMatrix>
+        </filter>
+    </defs>
+    <g id="页面-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="Interface,-Essential/Calendar,-Schedule,-31" transform="translate(-1734.000000, -485.000000)" filter="url(#filter-1)">
+            <g transform="translate(1734.000000, 485.000000)" id="Group">
+                <g stroke-linecap="round" stroke-linejoin="round" transform="translate(5.500000, 5.280000)" id="Path" stroke="#323232" stroke-width="2.75">
+                    <line x1="33.0000001" y1="11.22" x2="0" y2="11.22"></line>
+                    <line x1="9.1666667" y1="0" x2="9.1666667" y2="4.10666668"></line>
+                    <line x1="23.8333334" y1="0" x2="23.8333334" y2="4.10666668"></line>
+                    <path d="M27.5,33.2200001 L5.5,33.2200001 C2.46216668,33.2200001 0,30.7578335 0,27.7200001 L0,7.55333334 C0,4.51550002 2.46216668,2.05333334 5.5,2.05333334 L27.5,2.05333334 C30.5378335,2.05333334 33,4.51550002 33,7.55333334 L33,27.7200001 C33,30.7578335 30.5378335,33.2200001 27.5,33.2200001 Z"></path>
+                </g>
+                <polygon id="Path" points="0 0 44.0000002 0 44.0000002 44.0000002 0 44.0000002"></polygon>
+            </g>
+        </g>
+    </g>
+</svg>

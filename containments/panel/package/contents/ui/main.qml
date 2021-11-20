@@ -35,43 +35,53 @@ import org.kde.plasma.private.mobileshell 1.0 as MobileShell
 
 import org.kde.notificationmanager 1.1 as Notifications
 
-import org.kde.phone.jingos.mediamanager 1.0
+import org.kde.phone.jingos.hotkeysmanager 1.0
+import org.kde.plasma.private.digitalclock 1.0 as DC
 
+import jingos.display 1.0
 import "LayoutManager.js" as LayoutManager
 
 import "quicksettings"
 import "indicators" as Indicators
 
-
 Item {
     id: root
-    width: 480
-    height: 30
+    width: JDisplay.dp(480)
+    height: JDisplay.dp(30)
+
+    property int animationTime: 75
 
     Plasmoid.backgroundHints: PlasmaCore.Types.NoBackground
 
+    property bool blockFlickable
     property Item toolBox
     property int buttonHeight: width/4
     property bool reorderingApps: false
+    property bool flightMode: stSource.data["StatusPanel"]["flight mode"]
     property var layoutManager: LayoutManager
 
     property var uint: [];
     readonly property color backgroundColor: NanoShell.StartupFeedback.visible ? NanoShell.StartupFeedback.backgroundColor : icons.backgroundColor
-    property bool showingApp: !MobileShell.HomeScreenControls.homeScreenVisible //: !MobileShell.HomeScreenControls.isSystemApp //
+    property bool showColorWhite: showColorLight()//!MobileShell.HomeScreenControls.homeScreenVisible
 
     readonly property bool hasTasks: tasksModel.count > 0
-
-    property real appWidthRatio: Screen.width / 1920
-    property real appHeightRatio: Screen.height / 1200
 
     Containment.onAppletAdded: {
         addApplet(applet, x, y);
         LayoutManager.save();
     }
 
+    Connections {
+        target: plasmoid.nativeInterface
+
+        onSetToDefaultVolume: {
+            volumeHandle.toBeDefault = true
+        }
+    }
+
     function addApplet(applet, x, y) {
-        if(applet.id === 4) //通知图标不加入
-            return;
+        //去掉KDE自带的图标
+        return;
         var compactContainer = compactContainerComponent.createObject(appletIconsRow)
         print("======Applet added: " + applet + " " + applet.title+ " id:"+applet.id)
 
@@ -86,13 +96,38 @@ Item {
         var fullContainer = null;
     }
 
-    MediaManager {
-        onMouseOnTopLeftConer: {
-            nofifySlidingPanel.toggle()
+    Notifications.WatchedNotificationsModel {
+        id: notifyModel
+    }
+
+    function getLocalTimeString() {
+        var timeStr = timeSource.data["Local"]["DateTime"].toLocaleTimeString(Qt.locale(),timezoneProxy.isSystem24HourFormat ?
+                                 "hh:mm" : (timezoneProxy.getRegionTimeFormat() === "zh_"? "AP hh:mm" : "hh:mm AP"));
+        if(timezoneProxy.getRegionTimeFormat() === "zh_"){
+            if(timeStr.search("AM") !== -1)
+                timeStr = timeStr.replace("AM","上午");
+            if(timeStr.search("PM") !== -1)
+                timeStr = timeStr.replace("PM","下午");
+
+        }else{
+            if(timeStr.search("上午") !== -1)
+                timeStr = timeStr.replace("上午","AM");
+            if(timeStr.search("下午") !== -1)
+                timeStr = timeStr.replace("下午","PM");
         }
-        onMouseOnTopRightConer: {
-            slidingPanel.toggle()
-        }
+        return timeStr;
+    }
+
+    function showColorLight() {
+        if(plasmoid.nativeInterface.allMinimized)
+            return true;
+        if(plasmoid.nativeInterface.isDarkColorScheme)
+            return true;
+        return false;
+    }
+
+    DC.TimeZoneFilterProxy {
+        id:timezoneProxy
     }
 
     Component.onCompleted: {
@@ -100,6 +135,30 @@ Item {
         LayoutManager.root = root;
         LayoutManager.layout = appletsLayout;
         LayoutManager.restore();
+	plasmoid.nativeInterface.initializeConfigData();
+    }
+
+    HotkeysManager {
+        id: hotkeysManager
+
+        onShowNotificationCenter: {
+            nofifySlidingPanel.toggle()
+        }
+
+        onShowControlCenter: {
+            slidingPanel.toggle()
+        }
+
+        onMouseOnTopLeftConer: {
+            nofifySlidingPanel.toggle()
+        }
+
+        onMouseOnTopRightConer: {
+            slidingPanel.toggle()
+        }
+        onCloseLockScreeNotificationId:{
+            notifyModel.close(id);
+        }
     }
 
     TaskManager.TasksModel {
@@ -126,7 +185,7 @@ Item {
 
     RowLayout {
         id: appletsLayout
-        Layout.minimumHeight: Math.max(root.height, Math.round(Layout.preferredHeight / root.height) * root.height)
+        Layout.minimumHeight: JDisplay.dp(Math.max(root.height, Math.round(Layout.preferredHeight / root.height) * root.height))
     }
 
     Component {
@@ -150,80 +209,47 @@ Item {
         id: timeSource
         engine: "time"
         connectedSources: ["Local"]
-        interval: 60 * 1000
+        interval: 1000
     }
 
     DropShadow {
         anchors.fill: icons
-        visible: !showingApp
-        cached: true
+        visible: showColorWhite
         horizontalOffset: 0
         verticalOffset: 1
-        radius: 4.0
-        samples: 17
-        color: Qt.rgba(255,255,255,0.2)
+        radius: JDisplay.dp(4.0)
+        samples: JDisplay.dp(17)
+        cached: true
+        color: Qt.rgba(0,0,0,0.8)
         source: icons
     }
 
     PlasmaCore.ColorScope {
         id: icons
         z: 1
-        colorGroup: showingApp ? PlasmaCore.Theme.NormalColorGroup : PlasmaCore.Theme.ComplementaryColorGroup
+        property int margin: JDisplay.dp(3)
+        colorGroup: !showColorWhite ? PlasmaCore.Theme.NormalColorGroup : PlasmaCore.Theme.ComplementaryColorGroup
         //parent: slidingPanel.visible && !slidingPanel.wideScreen ? panelContents : root
         anchors {
             left: parent.left
             right: parent.right
-            bottom: parent.bottom
+            top: parent.top
+            topMargin:margin
         }
-        height: root.height
-/*
-        Rectangle {
-            anchors.fill: parent
+        height: root.height-margin
 
-            gradient: Gradient {
-                GradientStop {
-                    position: 1.0
-                    ColorAnimation on color {
-                        id: topColorAnimation
-                        to: showingApp ? root.backgroundColor : "transparent";
-                        duration: 250
-
-                        onToChanged: {
-                            topColorAnimation.restart()
-                        }
-                    }
-                    // color: showingApp ? root.backgroundColor : "transparent"
-                }
-                GradientStop {
-                    position: 0.0
-                    ColorAnimation on color {
-                        id: bottomColorAnimation
-
-                        to: showingApp ? root.backgroundColor : Qt.rgba(0, 0, 0, 0.1);
-                        duration: 250
-
-                        onToChanged: {
-                            bottomColorAnimation.restart()
-                        }
-                    }
-                    // color: showingApp ? root.backgroundColor : Qt.rgba(0, 0, 0, 0.1)
-                }
-            }
-
-        }
-        */
         PlasmaComponents.Label {
             id: clock
             property bool is24HourTime: plasmoid.nativeInterface.isSystem24HourFormat
             anchors.left: parent.left
-            anchors.leftMargin: height / 2
+            anchors.leftMargin: height / 2 + JDisplay.dp(2)
             height: parent.height
-            text:  getLocalTimeString()//Qt.formatTime(timeSource.data["Local"]["DateTime"], is24HourTime ? "h:mm" : "h:mm AP")
+            text:  getLocalTimeString()
 
-            color: PlasmaCore.ColorScope.textColor
+            color: showColorWhite ? "white" : "black"//PlasmaCore.ColorScope.textColor
             horizontalAlignment: Qt.AlignHCenter
             verticalAlignment: Qt.AlignVCenter
-            font.pointSize: 9//height - height / 3
+            font.pixelSize: JDisplay.sp(12)
         }
 
         RowLayout {
@@ -239,29 +265,33 @@ Item {
         //[liubangguo][20210513]change panel items position
         RowLayout {
             id: simpleIndicatorsLayout
-            anchors.bottom: parent.bottom
+            //anchors.bottom: parent.bottom
             anchors.right: parent.right
-            anchors.rightMargin: units.smallSpacing
+            anchors.rightMargin: JDisplay.dp(11)//units.smallSpacing
             anchors.verticalCenter: parent
 
             height: parent.height
-            spacing: 5
+            spacing: JDisplay.dp(5)
 
-            //Indicators.Headset{}
-            Indicators.Udisk{
-                visible:plasmoid.nativeInterface.udiskInserted
+            Indicators.Headset{
+                visible:stSource.data["StatusPanel"]["sound insert"]
             }
-            //Indicators.Location{}
+
+            Indicators.Udisk {
+                visible:stSource.data["StatusPanel"]["udisk insert"]
+            }
+            Indicators.Location {}
             //Indicators.Rotate{}
+
+            Indicators.VPN {}
 
             Indicators.Volume {
                 id: volumeHandle
             }
 
-            Indicators.AlarmClock{
-                visible:plasmoid.nativeInterface.alarmVisible
+            Indicators.AlarmClock {
+                visible:stSource.data["StatusPanel"]["alarm active"]
             }
-
 
             Indicators.Battery {}
         }
@@ -269,95 +299,67 @@ Item {
         RowLayout{
             id:wirelessIndicatorsLayout
 
-            anchors.bottom: parent.bottom
+            //anchors.bottom: parent.bottom
             anchors.left: clock.right
-            anchors.leftMargin: 6//units.smallSpacing
+            anchors.leftMargin: JDisplay.dp(6)//units.smallSpacing
+            anchors.verticalCenter: parent
 
             height: parent.height
-            spacing: 6
+            spacing: JDisplay.dp(6)
 
+            Indicators.SignalStrength{
+            }
             Indicators.Wifi {}
             Indicators.Bluetooth {}
-
+            Indicators.FlightMode {
+                visible:stSource.data["StatusPanel"]["flight mode"]
+            }
         }
 
+        PlasmaCore.DataSource {
+            id: stSource
+            engine: "statuspanel"
+            connectedSources: ["StatusPanel"]
+        }
     }
-    
+
     MouseArea {
         id: mouseAreaHandle
+
         z: 99
-        property int oldMouseY: 0
-        property bool slidingPanelActive: true
         anchors.fill: parent
 
         onPressed: {
-            slidingPanel.stopAnim()
-            nofifySlidingPanel.stopAnim()
+            if(slidingPanel.visible || slidingPanel.animateRunning || nofifySlidingPanel.visible || nofifySlidingPanel.animateRunning)
+                return;
 
             if(mouse.x < parent.width / 2) {
-
-                if (nofifySlidingPanel.isNotificationPanelOpen) {
-                    return
-                }
-                slidingPanel.close()
-                mouseAreaHandle.slidingPanelActive = false
-                // nofifySlidingPanel.drawerX = 16// nofifySlidingPanel.drawerWidth / 20//Math.min(Math.max(0, mouse.x - slidingPanel.drawerWidth/2), slidingPanel.width - slidingPanel.drawerWidth)
-                nofifySlidingPanel.userInteracting = true;
-                oldMouseY = mouse.y;
-                nofifySlidingPanel.offset = 0//units.gridUnit * 2;
-                nofifySlidingPanel.showFullScreen();
+                nofifySlidingPanel.fixedArea.opacity = 1
+                nofifySlidingPanel.offset = 0
+                nofifySlidingPanel.open()
             } else {
-                if (slidingPanel.slidingPanelIsOpen) {
-                    return
-                }
-                nofifySlidingPanel.close()
-                mouseAreaHandle.slidingPanelActive = true
-                // slidingPanel.drawerX = slidingPanel.width - slidingPanel.drawerWidth - 16 //slidingPanel.drawerWidth / 20//Math.min(Math.max(0, mouse.x - slidingPanel.drawerWidth/2), slidingPanel.width - slidingPanel.drawerWidth)
-                slidingPanel.userInteracting = true;
-                oldMouseY = mouse.y;
-                slidingPanel.offset = 0//units.gridUnit * 2;
-                slidingPanel.showFullScreen();
-            }
-        }
-
-        onPositionChanged: {
-            
-            if(!mouseAreaHandle.slidingPanelActive) {
-                if (nofifySlidingPanel.isNotificationPanelOpen) {
-                    return
-                }
-                nofifySlidingPanel.offset = Math.min(nofifySlidingPanel.contentItem.height, nofifySlidingPanel.offset + (mouse.y - oldMouseY));
-                oldMouseY = mouse.y;
-            } else {
-                if (slidingPanel.slidingPanelIsOpen) {
-                    return
-                }
-                slidingPanel.offset = Math.min(slidingPanel.contentItem.height, slidingPanel.offset + (mouse.y - oldMouseY));
-                oldMouseY = mouse.y;
-            }
-        }
-
-        onReleased: {
-            if(!mouseAreaHandle.slidingPanelActive) {
-                nofifySlidingPanel.userInteracting = false;
-                nofifySlidingPanel.updateState();
-            } else {
-                slidingPanel.userInteracting = false;
-                slidingPanel.updateState();
+                slidingPanel.fixedArea.opacity = 1
+                slidingPanel.offset = 0
+                slidingPanel.open();
             }
         }
     }
 
     SlidingPanel {
         id: slidingPanel
+
         width: plasmoid.availableScreenRect.width
         height: plasmoid.availableScreenRect.height
-        openThreshold: units.gridUnit * 2
-        headerHeight: root.height
+        openThreshold: JDisplay.dp(30)
+        headerHeight: root.height + JDisplay.dp(4)
 
         offset: quickSettingsParent.height / 10
         drawerHeight: panelContents.width
-        onClosed: quickSettings.closed()
+
+        onClosed: {
+            nofifySlidingPanel.init()
+            quickSettings.closed()
+        }
 
         contentItem: GridLayout {
             id: panelContents
@@ -367,13 +369,13 @@ Item {
                 id: quickSettingsParent
                 Layout.alignment: Qt.AlignTop
                 Layout.preferredWidth: panelContents.width
-                Layout.preferredHeight: panelContents.width
+                Layout.preferredHeight: panelContents.width//*5/6
                 z: 4
 
                 contentItem: QuickSettings {
                     id: quickSettings
                     onCloseRequested: {
-                        slidingPanel.hide()
+                        slidingPanel.close()
                     }
                 }
             }
@@ -382,42 +384,62 @@ Item {
 
     SlidingPanelNotification {
         id: nofifySlidingPanel
-        
+
         width: plasmoid.availableScreenRect.width
         height: plasmoid.availableScreenRect.height
-        openThreshold: units.gridUnit * 2
-        headerHeight: root.height
-        drawerHeight: 155
+        openThreshold: JDisplay.dp(16)
+        headerHeight: root.height + JDisplay.dp(4)
+        drawerHeight: JDisplay.dp(155)
+        direction: nofifySlidingPanel.MovementDirection.Down
+
+        property int animationTime: root.animationTime
 
         Connections {
             target: notifications
+
             onListViewContentHeightChanged: {
                 if (notifications.listViewCount === 0 ) {
-                    nofifySlidingPanel.drawerHeight = 155
+                    nofifySlidingPanel.drawerHeight = JDisplay.dp(155)
                 } else {
-                    if ((appHeightRatio * 80 + notifications.listViewContentHeight) + PlasmaCore.Units.smallSpacing * 5 > appHeightRatio * 1124) {
-                        nofifySlidingPanel.drawerHeight = appHeightRatio * 1124
-
+                    if ((JDisplay.dp(60) + notifications.listViewContentHeight) + JDisplay.dp(10) > JDisplay.dp(1150 / 2) + JDisplay.dp(1)) {
+                        nofifySlidingPanel.drawerHeight = JDisplay.dp(1150 / 2)  + JDisplay.dp(1)
                     } else {
-                        nofifySlidingPanel.drawerHeight =  notifications.listViewContentHeight + 70
+                        nofifySlidingPanel.drawerHeight =  notifications.listViewContentHeight + JDisplay.dp(10) + JDisplay.dp(60)  + JDisplay.dp(1)
                     }
                 }
             }
         }
-        
-        offset: notifyQuickSettingsParent.height / 10
 
-        onClosed: notifications.backAll()
+        onContentHeightFinished: {
+            if (notifications.listViewCount === 0) {
+                closeTimer.restart()
+            }
+        }
+
+        Timer {
+            id: closeTimer
+
+            running: false
+            repeat: false
+            interval: 0
+            onTriggered: {
+                notifications.closeRequested()
+            }
+        }
+
+        onClosed: {
+            slidingPanel.init()
+            notifications.backAll()
+            notifications.cleanButton.reset()
+        }
 
         contentItem: GridLayout {
             id: notifyPanelContents
-            anchors.fill: parent
 
+            anchors.fill: parent
             DrawerBackground {
                 id: notifyQuickSettingsParent
-                // anchors.fill: parent
                 Layout.alignment: Qt.AlignTop
-                // Layout.preferredWidth: slidingPanel.wideScreen ? Math.min(slidingPanel.width/2, units.gridUnit * 25) : panelContents.width
                 Layout.preferredWidth: notifyPanelContents.width * 0.9
                 Layout.preferredHeight: notifyPanelContents.height
                 z: 4
@@ -426,35 +448,10 @@ Item {
                     id: notifications
 
                     onCloseRequested: {
-                        // nofifySlidingPanel.hide()
                         nofifySlidingPanel.close()
-
                     }
                 }
             }
         }
-    }
-
-    Notifications.WatchedNotificationsModel {
-        id: notifyModel
-    }
-
-    function getLocalTimeString(){
-        var timeStr = String(timeSource.data["Local"]["DateTime"]);
-        var isChinaLocal = (timeStr.indexOf("GMT+0800") != -1)
-        timeStr = Qt.formatTime(timeSource.data["Local"]["DateTime"], plasmoid.nativeInterface.isSystem24HourFormat ? "h:mm" : "h:mm AP");
-        if(isChinaLocal){
-            if(timeStr.search("AM") != -1)
-                timeStr = timeStr.replace("AM","上午");
-            if(timeStr.search("PM") != -1)
-                timeStr = timeStr.replace("PM","下午");
-        }
-        else{
-            if(timeStr.search("上午") != -1)
-                timeStr = timeStr.replace("上午","AM");
-            if(timeStr.search("下午") != -1)
-                timeStr = timeStr.replace("下午","PM");
-        }
-        return timeStr;
     }
 }

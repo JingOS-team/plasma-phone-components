@@ -1,0 +1,119 @@
+# Copyright (C) YEAR This file is copyright:
+# This file is distributed under the same license as the plasma-phone-components package.
+# Wantoyo <wantoyek@gmail.com>, 2019, 2020.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: plasma-phone-components\n"
+"Report-Msgid-Bugs-To: https://bugs.kde.org\n"
+"POT-Creation-Date: 2021-02-02 02:55+0100\n"
+"PO-Revision-Date: 2020-05-03 09:55+0700\n"
+"Last-Translator: Wantoyo <wantoyek@gmail.com>\n"
+"Language-Team: Indonesian <kde-i18n-doc@kde.org>\n"
+"Language: id\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Generator: Lokalize 19.12.1\n"
+
+#: package/contents/ui/indicators/Battery.qml:50
+#, kde-format
+msgid "%1%"
+msgstr "%1%"
+
+#: package/contents/ui/indicators/SignalStrength.qml:71
+#, kde-format
+msgid "Sim locked"
+msgstr ""
+
+#: package/contents/ui/indicators/Volume.qml:153
+#, kde-format
+msgid "Audio"
+msgstr ""
+
+#: package/contents/ui/indicators/Volume.qml:157
+#, kde-format
+msgid "Increase Volume"
+msgstr "Tambahi Volume"
+
+#: package/contents/ui/indicators/Volume.qml:164
+#, kde-format
+msgid "Decrease Volume"
+msgstr "Kurangi Volume"
+
+#: package/contents/ui/indicators/Volume.qml:171
+#, kde-format
+msgid "Mute"
+msgstr "Bungkam"
+
+#: package/contents/ui/quicksettings/QuickSettings.qml:167
+#, kde-format
+msgid "Settings"
+msgstr "Pengaturan"
+
+#: package/contents/ui/quicksettings/QuickSettings.qml:175
+#, kde-format
+msgid "Wifi"
+msgstr "Wifi"
+
+#: package/contents/ui/quicksettings/QuickSettings.qml:183
+#, kde-format
+msgid "Bluetooth"
+msgstr ""
+
+#: package/contents/ui/quicksettings/QuickSettings.qml:192
+#, kde-format
+msgid "Mobile Data"
+msgstr "Data Seluler"
+
+#: package/contents/ui/quicksettings/QuickSettings.qml:200
+#, kde-format
+msgid "Battery"
+msgstr "Baterai"
+
+#: package/contents/ui/quicksettings/QuickSettings.qml:208
+#, kde-format
+msgid "Sound"
+msgstr "Suara"
+
+#: package/contents/ui/quicksettings/QuickSettings.qml:216
+#, kde-format
+msgid "Flashlight"
+msgstr "Lampu senter"
+
+#: package/contents/ui/quicksettings/QuickSettings.qml:224
+#, kde-format
+msgid "Location"
+msgstr "Lokasi"
+
+#: package/contents/ui/quicksettings/QuickSettings.qml:231
+#, kde-format
+msgid "Screenshot"
+msgstr "Skrinsut"
+
+#: package/contents/ui/quicksettings/QuickSettings.qml:239
+#, kde-format
+msgid "Auto-rotate"
+msgstr "Auto rotasi"
+
+#: package/contents/ui/quicksettings/QuickSettings.qml:247
+#, kde-format
+msgid "Night Color"
+msgstr ""
+
+#: package/contents/ui/quicksettings/QuickSettings.qml:298
+#, kde-format
+msgid "Display Brightness"
+msgstr "Kecerahan Display"
+
+#: phonepanel.cpp:187
+#, fuzzy, kde-format
+#| msgid "Screenshot"
+msgid "New Screenshot"
+msgstr "Skrinsut"
+
+#: phonepanel.cpp:189
+#, kde-format
+msgid "New screenshot saved to %1"
+msgstr ""

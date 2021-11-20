@@ -23,6 +23,7 @@
 import QtQuick 2.12
 import QtQuick.Layouts 1.12
 import QtQuick.Controls 2.8 as Controls
+ import QtGraphicalEffects 1.15
 
 import org.kde.plasma.core 2.0 as PlasmaCore
 import org.kde.kcoreaddons 1.0 as KCoreAddons
@@ -52,7 +53,20 @@ Item {
     Image {
         id: background
         anchors.fill: parent
-        source: "file:///usr/share/icons/jing/bgblur.png"
+        source: wallPaperPath.getWallPaperPath()
+        sourceSize: Qt.size(parent.width, parent.height)
+        smooth: true
+        visible: false
+    }
+
+    FastBlur {
+        anchors.fill: background
+        source: background
+        radius: 64
+    }
+
+    PlasmaCore.ReadWallPaperPath {
+        id: wallPaperPath
     }
 
     Rectangle {
@@ -61,7 +75,10 @@ Item {
         opacity: 0.5
         color: "#000000"
     }
-    SimpleHeaderBar {
+
+    //[liubangguo]取消logout界面状态栏
+    /*SimpleHeaderBar {
+        id :header
         anchors {
             top: parent.top
             left: parent.left
@@ -69,7 +86,7 @@ Item {
         }
         height: units.gridUnit
         opacity: 1
-    }
+    }*/
 
     MouseArea {
         anchors.fill: parent
@@ -158,12 +175,11 @@ Item {
     Column {
         id: lay
         anchors.centerIn: parent
-        width: root.width*0.22
-        Item
-        {
+        width: root.width*0.239
+        Item {
             id:btnspace1
             width: lay.width
-            height: parent.height*0.290
+            height: parent.height*0.334
         }
         ActionButton {
             width:lay.width
@@ -174,11 +190,10 @@ Item {
                 closeAnim.execute(root.haltRequested);
             }
         }
-        Item
-        {
+        Item {
             id:btnspace2
             width: lay.width
-            height: parent.height*0.05
+            height: parent.height*0.054
         }
         ActionButton {
             width:lay.width
@@ -193,14 +208,14 @@ Item {
         Item{
             id:concelbtn
             width:lay.width
-            height:root.height*0.434
+            height:root.height*0.4
+
             CancelButton {
-                width:root.height * 0.1
-                height:root.height * 0.1
+                width:lay.width
+                height:root.height * 0.145
                 anchors {
                     top: concelbtn.top
-                    topMargin:concelbtn.height*0.49
-                    leftMargin: 0
+                    topMargin:concelbtn.height * 0.204
                     horizontalCenter: concelbtn.horizontalCenter
                 }
                 iconSource: "file:///usr/share/icons/jing/SwiMachine/system-cancel.svg"

@@ -1,25 +1,17 @@
 /*
-Copyright (C) 2021 Bob Wu <pengbo.wu@jingos.com>
-
-This program is free software; you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation; either version 2 of the License, or
-(at your option) any later version.
-
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-GNU General Public License for more details.
-
-You should have received a copy of the GNU General Public License
-along with this program.  If not, see <http://www.gnu.org/licenses/>.
-*/
+ * Copyright (C) 2021 Beijing Jingling Information System Technology Co., Ltd. All rights reserved.
+ * 
+ * Authors: 
+ * Liu Bangguo <liubangguo@jingos.com>
+ *
+ */
 
 import QtQuick 2.12
 import QtQml 2.12
 import QtGraphicalEffects 1.12
 import QtQuick.Particles 2.12
 import QtQuick.Window 2.12
+import jingos.display 1.0
 
 Rectangle {
     id: charged
@@ -69,7 +61,7 @@ Rectangle {
     }
 
     Rectangle {
-        id:animation
+        id: animation
 
         anchors.centerIn: chargedImage
         width: circleDia - arcWidth / 2
@@ -84,7 +76,7 @@ Rectangle {
             ImageParticle {
                 groups: ["paopao"];
                 source: "file:///usr/share/icons/jing/airBubbles.svg"
-                
+
             }
 
             Emitter {
@@ -95,7 +87,7 @@ Rectangle {
                 anchors.horizontalCenter: parent.horizontalCenter
 
                 group: "paopao"
-                emitRate: 2;
+                emitRate: 2
                 lifeSpan: 1200
                 size: 27;
                 endSize: 4;
@@ -107,9 +99,9 @@ Rectangle {
                 }
 
                 velocity: AngleDirection {
-                    angle: 270;
+                    angle: 270
                     magnitude: 80 / appHeightRatio
-                    angleVariation: 50;
+                    angleVariation: 50
                     magnitudeVariation: 50 / appHeightRatio
                 }
             }
@@ -178,7 +170,7 @@ Rectangle {
         anchors.centerIn: chargedImage
         width: 2 * circleDia + arcWidth
         height: 2 * circleDia + arcWidth
-        
+
         scale: 1.2
         opacity: 0
 

@@ -26,14 +26,17 @@ import QtQuick.Layouts 1.4
 import org.kde.plasma.core 2.0 as PlasmaCore
 import org.kde.plasma.components 2.0 as PlasmaComponents
 import org.kde.bluezqt 1.0 as BluezQt
+import org.kde.plasma.private.bluetooth 1.0
 import org.kde.plasma.private.mobileshell 1.0 as MobileShell
+import jingos.display 1.0
 
 
 Item{
     property bool showingApp: false
     Layout.alignment: Qt.AlignVCenter
-    width:6
-    height:10
+    width:JDisplay.dp(8)
+    height:JDisplay.dp(11)
+    visible:devicesProxyModel.connectedName!=""
 
     Image{
         id:imgIcon
@@ -54,4 +57,19 @@ Item{
                 visible: BluezQt.Manager.bluetoothOperational
                 opacity:1.0
     }
+
+    DevicesProxyModel {
+        id: devicesProxyModel
+        sourceModel: devicesModel
+
+        onConnectedNameChanged:{
+
+
+        }
+    }
+
+    BluezQt.DevicesModel {
+        id:devicesModel
+    }
+
 }

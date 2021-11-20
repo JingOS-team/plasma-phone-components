@@ -25,6 +25,7 @@
 #include <KFileItem>
 #include <KDesktopFile>
 #include <KDirLister>
+#include <QStandardPaths>
 
 // Qt
 #include <QObject>
@@ -42,7 +43,9 @@
 #include "type.h"
 #include "launcheritem.h"
 #include "basemodel.h"
-
+#include <QDirIterator>
+#include <QMimeDatabase>
+#include <dlfcn.h>
 class ListModelManager;
 class ApplicationListModel;
 
@@ -72,7 +75,8 @@ public:
     Q_INVOKABLE void moveItem(int from, int to, int page = 0);
     Q_INVOKABLE void movePlaceholderItem(int to);
 
-    Q_INVOKABLE void runApplication(const QString &storageId, KWayland::Client::PlasmaWindow *window = nullptr);
+    Q_INVOKABLE void runApplication(const QString &storageId);
+    Q_INVOKABLE bool applicationRunning(QString storegeId);
 
     Q_INVOKABLE void loadApplications();
 
@@ -87,7 +91,7 @@ public:
     Q_INVOKABLE QAbstractListModel *getFavoriteAppMdoel();
 
     Q_INVOKABLE void dragItemToModel(LauncherItem* item, int fromModel , int toModel = -1);
-    Q_INVOKABLE void addPlaceholderItem(int page = -1);
+    Q_INVOKABLE void addPlaceholderItem(int page = -1, bool pushBack = true);
     Q_INVOKABLE void removePlaceholderItem();
     Q_INVOKABLE void replacePlaceholderItemToAppItem(LauncherItem* item);
     Q_INVOKABLE void removeLauncherItem(LauncherItem* item);
@@ -99,6 +103,9 @@ public:
     Q_INVOKABLE int getFavoriteMaxIconNum();
     Q_INVOKABLE void refreshLocation(const int &page);
     Q_INVOKABLE void refreshAllLocation();
+    Q_INVOKABLE bool isAndroidApp(QString categories);
+    Q_INVOKABLE bool openWebUrl(QString url);
+    Q_INVOKABLE QStringList getFetureImages();
 
 public Q_SLOTS:
     void sycocaDbChanged(const QStringList &change);
@@ -126,6 +133,8 @@ public Q_SLOTS:
 
     Q_INVOKABLE void openWithApp(const QString &exec, const QStringList &urls);
 
+    void onOpenKonsole();
+
 Q_SIGNALS:
     void countChanged();
     void favoriteCountChanged();
@@ -134,7 +143,6 @@ Q_SIGNALS:
     void refreshPage(int pageIndex);
 
 private:
-    void initWayland();
     bool checkFirstPageApp(const QString &name);
     bool checkFavoriteApp(const QString &name);
 
@@ -147,9 +155,11 @@ private:
     void removeLauncherPageModel(BaseModel<LauncherItem*>* page);
     QUrl resolve(const QString& url);
 
+    QStringList getCurrentIcons(const QString &path);
+    QString resetIcon(QString iconName);
+
     QList<ApplicationData> m_applicationList;
 
-    KWayland::Client::PlasmaWindowManagement *m_windowManagement = nullptr;
     HomeScreen *m_homeScreen = nullptr;
     int m_maxFavoriteCount = 0;
 
@@ -157,7 +167,6 @@ private:
     QStringList m_favorites;
     QSet<QString> m_desktopItems;
     QHash<QString, int> m_appPositions;
-
 
     QList<ApplicationData* > *m_listModel;
 
@@ -172,6 +181,7 @@ private:
     
     BaseModel<BaseModel<LauncherItem*>* > m_launcherPageModel;
     KDirLister *m_dirLister;
+    QStringList currentIcons;
 };
 
 #endif // LISTMODELMANAGER_H

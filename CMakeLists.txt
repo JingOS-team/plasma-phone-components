@@ -1,9 +1,9 @@
+cmake_minimum_required (VERSION 3.14 FATAL_ERROR)
+
 project(plasma-phone-components)
 
-# minimal requirements
-cmake_minimum_required (VERSION 2.8.12 FATAL_ERROR)
-set (QT_MIN_VERSION "5.15.0")
-set(KF5_MIN_VERSION "5.74")
+set(QT_MIN_VERSION "5.15.0")
+set(KF5_MIN_VERSION "5.78")
 
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
@@ -11,9 +11,8 @@ set(CMAKE_INCLUDE_CURRENT_DIR ON)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-find_package(ECM 5.41.0 REQUIRED NO_MODULE)
+find_package(ECM ${KF5_MIN_VERSION} REQUIRED NO_MODULE)
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${ECM_MODULE_PATH} ${ECM_KDE_MODULE_DIR} ${CMAKE_SOURCE_DIR}/cmake)
-
 include(KDEInstallDirs)
 include(KDECMakeSettings)
 include(KDECompilerSettings NO_POLICY_SCOPE)
@@ -36,6 +35,7 @@ find_package(KF5 ${KF5_MIN_VERSION} REQUIRED COMPONENTS
     Notifications
     Config
     DBusAddons
+    Wayland
 )
 
 ki18n_install(po)
@@ -60,8 +60,12 @@ install( FILES kwinmultitasking/metadata.desktop DESTINATION ${SERVICES_INSTALL_
 
 install( DIRECTORY components/ DESTINATION ${KDE_INSTALL_QMLDIR}/org/kde/plasma/private/mobileshell )
 
+install( DIRECTORY ./containments/panel/package/contents/ui/icons/quicksettings DESTINATION /usr/share/icons/jing/jing/settings/ )
 install(FILES ./look-and-feel/contents/lockscreen/imgs/airBubbles.svg  DESTINATION  /usr/share/icons/jing/  )
 install(FILES ./look-and-feel/contents/lockscreen/imgs/lightning.svg  DESTINATION  /usr/share/icons/jing/  )
+install(FILES ./look-and-feel/contents/lockscreen/imgs/lightningQuickly.svg  DESTINATION  /usr/share/icons/jing/  )
+install(FILES ./look-and-feel/contents/lockscreen/imgs/unlock-screen.svg  DESTINATION  /usr/share/icons/jing/  )
+install(FILES ./look-and-feel/contents/lockscreen/imgs/lock-screen.svg  DESTINATION  /usr/share/icons/jing/  )
 install(FILES ./containments/panel/package/contents/ui/quicksettings/imgs/cleaningAll.svg  DESTINATION  /usr/share/icons/jing/  )
 install(FILES ./containments/panel/package/contents/ui/quicksettings/imgs/close.svg  DESTINATION  /usr/share/icons/jing/  )
 install(FILES ./containments/panel/package/contents/ui/icons/Bluetooth.svg DESTINATION /usr/share/icons/jing/jing/settings/ )
@@ -91,6 +95,27 @@ install(FILES ./containments/panel/package/contents/ui/icons/wifi_volume_75.svg 
 install(FILES ./containments/panel/package/contents/ui/icons/wifi_volume_50.svg DESTINATION /usr/share/icons/jing/jing/settings/ )
 install(FILES ./containments/panel/package/contents/ui/icons/wifi_volume_25.svg DESTINATION /usr/share/icons/jing/jing/settings/ )
 install(FILES ./containments/panel/package/contents/ui/icons/network_wired.svg DESTINATION /usr/share/icons/jing/jing/settings/ )
+install(FILES ./containments/panel/package/contents/ui/icons/sim_disconnected.svg DESTINATION /usr/share/icons/jing/jing/settings/ )
+install(FILES ./containments/panel/package/contents/ui/icons/sim_volume_0.svg DESTINATION /usr/share/icons/jing/jing/settings/ )
+install(FILES ./containments/panel/package/contents/ui/icons/sim_volume_25.svg DESTINATION /usr/share/icons/jing/jing/settings/ )
+install(FILES ./containments/panel/package/contents/ui/icons/sim_volume_50.svg DESTINATION /usr/share/icons/jing/jing/settings/ )
+install(FILES ./containments/panel/package/contents/ui/icons/sim_volume_75.svg DESTINATION /usr/share/icons/jing/jing/settings/ )
+install(FILES ./containments/panel/package/contents/ui/icons/sim_volume_100.svg DESTINATION /usr/share/icons/jing/jing/settings/ )
+install(FILES ./containments/panel/package/contents/ui/icons/FlightMode.svg DESTINATION /usr/share/icons/jing/jing/settings/ )
+install(FILES ./containments/panel/package/contents/ui/icons/Calculator.svg DESTINATION /usr/share/icons/jing/jing/settings/ )
+install(FILES ./containments/panel/package/contents/ui/icons/Calendar.svg DESTINATION /usr/share/icons/jing/jing/settings/ )
+install(FILES ./containments/panel/package/contents/ui/icons/Camera.svg DESTINATION /usr/share/icons/jing/jing/settings/ )
+install(FILES ./containments/panel/package/contents/ui/icons/Clock.svg DESTINATION /usr/share/icons/jing/jing/settings/ )
+install(FILES ./containments/panel/package/contents/ui/icons/Keyboard_Hide.svg DESTINATION /usr/share/icons/jing/jing/settings/ )
+install(FILES ./containments/panel/package/contents/ui/icons/Keyboard_Show.svg DESTINATION /usr/share/icons/jing/jing/settings/ )
+install(FILES ./containments/panel/package/contents/ui/icons/Poweroff.svg DESTINATION /usr/share/icons/jing/jing/settings/ )
+install(FILES ./containments/panel/package/contents/ui/icons/Mute_enable.svg DESTINATION /usr/share/icons/jing/jing/settings/ )
+install(FILES ./containments/panel/package/contents/ui/icons/Mute_disable.svg DESTINATION /usr/share/icons/jing/jing/settings/ )
+install(FILES ./containments/panel/package/contents/ui/icons/FlightMode_enable.svg DESTINATION /usr/share/icons/jing/jing/settings/ )
+install(FILES ./containments/panel/package/contents/ui/icons/AutoBrightness_enable.svg DESTINATION /usr/share/icons/jing/jing/settings/ )
+install(FILES ./containments/panel/package/contents/ui/icons/AutoBrightness_disable.svg DESTINATION /usr/share/icons/jing/jing/settings/ )
+install(FILES ./containments/panel/package/contents/ui/icons/quick_charging.svg DESTINATION /usr/share/icons/jing/jing/settings/ )
+install(FILES ./containments/panel/package/contents/ui/icons/quick_charging_white.svg DESTINATION /usr/share/icons/jing/jing/settings/ )
 
 
 add_subdirectory(bin)

@@ -1,26 +1,21 @@
-﻿/***************************************************************************
- *   Copyright (C) 2021 Wang Rui <wangrui@jingos.com>                      *
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- *   This program is distributed in the hope that it will be useful,       *
- *   but WITHOUT ANY WARRANTY; without even the implied warranty of        *
- *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the         *
- *   GNU General Public License for more details.                          *
- *                                                                         *
- *   You should have received a copy of the GNU General Public License     *
- *   along with this program; if not, write to the                         *
- *   Free Software Foundation, Inc.,                                       *
- *   51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA .        *
- ***************************************************************************/
+﻿/*
+ * Copyright (C) 2021 Beijing Jingling Information System Technology Co., Ltd. All rights reserved.
+ * 
+ * Authors: 
+ * Liu Bangguo <liubangguo@jingos.com>
+ *
+ */
 
 #include "launcheritem.h"
 #include <QDebug>
 #include <QMetaType>
 #include <QList>
+#include <QDBusInterface>
+#include <QDBusReply>
+
+#define DBUS_SERVICE_NAME            "com.jingos.jappmanagerd"
+#define DBUS_PATH_NAME               "/com/jingos/jappmanagerd"
+#define DBUS_INTERFACE_NAME          "com.jingos.jappmanagerd"
 
 class PrivateLauncherItem
 {
@@ -33,14 +28,13 @@ public:
         mStorageId.clear();
         mEntryPath.clear();
         mLocation = Desktop;
-        mWindow = nullptr;
         mType = LauncherItem::App;
         mStartupNotify = true;
         mType = 0;
         mItemIndex = 0;
         mAppPid = 0;
-        mWindowList.clear();
         mIsSystemApp = false;
+        mCategories.clear();
     }
 
     ~PrivateLauncherItem() {
@@ -54,13 +48,12 @@ public:
     QString mStorageId;
     QString mEntryPath;
     int mLocation;
-    KWayland::Client::PlasmaWindow *mWindow;
-    QList<KWayland::Client::PlasmaWindow* > mWindowList;
     bool mStartupNotify;
     int mType;
     int mItemIndex;
     qint64 mAppPid;
     bool mIsSystemApp;
+    QString mCategories;
 };
 
 LauncherItem::LauncherItem(QObject *parent) : QObject(parent),
@@ -82,7 +75,6 @@ void LauncherItem::initData()
     p->mStorageId.clear();
     p->mEntryPath.clear();
     p->mLocation = Desktop;
-    p->mWindow = nullptr;
     p->mType = LauncherItem::App;
     p->mStartupNotify = true;
     p->mType = 0;
@@ -195,44 +187,17 @@ int LauncherItem::setLocation(const int &location)
     return p->mLocation;
 }
 
-KWayland::Client::PlasmaWindow *LauncherItem::window()
-{
-    return p->mWindow;
-}
-
-KWayland::Client::PlasmaWindow *LauncherItem::setWindow(KWayland::Client::PlasmaWindow *window)
-{
-    if(p->mWindow != window)
-        p->mWindow = window;
-    emit windowChanged();
-    return p->mWindow;
-}
-
-void LauncherItem::addWindow(KWayland::Client::PlasmaWindow* window)
-{
-    setWindow(window);
-    p->mWindowList.append(window);
-}
-
-void LauncherItem::removeWindow(KWayland::Client::PlasmaWindow* window)
-{
-    for (int i = 0; i < p->mWindowList.size(); ++i) {
-        if (p->mWindowList.at(i) == window) {
-            p->mWindowList.removeAt(i);
-        }
-    }
-
-    if(p->mWindowList.count() == 0 || p->mWindowList.empty()) {
-        setWindow(nullptr);
-    }
-    
-    window = nullptr;
-}
-
 bool LauncherItem::applicationRunning()
 {
-    if(p->mWindow != nullptr)
-        return true;
+    QDBusInterface interface(DBUS_SERVICE_NAME, DBUS_PATH_NAME, DBUS_INTERFACE_NAME, QDBusConnection::sessionBus());
+    QDBusReply<bool> reply = interface.call("appIsRunning", storageId());
+
+    if (reply.isValid()) {
+        qDebug() << "reply.value: " << reply.value();
+        return reply.value();
+    } else {
+        qDebug() << "reply.error: " << reply.error();
+    }
     return false;
 }
 
@@ -287,11 +252,11 @@ void LauncherItem::setItemData(LauncherItem *itemData)
     setStorageId(itemData->storageId());
     setEntryPath(itemData->entryPath());
     setLocation(itemData->location());
-    setWindow(itemData->window());
     setStartupNotify(itemData->startupNotify());
     setType(itemData->type());
     setItemIndex(itemData->itemIndex());
     setIsSystemApp(itemData->isSystemApp());
+    setCategories(itemData->categories());
 }
 
 qint64 LauncherItem::appPid()
@@ -317,4 +282,17 @@ bool LauncherItem::setIsSystemApp(const bool &isSystemApp)
         p->mIsSystemApp = isSystemApp;
     emit isSystemAppChanged();
     return p->mIsSystemApp;
+}
+
+QString LauncherItem::categories()
+{
+    return p->mCategories;
+}
+
+QString LauncherItem::setCategories(const QString &categories)
+{
+    if(p->mCategories != categories)
+        p->mCategories = categories;
+    emit categoriesChanged();
+    return p->mCategories;
 }

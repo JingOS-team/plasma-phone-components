@@ -1,26 +1,52 @@
 #!/bin/sh
 
 [ -f /etc/profile ] && . /etc/profile
-
-export QT_QPA_PLATFORM=wayland
-export QT_QPA_PLATFORMTHEME=KDE
-export QT_WAYLAND_DISABLE_WINDOWDECORATION=1
-export EGL_PLATFORM=wayland
-
 export QT_QUICK_CONTROLS_STYLE=Plasma
 export QT_ENABLE_GLYPH_CACHE_WORKAROUND=1
 export QT_QUICK_CONTROLS_MOBILE=true
 export PLASMA_PLATFORM=phone:handset
 export QT_VIRTUALKEYBOARD_STYLE=Plasma
-
 export GRID_UNIT_PX=25
 export FORCE_RIL_NUM_MODEMS=1
 export PLASMA_DEFAULT_SHELL=org.kde.plasma.phone
+export QT_QPA_PLATFORMTHEME=KDE
+export QT_WAYLAND_DISABLE_WINDOWDECORATION=0
 
-# work around to fix : https://bugs.launchpad.net/ubuntu/+source/mesa/+bug/1507584
-if [ -d @KDE_INSTALL_FULL_LIBDIR@/libhybris-egl ]; then
-    export LD_LIBRARY_PATH=@KDE_INSTALL_FULL_LIBDIR@/libhybris-egl:$LD_LIBRARY_PATH
+export GTK_IM_MODULE=fcitx
+export QT_IM_MODULE=fcitx
+export XMODIFIERS=@im=fcitx
+
+ARCH=`arch`
+echo $ARCH
+if [ $ARCH = "aarch64" ]; then
+        export QT_QPA_PLATFORM=wayland-egl
+        export EGL_PLATFORM=wayland
+        export LD_LIBRARY_PATH=/opt/libhybris/lib/aarch64-linux-gnu/:/opt/libhybris/lib/aarch64-linux-gnu/libhybris/:/opt/libhybris/lib/aarch64-linux-gnu/libhybris/linker:/opt/libhybris/lib/aarch64-linux-gnu/libhybris-egl:$LD_LIBRARY_PATH
+        export KWIN_COMPOSE=O2ES
+        export QSG_RENDER_LOOP=threaded
+        export WAYLAND_DISPLAY=wayland-1
+        export XWAYLAND_NO_GLAMOR=1
+        export QT_MESSAGE_PATTERN="%{appname}[%{pid}][%{if-debug}D%{endif}%{if-info}I%{endif}%{if-warning}W%{endif}%{if-critical}C%{endif}%{if-fatal}F%{endif}] - %{message}"
+        #export QT_LOGGING_RULES="kwin_*.debug=true;kwin_wayland_hwcomposer=true"
+        #96dpi  KWIN_DEBUG_DPI=3.8
+        #export KWIN_DEBUG_DPI=1.25
+        #export KWIN_DEBUG_SCALE=0.5
+        #export KWIN_DEBUG_WIDTH=1296
+        #export KWIN_DEBUG_HEIGHT=2368
+        #export KWIN_DEBUG_SHOW_FPS=yes
+        #export KWIN_HAVE_PERFETTO=yes
+	export LD_PRELOAD=/lib/aarch64-linux-gnu/libgomp.so.1
+
+        if [ $USER = "root" ]; then
+        	echo "root login"
+	        startplasma-wayland --hwcomposer --setup-mode --socket=wayland-1 --libinput --no-lockscreen --exit-with-session=/usr/bin/startup-settings
+        else
+        	echo "user login"
+                startplasma-wayland --xwayland --hwcomposer --socket=wayland-1 --libinput --lockscreen --inputmethod maliit-keyboard --exit-with-session=@KDE_INSTALL_FULL_LIBEXECDIR@/startplasma-waylandsession
+        fi
+else
+	export QT_QPA_PLATFORM=wayland
+	export EGL_PLATFORM=wayland
+	touch /tmp/simplelogin_starting
+	startplasma-wayland --xwayland --libinput --lockscreen --exit-with-session=@KDE_INSTALL_FULL_LIBEXECDIR@/startplasma-waylandsession
 fi
-
-touch /tmp/simplelogin_starting
-startplasma-wayland --xwayland --libinput --lockscreen --inputmethod maliit-keyboard --exit-with-session=@KDE_INSTALL_FULL_LIBEXECDIR@/startplasma-waylandsession

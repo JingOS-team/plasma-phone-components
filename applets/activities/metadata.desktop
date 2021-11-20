@@ -1,6 +1,7 @@
 [Desktop Entry]
 Encoding=UTF-8
 Name=Phone Activities
+Name[ast]=Actividaes del teléfonu
 Name[ca]=Activitats del telèfon
 Name[ca@valencia]=Activitats del telèfon
 Name[cs]=Aktivity telefonu
@@ -21,6 +22,7 @@ Name[ko]=전화 활동
 Name[lt]=Telefono veiklos
 Name[nl]=Telefoonactiviteiten
 Name[nn]=Telefonaktivitetar
+Name[pa]=ਫ਼ੋਨ ਸਰਗਰਮੀਆਂ
 Name[pl]=Aktywności telefonu
 Name[pt]=Actividades do Telefone
 Name[pt_BR]=Atividades do telefone
@@ -36,6 +38,7 @@ Name[zh_CN]=手机活动
 Name[zh_TW]=手機活動
 
 Comment=Activity switcher for the phone
+Comment[ast]=Conmutador d'actividaes del teléfonu
 Comment[ca]=Commutador de l'activitat per al telèfon
 Comment[ca@valencia]=Commutador de l'activitat per al telèfon
 Comment[cs]=Přepínač aktivit pro telefon
@@ -55,6 +58,7 @@ Comment[ko]=전화기의 활동 전환기
 Comment[lt]=Veiklų perjungiklis telefonui
 Comment[nl]=Omschakelaar van telefoonactiviteiten
 Comment[nn]=Aktivitetsbytar for telefon
+Comment[pa]=ਫ਼ੋਨ ਲਈ ਸਰਗਰਮੀ ਸਵਿੱਚਰ
 Comment[pl]=Przełącznik aktywności dla tego telefonu
 Comment[pt]=Selector de actividades do telefone
 Comment[pt_BR]=Alternador de atividade para o telefone

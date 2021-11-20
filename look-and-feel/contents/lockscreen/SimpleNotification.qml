@@ -1,5 +1,6 @@
 /*
 Copyright (C) 2020 Devin Lin <espidev@gmail.com>
+Copyright (C) 2021 Liu Bangguo <liubangguo@jingos.com>
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -26,7 +27,7 @@ import org.kde.plasma.extras 2.0 as PlasmaExtras
 import org.kde.notificationmanager 1.1 as Notifications
 
 import org.kde.kquickcontrolsaddons 2.0 as KQCAddons
-
+import jingos.display 1.0
 import "../components"
 
 // meant to be temporary, until the notifications components in plasma-workspace are available to used
@@ -51,7 +52,7 @@ Item {
         width: parent.width
         
         border.color: "#bdbdbd"
-        border.width: 1
+        border.width: JDisplay.dp(1)
         
         RowLayout {
             id: notifLayout
@@ -80,7 +81,7 @@ Item {
                     maximumLineCount: 3
                     wrapMode: Text.WordWrap
                     elide: Text.ElideRight
-                    font.pointSize: 11
+                    font.pointSize: JDisplay.sp(11)
                 }
                 Label {
                     text: notification.body
@@ -88,7 +89,7 @@ Item {
                     Layout.fillWidth: true
                     wrapMode: Text.WordWrap
                     elide: Text.ElideRight
-                    font.pointSize: 10
+                    font.pointSize: JDisplay.sp(10)
                 }
             }
             

@@ -1,11 +1,12 @@
 import QtQuick 2.7
 import QtQuick.Controls 2.0
 import QtQuick.Layouts 1.3
+import jingos.display 1.0
 
 ApplicationWindow {
     visible: true
-    width: 640
-    height: 480
+    width: JDisplay.dp(640)
+    height: JDisplay.dp(480)
     title: i18nd("plasma-phone-components", "Hello World")
 
     property real startX
@@ -28,7 +29,7 @@ ApplicationWindow {
         Label {
             id: label
             anchors.fill:parent
-            font.pointSize: 20
+            font.pointSize: JDisplay.sp(20)
             verticalAlignment: Text.AlignHCenter
             horizontalAlignment: Text.AlignVCenter
             wrapMode: Text.WordWrap

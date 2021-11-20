@@ -21,6 +21,7 @@
 import QtQuick 2.8
 import org.kde.plasma.core 2.0 as PlasmaCore
 import org.kde.plasma.components 3.0 as PlasmaComponents3
+import jingos.display 1.0
 
 Rectangle {
     id: root
@@ -33,13 +34,13 @@ Rectangle {
     property alias circleVisiblity: iconCircle.visible
     property int fontSize: config.fontSize
     readonly property bool softwareRendering: GraphicsInfo.api === GraphicsInfo.Software
+
     signal clicked
 
     activeFocusOnTab: true
-
     radius: root.height*0.2
 
-    color: activeFocus || containsMouse ?Qt.rgba(0.623,0.623,0.667,0.3):Qt.rgba(1.0,1.0,1.0,0.3)
+    color: activeFocus || containsMouse ?Qt.rgba(0.623,0.623,0.667,0.2):Qt.rgba(1.0,1.0,1.0,0.2)
     Behavior on opacity {
         PropertyAnimation { // OpacityAnimator makes it turn black at random intervals
             duration: units.longDuration
@@ -49,7 +50,7 @@ Rectangle {
 
     Item {
         anchors.centerIn: root
-        width:  icon.implicitWidth + parent.height*0.32 + label.implicitWidth
+        width:  icon.width + parent.height*0.32 + label.implicitWidth
         height:  parent.height
 
         Rectangle {
@@ -85,8 +86,8 @@ Rectangle {
 
         Image {
             id:icon
-            width: 30
-            height: 30
+            width: parent.height*0.429
+            height: parent.height*0.429
             anchors {
                 left:parent.left
                 verticalCenter: parent.verticalCenter
@@ -110,8 +111,8 @@ Rectangle {
 
         PlasmaComponents3.Label {
             id: label
-            font.pixelSize: parent.height*0.25
-            font.family:"PingFangSC"
+            font.pixelSize: JDisplay.sp(15)//parent.height*0.25
+//            font.family:"PingFangSC"
             anchors.left: icon.right
             anchors.leftMargin:parent.height*0.32
             anchors.verticalCenter: icon.verticalCenter

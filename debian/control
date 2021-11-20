@@ -1,0 +1,49 @@
+Source: plasma-phone-components
+Section: kde
+Priority: optional
+Maintainer: Debian/Kubuntu Qt/KDE Maintainers <debian-qt-kde@lists.debian.org>
+XSBC-Original-Maintainer: Boudewijn Rempt <boud@valdyas.org>
+Build-Depends: cmake,
+               debhelper (>= 11),
+               extra-cmake-modules (>= 5.36.0),
+               kwayland-dev,
+               libgstreamer1.0-dev,
+               libkf5declarative-dev,
+               libkf5notifications-dev,
+               libkf5people-dev,
+               libkf5plasma-dev,
+               libkf5service-dev,
+               libphonenumber-dev,
+               libsystemd-dev,
+               libtelepathy-qt5-dev,
+               pkg-config,
+               pkg-kde-tools (>= 0.9),
+               qtbase5-dev,
+               qtdeclarative5-dev
+Standards-Version: 4.2.1
+Homepage: https://plasma-mobile.org
+Vcs-Browser: https://gitlab.com/debian-pm/plasma-mobile/plasma-phone-components
+Vcs-Git: https://gitlab.com/debian-pm/plasma-mobile/plasma-phone-components.git
+
+Package: plasma-phone-components
+Architecture: any
+Depends: breeze-icon-theme,
+         fonts-mplus,
+         fonts-oxygen,
+         kpeople-vcard,
+         milou,
+         plasma-nano,
+         plasma-workspace,
+         powerdevil,
+         qml-module-org-kde-activities,
+         qml-module-org-kde-kio,
+         qml-module-org-kde-kirigami2,
+         qml-module-org-kde-kquickcontrols,
+         qml-module-org-kde-people,
+         qml-module-qtquick-localstorage,
+	  qml-module-qtquick-particles2,
+         ${misc:Depends},
+         ${shlibs:Depends}
+Recommends: qml-module-ofono
+Description: Set of components required for Plasma Phone
+ Phone components for KDE Plasma.

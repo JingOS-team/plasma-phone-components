@@ -1,0 +1,29 @@
+#!/bin/sh
+
+if [ -e /etc/systemd/system/multi-user.target.wants/systeminfo.service ]; then
+	rm /etc/systemd/system/multi-user.target.wants/systeminfo.service
+	ln -s  /lib/systemd/system/systeminfo.service  /etc/systemd/system/multi-user.target.wants/systeminfo.service
+fi
+
+UID=1000
+
+if id "$UID" > /dev/null 2>&1; then
+    USER="$(id "$UID" -u -n)"
+
+    if [ $? -eq 0 ];then
+        if [ -e /home/$USER/.cache/plasmashell ]; then
+            rm -rf /home/$USER/.cache/plasmashell
+        fi
+
+        if [ -e /home/$USER/.config/JingLauncher/Position.conf ]; then
+cat > /home/$USER/.config/JingLauncher/Position.conf << EOF
+[Favorites]
+org.kde.discover.desktop="-1,1"
+org.kde.konsole.desktop="-1,0"
+org.kde.mobile.plasmasettings.desktop="-1,2"
+EOF
+        fi
+    fi
+fi
+
+exit 0

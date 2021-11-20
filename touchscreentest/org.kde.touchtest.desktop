@@ -1,5 +1,6 @@
 [Desktop Entry]
 Name=Touch Test
+Name[ast]=Prueba táctil
 Name[ca]=Prova el tàctil
 Name[ca@valencia]=Prova el tàctil
 Name[cs]=Test doteku
@@ -20,6 +21,7 @@ Name[ko]=터치 테스트
 Name[lt]=Prilietimo išbandymas
 Name[nl]=Aanraaktest
 Name[nn]=Røretest
+Name[pa]=ਟੱਚ ਲਈ ਟੈਸਟ
 Name[pl]=Próba dotyku
 Name[pt]=Teste de Toque
 Name[pt_BR]=Teste de toque
@@ -38,6 +40,7 @@ Categories=Qt;KDE;System;Development;
 
 Exec=touchtest
 GenericName=Terminal
+GenericName[ast]=Terminal
 GenericName[ca]=Terminal
 GenericName[ca@valencia]=Terminal
 GenericName[cs]=Terminál
@@ -58,6 +61,7 @@ GenericName[ko]=터미널
 GenericName[lt]=Terminalas
 GenericName[nl]=Terminal
 GenericName[nn]=Terminal
+GenericName[pa]=ਟਰਮੀਨਲ
 GenericName[pl]=Terminal
 GenericName[pt]=Terminal
 GenericName[pt_BR]=Terminal

@@ -29,6 +29,7 @@
 #include <QQuickItem>
 #include <QQuickWindow>
 #include <QList>
+#include <QDir>
 
 // KDE
 #include <KIO/ApplicationLauncherJob>
@@ -41,16 +42,19 @@
 #include <KDesktopFile>
 #include <KShell>
 
-#include <KWayland/Client/connection_thread.h>
-#include <KWayland/Client/plasmawindowmanagement.h>
-#include <KWayland/Client/registry.h>
-#include <KWayland/Client/surface.h>
 #include <QMetaType>
 #include <QDebug>
 #include <QSettings>
 #include <QStringList>
 #include <QTimer>
 #include <QList>
+#include <QDBusInterface>
+#include <QDBusReply>
+#include <QDesktopServices>
+
+#define DBUS_SERVICE_NAME            "com.jingos.jappmanagerd"
+#define DBUS_PATH_NAME               "/com/jingos/jappmanagerd"
+#define DBUS_INTERFACE_NAME          "com.jingos.jappmanagerd"
 
 constexpr int MAX_FAVOURITES = 8;
 constexpr int DESKTOP_MAX_ICON_NUM = 24;
@@ -65,7 +69,8 @@ ListModelManager::ListModelManager(HomeScreen *parent)
       runAppActive(true)
 {
     qRegisterMetaType<QAbstractListModel* >();
-    qRegisterMetaType<KWayland::Client::PlasmaWindow* >();
+    
+    panelBehavorList << QStringLiteral("org.kde.plasmashell");
 
     QDBusConnection connection = QDBusConnection::sessionBus();
     if(!connection.registerService("org.dbus.jingos.launcher")) {
@@ -100,7 +105,6 @@ ListModelManager::ListModelManager(HomeScreen *parent)
     m_dirLister->started(resolve(DESKTOP_DIR));
     
     // loadApplications();
-    initWayland();
 
     // connect(KSycoca::self(), qOverload<const QStringList &>(&KSycoca::databaseChanged),
     //         this, &ListModelManager::sycocaDbChanged);
@@ -120,69 +124,6 @@ void ListModelManager::sycocaDbChanged(const QStringList &changes)
 bool appNameLessThan(const ApplicationData &a1, const ApplicationData &a2)
 {
     return a1.name.toLower() < a2.name.toLower();
-}
-
-void ListModelManager::initWayland()
-{
-    if (!QGuiApplication::platformName().startsWith(QLatin1String("wayland"), Qt::CaseInsensitive)) {
-        return;
-    }
-
-    using namespace KWayland::Client;
-    ConnectionThread *connection = ConnectionThread::fromApplication(this);
-
-    if (!connection) {
-        return;
-    }
-    auto *registry = new Registry(this);
-    registry->create(connection);
-    connect(registry, &Registry::plasmaWindowManagementAnnounced, this,
-            [this, registry] (quint32 name, quint32 version) {
-        m_windowManagement = registry->createPlasmaWindowManagement(name, version, this);
-        qRegisterMetaType<QVector<int> >("QVector<int>");
-
-        connect(m_windowManagement, &KWayland::Client::PlasmaWindowManagement::windowCreated,
-                this, [this] (KWayland::Client::PlasmaWindow *window) {
-            if (window->appId() == QStringLiteral("org.kde.plasmashell")) {
-                return;
-            }
-
-            for(int i = 0; i < applicationModelMap.keys().size(); i++) {
-                BaseModel<LauncherItem*>* listModel =  applicationModelMap[applicationModelMap.keys().at(i)];
-
-                if(listModel == nullptr)
-                    break;
-
-                for(int i = 0; i < listModel->size(); i++) {
-                    if (listModel->at(i) != nullptr && ((listModel->at(i)->storageId() == window->appId() + QStringLiteral(".desktop")) 
-                        || window->pid() == listModel->at(i)->appPid())) {
-                        listModel->at(i)->addWindow(window);
-                        connect(window, &KWayland::Client::PlasmaWindow::unmapped, this, [this, window] () {
-
-                            for(int i = 0; i < applicationModelMap.keys().size(); i++) {
-                                BaseModel<LauncherItem*>* listModel =  applicationModelMap[applicationModelMap.keys().at(i)];
-
-                                if(listModel == nullptr)
-                                    break;
-
-                                for(int i = 0; i < listModel->size(); i++) {
-                                    if (listModel->at(i) !=nullptr && (listModel->at(i)->storageId() == window->appId() + QStringLiteral(".desktop") 
-                                        || window->pid() == listModel->at(i)->appPid())) {
-                                        listModel->at(i)->removeWindow(window);
-                                        break;
-                                    }
-                                }
-                            }
-                        });
-                        break;
-                    }
-                }
-            }
-        });
-    });
-
-    registry->setup();
-    connection->roundtrip();
 }
 
 void ListModelManager::loadApplications()
@@ -262,12 +203,12 @@ void ListModelManager::loadApplications()
 
                                     if(listModel->at(i)->storageId() == service->storageId()) {
                                         listModel->at(i)->setName(service->name());
-                                        listModel->at(i)->setIcon(service->icon());
+                                        listModel->at(i)->setIcon(resetIcon(service->icon()));
                                         listModel->at(i)->setEntryPath(service->exec());
                                         listModel->at(i)->setStartupNotify(service->property(QStringLiteral("StartupNotify")).toBool());
                                         listModel->at(i)->setType(LauncherItem::App);
                                         listModel->at(i)->setExecName(execPath.split("/").last());
-
+                                        listModel->at(i)->setCategories(service->property(QStringLiteral("Categories")).toString());
                                         initFlag = true;
                                         break;
                                     }
@@ -282,13 +223,14 @@ void ListModelManager::loadApplications()
  
                             LauncherItem* data = new LauncherItem(this);
                             data->setName(service->name());
-                            data->setIcon(service->icon());
+                            data->setIcon(resetIcon(service->icon()));
                             data->setStorageId(service->storageId());
                             data->setEntryPath(service->exec());
                             data->setStartupNotify(service->property(QStringLiteral("StartupNotify")).toBool());
                             data->setType(LauncherItem::App);
                             data->setLocation(Desktop);
                             data->setExecName(execPath.split("/").last());
+                            data->setCategories(service->property(QStringLiteral("Categories")).toString());
 
                             if(applicationModelMap.keys().size() == 0) {
                                 BaseModel<LauncherItem*> *firstPageModel = new BaseModel<LauncherItem*>;
@@ -333,10 +275,11 @@ void ListModelManager::loadApplications()
         }
     }
 
-    panelBehavorList << pb3 << QStringLiteral("org.kde.plasmashell");
-
-    blgroup.writeEntry("belowPanel", pb3);
-    cfg->sync();
+    if(pb3.size() > 0) {
+        panelBehavorList << pb3;
+        blgroup.writeEntry("belowPanel", panelBehavorList);
+        cfg->sync();
+    }
 
     emit countChanged();
 
@@ -396,23 +339,48 @@ void ListModelManager::movePlaceholderItem(int to)
     }
 }
 
-void ListModelManager::runApplication(const QString &storageId, KWayland::Client::PlasmaWindow *window)
+bool ListModelManager::isAndroidApp(QString categories)
+{
+    if(categories.contains("Android")) {
+        return true;
+    }
+    return false;
+}
+
+bool ListModelManager::openWebUrl(QString url)
+{
+    QDesktopServices::openUrl(url);
+    qDebug()<< Q_FUNC_INFO << " open url:" << url;
+
+    return true;
+}
+
+void ListModelManager::runApplication(const QString &storageId)
 {
     if(!runAppActive)
         return;
     runAppActive = false;
+    
     QTimer::singleShot(800, this, SLOT(updateRunAppState()));
+        qDebug() << " --- plasmashell ---- run android storageId : " << storageId;
 
     if (storageId.isEmpty()) {
         return;
     }
 
-    if(window != nullptr) {
-        window->requestActivate();
-        return;
-    }
-
     KService::Ptr service = KService::serviceByStorageId(storageId);
+    if (service)
+    {
+        auto category = service->property(QStringLiteral("Categories")).toString();
+        if (isAndroidApp(category))
+        {
+            auto exec = service->exec();
+            if (!exec.startsWith("jingsideproxy"))
+            {
+                service->setExec("jingsideproxy " + exec);
+            }
+        }
+    }
     KIO::ApplicationLauncherJob *job = new KIO::ApplicationLauncherJob(service);
     job->setUiDelegate(new KNotificationJobUiDelegate(KJobUiDelegate::AutoHandlingEnabled));
     job->start();
@@ -536,12 +504,11 @@ void ListModelManager::dragItemToModel(LauncherItem *item, int fromModel, int to
         applicationModelMap[toModel]->append(item);
 }
 
-void ListModelManager::addPlaceholderItem(int page)
+void ListModelManager::addPlaceholderItem(int page, bool pushBack)
 {
     if(applicationModelMap.contains(page) && applicationModelMap[page] ) {
         int maxnum = page == -1 ? FAVORITE_MAX_ICON_NUM : DESKTOP_MAX_ICON_NUM;
         if(applicationModelMap[page]->size() >= maxnum) {
-            removePlaceholderItem();
             return;
         }
     }
@@ -564,7 +531,11 @@ void ListModelManager::addPlaceholderItem(int page)
         } else {
             placeholderitem->setLocation(Desktop);
         }
-        applicationModelMap[page]->append(placeholderitem);
+
+        if(pushBack)
+            applicationModelMap[page]->append(placeholderitem);
+        else
+            applicationModelMap[page]->prepend(placeholderitem);
     }
 }
 
@@ -905,13 +876,24 @@ void ListModelManager::onNewItems(const KFileItemList &fileItems)
     QStringList pb3;
     QStringList blacklist = blgroup.readEntry("blacklist", QStringList());
 
+    currentIcons.clear();
+    currentIcons = getCurrentIcons(QStringLiteral("/usr/share/icons/jing/jingos-apps-icons/"));
+
     KFileItem fileItem;
     foreach (fileItem, fileItems) {
-        if(!fileItem.isDesktopFile()) {
+        if(!fileItem.isDesktopFile() || !fileItem.name().endsWith(".desktop")) {
             continue;
         }
         const KDesktopFile file(fileItem.url().path());
         
+        if (file.desktopGroup().readEntry("PanelBehavor").toInt() == 3) {
+            if(fileItem.name().endsWith(".desktop")) {
+                pb3 << fileItem.name().remove(".desktop");
+            } else {
+                pb3 << fileItem.name();
+            }
+        }
+            
         if (file.noDisplay()) {
             continue;
         }
@@ -922,17 +904,7 @@ void ListModelManager::onNewItems(const KFileItemList &fileItems)
         if (file.hasApplicationType() &&
                 !blacklist.contains(fileItem.name()) &&
                 file.desktopGroup().readEntry("Terminal", "false") == "false") {
-            
-            if (file.desktopGroup().readEntry("PanelBehavor").toInt() == 3) {
-                if(fileItem.name().endsWith(".desktop")) {
-                    pb3 << fileItem.name().remove(".desktop");
-                } else {
-                    pb3 << fileItem.name();
-                }
-            }
-            
-            // bl << file->name();
-            
+                        
             QString execPath = file.desktopGroup().readEntry("Exec");
             if (execPath.contains(" ")) {
                 QStringList values = execPath.split(" ");
@@ -958,12 +930,14 @@ void ListModelManager::onNewItems(const KFileItemList &fileItems)
 
                     if(listModel->at(j)->storageId() == fileItem.name()) {
                         listModel->at(j)->setName(file.readName());
-                        listModel->at(j)->setIcon(file.readIcon());
+                        listModel->at(j)->setIcon(resetIcon(file.readIcon()));
                         listModel->at(j)->setEntryPath(file.desktopGroup().readEntry("Exec"));
                         listModel->at(j)->setStartupNotify(file.desktopGroup().readEntry("StartupNotify") == "true" ? true: false);
                         listModel->at(j)->setType(LauncherItem::App);
                         listModel->at(j)->setExecName(execPath.split("/").last());
                         listModel->at(j)->setIsSystemApp((file.desktopGroup().readEntry("PanelBehavor").toInt() == 3 || fileItem.name() == TERMINAL_DESKTOP));
+                        listModel->at(j)->setCategories(file.desktopGroup().readEntry("Categories"));
+
                         initFlag = true;
                         break;
                     }
@@ -978,7 +952,7 @@ void ListModelManager::onNewItems(const KFileItemList &fileItems)
 
             LauncherItem* data = new LauncherItem(this);
             data->setName(file.readName());
-            data->setIcon(file.readIcon());
+            data->setIcon(resetIcon(file.readIcon()));
             data->setStorageId(fileItem.name());
             data->setEntryPath(file.desktopGroup().readEntry("Exec"));
             data->setStartupNotify(file.desktopGroup().readEntry("StartupNotify") == "true" ? true: false);
@@ -986,6 +960,7 @@ void ListModelManager::onNewItems(const KFileItemList &fileItems)
             data->setLocation(Desktop);
             data->setExecName(execPath.split("/").last());
             data->setIsSystemApp((file.desktopGroup().readEntry("PanelBehavor").toInt() == 3 || fileItem.name() == TERMINAL_DESKTOP));
+            data->setCategories(file.desktopGroup().readEntry("Categories"));
 
             if(applicationModelMap.keys().size() == 1 && applicationModelMap.contains(-1)) {
                 BaseModel<LauncherItem*> *firstPageModel = new BaseModel<LauncherItem*>;
@@ -1028,10 +1003,11 @@ void ListModelManager::onNewItems(const KFileItemList &fileItems)
         }
     }
 
-    panelBehavorList << pb3 << QStringLiteral("org.kde.plasmashell");
-
-    blgroup.writeEntry("belowPanel", pb3);
-    cfg->sync();
+    if(pb3.size() > 0) {
+        panelBehavorList << pb3;
+        blgroup.writeEntry("belowPanel", panelBehavorList);
+        cfg->sync();
+    }
 
     emit countChanged();
 
@@ -1079,7 +1055,6 @@ void ListModelManager::onItemsDeleted(const KFileItemList &items)
                 for(int i = 0; i < listModel->size(); i++) {
                     if(listModel->at(i)->storageId() == item.name()) {
                         removeLauncherItem(listModel->at(i));
-                        return;
                     }
                 }
             }
@@ -1150,24 +1125,6 @@ void ListModelManager::openWithApp(const QString &exec, const QStringList &urls)
 
     QString mStorageId;
 
-    for(int i = 0; i < applicationModelMap.keys().size(); i ++) {
-
-        BaseModel<LauncherItem*>* listModel =  applicationModelMap[applicationModelMap.keys().at(i)];
-
-        if(listModel == nullptr)
-            continue; 
-                                
-        for(int j = 0; j < listModel->size() - 1; j++) {
-            if(exec.contains(listModel->at(j)->storageId())) {
-                mStorageId = listModel->at(j)->storageId();
-                if(listModel->at(j)->window() != nullptr) {
-                    listModel->at(j)->window()->requestActivate();
-                    return;
-                }
-            }
-        }
-    }
-
     KService service(exec);
     KService::Ptr servicePtr(new KService(service)); // clone
     KIO::ApplicationLauncherJob *job = new KIO::ApplicationLauncherJob(servicePtr);
@@ -1194,5 +1151,87 @@ void ListModelManager::openWithApp(const QString &exec, const QStringList &urls)
     job->start();
 }
 
+void ListModelManager::onOpenKonsole()
+{
+    QString mStorageId = "org.kde.konsole.desktop";
+
+    this->runApplication(mStorageId);
+}
+
+QString ListModelManager::resetIcon(QString iconName)
+{
+    for (int i = 0; i < currentIcons.size(); ++i) {
+        if(currentIcons.at(i).startsWith(iconName)) {
+            return QStringLiteral("file:///usr/share/icons/jing/jingos-apps-icons/") + currentIcons.at(i);
+        }
+    }
+    return iconName;
+}
+
+QStringList ListModelManager::getCurrentIcons(const QString &path)
+{
+    QDir dir(path);
+    QStringList nameFilters;
+    nameFilters <<"*.jpg" << "*.png" << "*.svg";
+    QStringList files = dir.entryList(nameFilters, QDir::Files | QDir::Readable, QDir::Name);
+
+    return files;
+}
+
+bool ListModelManager::applicationRunning(QString storegeId)
+{
+    QDBusInterface interface(DBUS_SERVICE_NAME, DBUS_PATH_NAME, DBUS_INTERFACE_NAME, QDBusConnection::sessionBus());
+    QDBusReply<bool> reply = interface.call("appIsRunning", storegeId);
+
+    if (reply.isValid()) {
+        qDebug() << "reply.value: " << reply.value();
+        return reply.value();
+    } else {
+        qDebug() << "reply.error: " << reply.error();
+    }
+    return false;
+}
+
+QStringList ListModelManager::getFetureImages()
+{
+    QString path;
+
+    const QStringList &locations = QStandardPaths::standardLocations(QStandardPaths::PicturesLocation);
+    if (!locations.isEmpty()) {
+        path = locations.at(0);
+    }
+    // QDir dir(path);
+    // QStringList nameFilters;
+    // nameFilters <<"*.jpg" << "*.png" << "*.svg";
+    // QStringList files = dir.entryList(nameFilters, QDir::Files | QDir::Readable, QDir::Time);
+
+    QStringList firstFiveLists;
+    // for(int i =0 ; i < files.length() ; i++){
+    //     if(i < 5){
+    //         firstFiveLists << path +"/"+ files[i];
+    //     }
+    // }
+
+    QMimeDatabase mimeDb;
+
+    QDirIterator it(path, QDir::AllEntries | QDir::NoSymLinks | QDir::NoDotAndDotDot , QDirIterator::Subdirectories);
+    int count = 0;
+    while (it.hasNext()) {
+        if (count > 5) {
+            break;
+        }
+        QString filePath = it.next();
+        QString mimetype = mimeDb.mimeTypeForFile(filePath).name();
+        if (mimetype.startsWith("image/")) {
+            firstFiveLists << filePath;
+            count++;
+        }
+    }
+   while (firstFiveLists.size() < 5) {
+       firstFiveLists << "";//"../../image/notelogo.svg";
+   }
+    qDebug() << Q_FUNC_INFO << " feture images::" << firstFiveLists;
+    return firstFiveLists;
+}
 
 #include "moc_listmodelmanager.cpp"

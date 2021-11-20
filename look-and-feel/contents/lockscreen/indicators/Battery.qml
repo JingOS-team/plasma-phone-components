@@ -23,10 +23,16 @@ import QtQuick.Layouts 1.4
 import org.kde.plasma.core 2.0 as PlasmaCore
 import org.kde.plasma.components 3.0 as PlasmaComponents
 import org.kde.plasma.workspace.components 2.0 as PW
+import jingos.display 1.0
 
 
 RowLayout {
+    property bool plugValue: pmSource.data["AC Adapter"]?pmSource.data["AC Adapter"]["Plugged in"] : 0
+    property bool isQuickCharging: pmSource.data["AC Adapter"] ? pmSource.data["AC Adapter"]["Quick charging"] : false;
+    Layout.alignment: Qt.AlignVCenter
     visible: pmSource.data["Battery"]["Has Cumulative"]
+    height: JDisplay.dp(11)
+    spacing: JDisplay.dp(3)
 
     PlasmaComponents.Label {
         id: batteryLabel
@@ -34,52 +40,42 @@ RowLayout {
         Layout.alignment: Qt.AlignVCenter
 
         color: PlasmaCore.ColorScope.textColor
-        // font.pixelSize: parent.height / 2
-        font.pointSize: 9
+        font.pixelSize: JDisplay.sp(13)
     }
 
     Item{
         id: battery
-        width: 14
-        height: 8
+        width: JDisplay.dp(21)
+        height: parent.height - JDisplay.dp(1)
 
         Image{
             id: batteryImg
-            width: 14
-            height: 8
+            sourceSize.width: parent.width
+            sourceSize.height: parent.height
             source: "file:///usr/share/icons/jing/jing/settings/Battery_rect_white.svg"
         }
 
-
-
         Rectangle{
             id: batteryVolumeRect
-            property int maxWidth: 11
+            property int maxWidth: JDisplay.dp(16)
             anchors.verticalCenter: parent.verticalCenter
             anchors.left: parent.left
-            anchors.leftMargin: 1
+            anchors.leftMargin: JDisplay.dp(2)
 
             width:maxWidth * pmSource.data["Battery"]["Percent"]/100
-            height:6
-            color: isPlugInsert() ? "#6DD400" :"white"
+            height: parent.height - JDisplay.dp(4)
+            color: isPlugInsert() ? "#6DD400" :  (pmSource.data["Battery"]["Percent"]<=20) ? "red": "white"
         }
-
-
 
         Image{
             id:batteryCharging
             anchors.centerIn: parent
-            width:3
-            height:6
+            width:JDisplay.dp(5)
+            height:JDisplay.dp(8)
 
-            source:"file:///usr/share/icons/jing/jing/settings/Battery_charge_white.svg"
-            visible: isPlugInsert()
+            source:chargingIcon()
+            visible: plugValue//isPlugInsert()
         }
-
-
-
-
-
     }
 
 
@@ -89,12 +85,25 @@ RowLayout {
         connectedSources: ["Battery", "AC Adapter"]
     }
 
+
+    onPlugValueChanged: {
+        console.log("=============onPlugValueChanged:"+plugValue);
+    }
+
     function isPlugInsert()
     {
         if(!pmSource.data["AC Adapter"])
             return fase;
         return pmSource.data["AC Adapter"]["Plugged in"];
     }
-}
 
+    function chargingIcon(){
+        if(pmSource.data["AC Adapter"]["Quick charging"] == true)
+        {
+            return "file:///usr/share/icons/jing/jing/settings/quick_charging_white.svg";
+        }
+
+        return "file:///usr/share/icons/jing/jing/settings/Battery_charge_white.svg";
+    }
+}
 

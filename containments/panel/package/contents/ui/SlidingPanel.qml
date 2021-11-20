@@ -26,26 +26,30 @@ import org.kde.plasma.components 3.0 as PlasmaComponents
 import org.kde.plasma.private.nanoshell 2.0 as NanoShell
 import QtGraphicalEffects 1.12
 import QtQml 2.14
+import jingos.display 1.0
 
 NanoShell.FullScreenOverlay {
     id: window
 
     property int offset: 0
+    property int fromOffset:0
     property int openThreshold
     property bool userInteracting: false
+    property bool childFocus: false
     readonly property bool wideScreen: width > height || width > units.gridUnit * 45
     property int drawerWidth:  wideScreen ? width / 3 : width
     property int drawerHeight
-    property int drawerX: window.width - window.drawerWidth - 8
+    property int drawerX: window.width - window.drawerWidth - JDisplay.dp(8)
     property int drawerY: 0
     property alias fixedArea: mainScope
     property alias flickable: mainFlickable
     color: "transparent"
-    //color: "#B8F1ED"//Qt.rgba(0, 0, 0, 0.6 * Math.min(1, offset/contentArea.height))
     property alias contentItem: contentArea.contentItem
     property int headerHeight
     property bool hasShown: false
     property bool slidingPanelIsOpen: false
+    property bool animateRunning: false
+    property int direction: SlidingPanel.MovementDirection.None
 
     signal closed
 
@@ -54,23 +58,13 @@ NanoShell.FullScreenOverlay {
         Up,
         Down
     }
-    property int direction: SlidingPanel.MovementDirection.None
 
-    function stopAnim() {
-        openAnim.stop();
-        closeAnim.stop();
-    }
-
-    function open() {
-        nofifySlidingPanel.close()
-        window.showFullScreen();
-        openAnim.restart();
-        hasShown = true;
-    }
-
-    function close() {
-        closeAnim.restart();
-        hasShown = false;
+    function init() {
+        window.offset = 0
+        animateRunning = false
+        slidingPanelIsOpen = false
+        window.visible = false;
+        window.closed();
     }
 
     function toggle() {
@@ -81,78 +75,104 @@ NanoShell.FullScreenOverlay {
         }
     }
 
-    function updateState() {
-        if (window.direction === SlidingPanel.MovementDirection.None) {
-            if (offset < openThreshold) {
-                close();
-            } else {
-                openAnim.restart();
-            }
-        } else if (offset > openThreshold && window.direction === SlidingPanel.MovementDirection.Down) {
-            openAnim.restart();
-        } else if (mainFlickable.contentY > openThreshold) {
-            close();
-        } else {
-            openAnim.restart();
-        }
+    function stopAnim() {
+        openAnim.stop();
+        closeAnim.stop();
     }
 
-    Timer {
-        id: updateStateTimer
-        interval: 0
-        onTriggered: updateState()
+    function open() {
+        window.showFullScreen();
+        window.offset = contentArea.height
+        openAnim.restart();
+        hasShown = true;
+    }
+
+    function close() {
+        closeAnim.restart();
+        hasShown = false;
     }
 
     onActiveChanged: {
         if (!active) {
-            close();
+            if(window.visible)
+                close();
         }
     }
 
-    SequentialAnimation {
+
+    ParallelAnimation {
         id: closeAnim
+
+        // PropertyAnimation {
+        //     target: window
+        //     duration: root.animationTime
+        //     easing.type: Easing.OutSine
+        //     properties: "offset"
+        //     from: contentArea.height - mainFlickable.contentY//window.offset
+        //     to: 0 //-headerHeight * 2
+        // }
+
         PropertyAnimation {
-            target: window
-            duration: units.longDuration
-            easing.type: Easing.InOutQuad
-            properties: "offset"
-            from: window.offset
-            to: -headerHeight * 2
+            target: mainScope
+            duration: root.animationTime
+            easing.type: Easing.OutSine
+            properties: "opacity"
+            from: 1
+            to: 0
         }
-        ScriptAction {
-            script: {
-                window.offset = -headerHeight * 2
-                mainFlickable.oldContentY = -headerHeight * 2
-                slidingPanelIsOpen = false
-                window.visible = false;
-                window.closed();
+
+        onStarted: {
+            animateRunning = true
+            setBlur(Qt.rect(0, 0, 1, 1), 1, 1);
+        }
+        onFinished: {
+            window.init()
+        }
+    }
+
+    ParallelAnimation {
+        id: openAnim
+
+        // PropertyAnimation {
+        //     target: window
+        //     duration: root.animationTime
+        //     easing.type: Easing.OutSine
+        //     properties: "offset"
+        //     from: 0// contentArea.height - mainFlickable.contentY//window.offset
+        //     to: contentArea.height
+        // }
+
+        PropertyAnimation {
+            target: mainScope
+            duration: root.animationTime
+            easing.type: Easing.OutSine
+            properties: "opacity"
+            from: 0
+            to: 1
+        }
+
+        onStarted: {
+            setBlur(Qt.rect(0, 0, 1, 1), 1, 1);
+            animateRunning = true
+        }
+        onFinished: {
+            animateRunning = false
+            slidingPanelIsOpen = true
+            setBlur(Qt.rect(drawerX , offset - panelContents.height + headerHeight,
+                    panelContents.width, panelContents.height), panelContents.width / 12, panelContents.width / 12);
+            if (mainScope.opacity !== 1) {
+                mainScope.opacity = 1
             }
         }
-        onFinished: {
-            slidingPanelIsOpen = false
-        }
-    }
-    
-    PropertyAnimation {
-        id: openAnim
-        target: window
-        duration: units.longDuration
-        easing.type: Easing.InOutQuad
-        properties: "offset"
-        from: window.offset
-        to: contentArea.height
-        onFinished: {
-            slidingPanelIsOpen = true
-        }
     }
 
-    onBeforeSynchronizing: {
-        setBlur(Qt.rect(drawerX , offset - panelContents.height + headerHeight,
-                        panelContents.width, panelContents.height), panelContents.width / 12, panelContents.width / 12);
+    onOffsetChanged: {
+        mainFlickable.contentY = contentArea.height - offset
     }
 
     PlasmaCore.ColorScope {
         id: mainScope
+
         anchors.fill: parent
 
         Flickable {
@@ -167,43 +187,21 @@ NanoShell.FullScreenOverlay {
             boundsBehavior: Flickable.StopAtBounds
 
             contentWidth: window.width
-            contentHeight: window.height*2
+            contentHeight: window.height
             bottomMargin: window.height
-
-            Binding {
-                id: bindingHandle
-
-                target: mainFlickable
-                property: "contentY"
-                value: -window.offset + contentArea.height
-                when: !mainFlickable.moving && !mainFlickable.dragging && !mainFlickable.flicking
-                restoreMode: Binding.RestoreBindingOrValue
-            }
-
-            onContentYChanged: {
-                if (contentY === oldContentY) {
-                    window.direction = SlidingPanel.MovementDirection.None;
-                } else {
-                    window.direction = contentY > oldContentY ? SlidingPanel.MovementDirection.Up : SlidingPanel.MovementDirection.Down;
-                }
-                window.offset = -contentY + contentArea.height
-                oldContentY = contentY;
-            }
-
-            onMovementStarted: window.userInteracting = true;
-            onFlickStarted: window.userInteracting = true;
-
-            onMovementEnded: {
-                window.userInteracting = false;
-                window.updateState();
-            }
+            interactive: false
 
             MouseArea {
                 id: dismissArea
+
                 z: 2
                 width: parent.width
                 height: mainFlickable.contentHeight
-                onClicked: window.close();
+
+                onClicked: {
+                    window.close();
+                }
+
                 PlasmaComponents.Control {
                     id: contentArea
                     z: 1

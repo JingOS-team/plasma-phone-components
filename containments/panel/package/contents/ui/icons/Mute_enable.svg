@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="44px" height="44px" viewBox="0 0 44 44" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <title>-mockplus-</title>
+    <defs>
+        <filter color-interpolation-filters="auto" id="filter-1">
+            <feColorMatrix in="SourceGraphic" type="matrix" values="0 0 0 0 0.235294 0 0 0 0 0.235294 0 0 0 0 0.262745 0 0 0 0.600000 0"></feColorMatrix>
+        </filter>
+    </defs>
+    <g id="页面-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="快捷方式切图" transform="translate(-1520.000000, -485.000000)">
+            <g id="Music,-Audio/Mute" transform="translate(1520.000000, 485.000000)" filter="url(#filter-1)">
+                <g transform="translate(-0.000000, -0.000000)" id="Path">
+                    <polygon points="0 0 44.0000002 0 44.0000002 44.0000002 0 44.0000002"></polygon>
+                    <path d="M10.7708334,15.8125001 L18.0656667,9.63233337 C19.2573334,8.6221667 21.0833334,9.46916671 21.0833334,11.0311667 L21.0833334,32.9670001 C21.0833334,34.5290001 19.2555001,35.3760001 18.0656667,34.3658335 L10.7708334,28.1856668" stroke="#323232" stroke-width="2.75" stroke-linecap="round" stroke-linejoin="round"></path>
+                    <path d="M10.7708334,28.1875001 L6.41666669,28.1875001 C5.40466669,28.1875001 4.58333335,27.3661668 4.58333335,26.3541668 L4.58333335,17.6458334 C4.58333335,16.6338334 5.40466669,15.8125001 6.41666669,15.8125001 L10.7708334,15.8125001" stroke="#323232" stroke-width="2.75" stroke-linecap="round" stroke-linejoin="round"></path>
+                    <line x1="37.7300002" y1="17.7650001" x2="29.4800001" y2="26.0150001" stroke="#323232" stroke-width="2.75" stroke-linecap="round" stroke-linejoin="round"></line>
+                    <line x1="37.7300002" y1="26.0150001" x2="29.4800001" y2="17.7650001" stroke="#323232" stroke-width="2.75" stroke-linecap="round" stroke-linejoin="round"></line>
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>

@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="44px" height="44px" viewBox="0 0 44 44" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <title>-mockplus-</title>
+    <defs>
+        <filter color-interpolation-filters="auto" id="filter-1">
+            <feColorMatrix in="SourceGraphic" type="matrix" values="0 0 0 0 0.235294 0 0 0 0 0.235294 0 0 0 0 0.262745 0 0 0 0.600000 0"></feColorMatrix>
+        </filter>
+    </defs>
+    <g id="页面-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="快捷方式切图" transform="translate(-1627.000000, -485.000000)">
+            <g id="Photo,-Edit/Camera,Photo" transform="translate(1627.000000, 485.000000)" filter="url(#filter-1)">
+                <g transform="translate(-0.000000, -0.000000)" id="Group">
+                    <g stroke-linecap="round" stroke-linejoin="round" transform="translate(5.500000, 7.333333)" id="Path" stroke="#323232" stroke-width="2.75">
+                        <path d="M21.7785334,11.3076334 C24.6330701,14.1621701 24.6330701,18.7902917 21.7785334,21.6448284 C18.9239967,24.4993651 14.2958751,24.4993651 11.4413384,21.6448284 C8.5868017,18.7902917 8.5868017,14.1621701 11.4413384,11.3076334 C14.2958751,8.4530967 18.9239967,8.4530967 21.7785334,11.3076334"></path>
+                        <path d="M33,9.1666667 L33,25.6666668 C33,27.6925001 31.3591668,29.3333335 29.3333335,29.3333335 L3.66666668,29.3333335 C1.64083334,29.3333335 0,27.6925001 0,25.6666668 L0,9.1666667 C0,7.14083336 1.64083334,5.5 3.66666668,5.5 L7.33333336,5.5 L10.0136667,0.909333337 C10.3418334,0.346500001 10.945,0 11.5976667,0 L21.3216668,0 C21.9651668,0 22.5610001,0.337333335 22.8928334,0.887333337 L25.6666668,5.5 L29.3333335,5.5 C31.3591668,5.5 33,7.14083336 33,9.1666667 Z"></path>
+                    </g>
+                    <polygon id="Path" points="0 0 44.0000002 0 44.0000002 44.0000002 0 44.0000002"></polygon>
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>

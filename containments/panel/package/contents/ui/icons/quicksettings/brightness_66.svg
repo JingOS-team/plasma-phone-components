@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="44px" height="44px" viewBox="0 0 44 44" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <title>Music, Audio/Volume Half 2</title>
+    <defs>
+        <filter color-interpolation-filters="auto" id="filter-1">
+            <feColorMatrix in="SourceGraphic" type="matrix" values="0 0 0 0 0.235294 0 0 0 0 0.235294 0 0 0 0 0.262745 0 0 0 0.600000 0"></feColorMatrix>
+        </filter>
+    </defs>
+    <g id="页面-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="Music,-Audio/Volume-Half-2" transform="translate(-333.000000, -164.000000)" filter="url(#filter-1)">
+            <g transform="translate(333.000000, 164.000000)">
+                <g id="Group" transform="translate(-0.000000, -0.000000)">
+                    <polygon id="Path" points="-1.13686838e-13 0 44.0000002 0 44.0000002 44.0000002 -1.13686838e-13 44.0000002"></polygon>
+                    <g stroke-linecap="round" stroke-linejoin="round" transform="translate(3.666667, 5.666667)" id="Path" stroke="#323232" stroke-width="2.98913043">
+                        <path d="M23.8150834,9.85152838 C27.3948868,13.4313317 27.3948868,19.2353534 23.8150834,22.8151568 C20.2352801,26.3949601 14.4312584,26.3949601 10.851455,22.8151568 C7.2716517,19.2353534 7.2716517,13.4313317 10.851455,9.85152838 C14.4312584,6.27172503 20.2352801,6.27172503 23.8150834,9.85152838"></path>
+                    </g>
+                </g>
+                <rect id="矩形" fill="#D8D8D8" x="20" y="4" width="3" height="4" rx="1.5"></rect>
+                <rect id="矩形" fill="#D8D8D8" x="20" y="36" width="3" height="4" rx="1.5"></rect>
+                <rect id="矩形" fill="#D8D8D8" transform="translate(37.000000, 22.500000) rotate(-270.000000) translate(-37.000000, -22.500000) " x="35.5" y="20.5" width="3" height="4" rx="1.5"></rect>
+                <rect id="矩形" fill="#D8D8D8" transform="translate(5.000000, 22.500000) rotate(-270.000000) translate(-5.000000, -22.500000) " x="3.5" y="20.5" width="3" height="4" rx="1.5"></rect>
+                <rect id="矩形" fill="#D8D8D8" transform="translate(33.313708, 10.893398) rotate(-315.000000) translate(-33.313708, -10.893398) " x="31.8137085" y="8.89339828" width="3" height="4" rx="1.5"></rect>
+                <rect id="矩形" fill="#D8D8D8" transform="translate(9.393398, 33.813708) rotate(-315.000000) translate(-9.393398, -33.813708) " x="7.89339828" y="31.8137085" width="3" height="4" rx="1.5"></rect>
+                <rect id="矩形" fill="#D8D8D8" transform="translate(33.313708, 33.813708) rotate(-225.000000) translate(-33.313708, -33.813708) " x="31.8137085" y="31.8137085" width="3" height="4" rx="1.5"></rect>
+                <rect id="矩形" fill="#D8D8D8" transform="translate(8.686292, 10.186292) rotate(-225.000000) translate(-8.686292, -10.186292) " x="7.1862915" y="8.1862915" width="3" height="4" rx="1.5"></rect>
+            </g>
+        </g>
+    </g>
+</svg>

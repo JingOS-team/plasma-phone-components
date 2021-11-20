@@ -57,6 +57,51 @@ msgstr "减少音量"
 msgid "Mute"
 msgstr "静音"
 
+#: containments/panel/package/contents/ui/indicators/SignalStrength.qml:126
+#, kde-format
+msgid "China Unicom"
+msgstr "中国联通"
+
+#: containments/panel/package/contents/ui/indicators/SignalStrength.qml:126
+#, kde-format
+msgid "CHN-UNICOM"
+msgstr "中国联通"
+
+#: containments/panel/package/contents/ui/indicators/SignalStrength.qml:126
+#, kde-format
+msgid "China Mobile"
+msgstr "中国移动"
+
+#: containments/panel/package/contents/ui/indicators/SignalStrength.qml:126
+#, kde-format
+msgid "CMCC"
+msgstr "中国移动"
+
+#: containments/panel/package/contents/ui/indicators/SignalStrength.qml:126
+#, kde-format
+msgid "China Telecom"
+msgstr "中国电信"
+
+#: containments/panel/package/contents/ui/indicators/SignalStrength.qml:145
+#, kde-format
+msgid "gsm"
+msgstr "2G"
+
+#: containments/panel/package/contents/ui/indicators/SignalStrength.qml:145
+#, kde-format
+msgid "umts"
+msgstr "3G"
+
+#: containments/panel/package/contents/ui/indicators/SignalStrength.qml:145
+#, kde-format
+msgid "lte"
+msgstr "4G"
+
+#: containments/panel/package/contents/ui/indicators/SignalStrength.qml:145
+#, kde-format
+msgid "nr"
+msgstr "5G"
+
 #: containments/panel/package/contents/ui/quicksettings/QuickSettings.qml:179
 #, kde-format
 msgid "Wifi"
@@ -223,8 +268,8 @@ msgstr "无媒体播放"
 
 #: look-and-feel/contents/lockscreen/MediaControls.qml:120
 #, kde-format
-msgid "No audio playback"
-msgstr "无音频播放"
+msgid "No audio"
+msgstr "无音频"
 
 #: look-and-feel/contents/lockscreen/MediaControls.qml:120
 #, kde-format
@@ -245,6 +290,11 @@ msgstr "播放或暂停播放"
 #, kde-format
 msgid "Next track"
 msgstr "下一曲"
+
+#: look-and-feel/contents/lockscreen/Clock.qml:78
+#, kde-format
+msgid "day"
+msgstr "日"
 
 #: look-and-feel/contents/logout/Logout.qml:159
 #, kde-format
@@ -322,3 +372,40 @@ msgstr "通知中心"
 #, kde-format
 msgid "Delete"
 msgstr "删除"
+
+#: Messagebox.qml:52
+#, kde-format
+msgid "Low Battery Warning"
+msgstr "低电警告"
+
+
+#: Messagebox.qml:56
+#, kde-format
+msgid "Battery power is less than 20%"
+msgstr "电量低于20%"
+
+#: Messagebox.qml:56
+#, kde-format
+msgid "Battery power is less than 10%"
+msgstr "电量低于10%"
+
+#: Messagebox.qml:56
+#, kde-format
+msgid "Battery power is less than 5%"
+msgstr "电量低于5%"
+
+#, kde-format
+msgid "Clear"
+msgstr "清除"
+
+msgid "New Notes"
+msgstr "新建笔记"
+
+msgid "Jing Notes"
+msgstr "鲸鲮手写"
+
+msgid "There are no photos at present"
+msgstr "目前无照片"
+
+msgid "There are no files at present"
+msgstr "目前无文档"

@@ -29,7 +29,7 @@ import QtGraphicalEffects 1.6
 Rectangle {
     id: delegateRoot
     anchors.fill: parent
-    color: "#f0f0f0"
+    color: delegateRoot.toggled ? "#3c4be8" : isDarkScheme ? Qt.rgba(142 / 255,142 / 255,147 / 255,0.2): Qt.rgba(248 / 255,248 / 255,248 / 255,0.7)
     radius: height / 4
     property bool toggled: model.enabled
     signal closeRequested
@@ -48,7 +48,7 @@ Rectangle {
     Behavior on opacity {
         NumberAnimation { duration: 100 }
     }
-    
+
     // DropShadow {
     //     anchors.fill: delegateRoot
     //     horizontalOffset: 0
@@ -111,12 +111,12 @@ Rectangle {
             }
         }
     }
-    
+
     Image {
         id: imgIcon
 
         anchors.centerIn: parent
-        sourceSize.width: parent.height / 2; 
+        sourceSize.width: parent.height / 2;
         sourceSize.height: parent.height / 2;
 
         visible: false
@@ -128,11 +128,10 @@ Rectangle {
     ColorOverlay {
         anchors.fill: imgIcon
         source: imgIcon
-        color: delegateRoot.toggled ? "#ffffff" : "#000000"
+        color: delegateRoot.toggled ? "#ffffff" : root.isDarkScheme? "white":"#000000"
         opacity: model.active ? 0.8 : 0.3
         antialiasing: true
     }
-
 
     Connections {
         target: root

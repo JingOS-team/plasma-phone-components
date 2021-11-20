@@ -1,8 +1,4 @@
 build
-*.config 
-*.creator 
-*.files 
-*.includes
-*.user
-
-*.kdev4
+.vscode/
+CMakeLists.txt.user
+plasma-phone.pro.user

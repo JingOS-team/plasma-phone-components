@@ -1,5 +1,6 @@
 /*
  *   Copyright 2011 Marco Martin <mart@kde.org>
+ *   Copyright 2021 Liu Bangguo <liubangguo@jingos.com>
  *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU Library General Public License as
@@ -21,6 +22,7 @@ import QtQuick 2.1
 import QtQuick.Layouts 1.1
 import org.kde.plasma.core 2.0 as PlasmaCore
 import org.kde.plasma.plasmoid 2.0
+import jingos.display 1.0
 
 
 PlasmaCore.ToolTipArea {
@@ -57,7 +59,7 @@ PlasmaCore.ToolTipArea {
         case PlasmaCore.Types.Horizontal:
             return height;
         default:
-            return units.gridUnit * 3;
+            return JDisplay.dp(units.gridUnit * 3);
         }
     }
 
@@ -68,7 +70,7 @@ PlasmaCore.ToolTipArea {
         case PlasmaCore.Types.Horizontal:
             return 0;
         default:
-            return units.gridUnit * 3;
+            return JDisplay.dp(units.gridUnit * 3);
         }
     }
 

@@ -27,12 +27,13 @@
 
 class QQuickItem;
 class ListModelManager;
+class NegativeModel;
 
 class HomeScreen : public Plasma::Containment
 {
     Q_OBJECT
     Q_PROPERTY(ListModelManager *listModelManager READ listModelManager CONSTANT)
-
+    Q_PROPERTY(NegativeModel *negativeModel READ negativeModel CONSTANT)
 public:
     HomeScreen( QObject *parent, const QVariantList &args );
     ~HomeScreen() override;
@@ -40,6 +41,7 @@ public:
     void configChanged() override;
 
     ListModelManager *listModelManager();
+    NegativeModel *negativeModel();
 
     Q_INVOKABLE void stackBefore(QQuickItem *item1, QQuickItem *item2);
     Q_INVOKABLE void stackAfter(QQuickItem *item1, QQuickItem *item2);
@@ -49,7 +51,7 @@ protected:
 
 private:
     ListModelManager *m_listModelManager = nullptr;
-
+    NegativeModel *m_negativeModel = nullptr;
 };
 
 #endif

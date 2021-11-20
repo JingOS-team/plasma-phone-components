@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="44px" height="44px" viewBox="0 0 44 44" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <title>-mockplus-</title>
+    <defs>
+        <filter color-interpolation-filters="auto" id="filter-1">
+            <feColorMatrix in="SourceGraphic" type="matrix" values="0 0 0 0 0.235294 0 0 0 0 0.235294 0 0 0 0 0.262745 0 0 0 0.600000 0"></feColorMatrix>
+        </filter>
+    </defs>
+    <g id="页面-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="快捷方式切图" transform="translate(-1413.000000, -485.000000)">
+            <g id="Interface,-Essential/clock-watch" transform="translate(1413.000000, 485.000000)" filter="url(#filter-1)">
+                <g transform="translate(-0.009167, -0.009167)" id="Group">
+                    <circle id="Oval" stroke="#323232" stroke-width="2.75" stroke-linecap="round" stroke-linejoin="round" cx="22.0091667" cy="22.0091667" r="16.506875"></circle>
+                    <polyline id="Path" stroke="#323232" stroke-width="2.75" stroke-linecap="round" stroke-linejoin="round" points="28.3441385 24.1202126 22.0091667 22.0091667 22.0091667 11.0045833"></polyline>
+                    <polygon id="Path" points="0 0 44.0183333 0 44.0183333 44.0183333 0 44.0183333"></polygon>
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>

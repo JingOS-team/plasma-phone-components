@@ -24,10 +24,12 @@ import QtGraphicalEffects 1.12
 
 import org.kde.plasma.core 2.0 as PlasmaCore
 import org.kde.plasma.components 3.0 as PlasmaComponents
+import org.kde.plasma.networkmanagement 0.2 as PlasmaNM
 import org.kde.plasma.workspace.components 2.0 as PW
 import org.kde.plasma.private.digitalclock 1.0 as DC
 import org.kde.plasma.private.mobileshell 1.0 as MobileShell
 import "indicators" as Indicators
+import jingos.display 1.0
 
 // a simple version of the task panel
 // in the future, it should share components with the existing task panel
@@ -47,45 +49,42 @@ PlasmaCore.ColorScope {
         color: Qt.rgba(0,0,0,0.8)
         source: icons
     }
+
+    function getLocalTimeString() {
+        var timeStr = timeSource.data["Local"]["DateTime"].toLocaleTimeString(Qt.locale(),timezoneProxy.isSystem24HourFormat ?
+                                 "hh:mm" : (timezoneProxy.getRegionTimeFormat() === "zh_"? "AP hh:mm" : "hh:mm AP"));
+        if(timezoneProxy.getRegionTimeFormat() === "zh_"){
+            if(timeStr.search("AM") !== -1)
+                timeStr = timeStr.replace("AM","上午");
+            if(timeStr.search("PM") !== -1)
+                timeStr = timeStr.replace("PM","下午");
+
+        }else{
+            if(timeStr.search("上午") !== -1)
+                timeStr = timeStr.replace("上午","AM");
+            if(timeStr.search("下午") !== -1)
+                timeStr = timeStr.replace("下午","PM");
+        }
+        return timeStr;
+    }
     
     PlasmaCore.DataSource {
         id: timeSource
         engine: "time"
         connectedSources: ["Local"]
-        interval: 60 * 1000
+        interval: 1000
     }
-    
-    Rectangle {
-        anchors.fill: parent
-        gradient: Gradient {
-            GradientStop {
-                position: 1.0
-                color: "transparent"
-            }
-            GradientStop {
-                position: 0.0
-                color: Qt.rgba(0, 0, 0, 0.1)
-            }
-        }
-    }
-    
-    // Loader {
-    //     id: strengthLoader
-    //     height: parent.height
-    //     width: item ? item.width : 0
-    //     source: Qt.resolvedUrl("indicators/SignalStrength.qml")
-    // }
 
     PlasmaComponents.Label {
         id: clock
         anchors.left: parent.left
         anchors.leftMargin: height / 2
         height: parent.height
-        text: getLocalTimeString()//Qt.formatTime(timeSource.data.Local.DateTime, is24HourTime ? "hh:mm" : "hh:mm AP")
+        text: getLocalTimeString()
         color: PlasmaCore.ColorScope.textColor
         horizontalAlignment: Qt.AlignHCenter
         verticalAlignment: Qt.AlignVCenter
-        font.pointSize: 9// height - height / 3
+        font.pixelSize: JDisplay.sp(12)// height - height / 3
     }
 
     RowLayout {
@@ -99,15 +98,27 @@ PlasmaCore.ColorScope {
 
     RowLayout {
         id: simpleIndicatorsLayout
+        spacing: JDisplay.dp(5)
         anchors {
             top: parent.top
             bottom: parent.bottom
             right: parent.right
-            rightMargin: units.smallSpacing
+            rightMargin: JDisplay.dp(11)
         }
-//        Indicators.Bluetooth {}
-//        Indicators.Wifi {}
-//        Indicators.Volume {}
+
+        Indicators.Headset{
+            visible:stSource.data["StatusPanel"]["sound insert"]
+        }
+
+        Indicators.Udisk {
+            visible:stSource.data["StatusPanel"]["udisk insert"]
+        }
+        Indicators.VPN {}
+        Indicators.Volume {}
+        Indicators.AlarmClock{
+            visible: stSource.data["StatusPanel"]["alarm active"]
+        }
+
         Indicators.Battery {}
     }
 
@@ -116,12 +127,16 @@ PlasmaCore.ColorScope {
 
         anchors.bottom: parent.bottom
         anchors.left: clock.right
-        anchors.leftMargin: 5//units.smallSpacing
+        anchors.leftMargin: JDisplay.dp(5)//units.smallSpacing
 
         height: parent.height
 
+        Indicators.SignalStrength{}
         Indicators.Wifi {}
         Indicators.Bluetooth {}
+        Indicators.FlightMode {
+            visible:stSource.data["StatusPanel"]["flight mode"]
+        }
 
     }
 
@@ -129,23 +144,9 @@ PlasmaCore.ColorScope {
         id:timezoneProxy
     }
 
-
-    function getLocalTimeString(){
-        var timeStr = String(timeSource.data["Local"]["DateTime"]);
-        var isChinaLocal = (timeStr.indexOf("GMT+0800") != -1)
-        timeStr = Qt.formatTime(timeSource.data["Local"]["DateTime"], timezoneProxy.isSystem24HourFormat ? "h:mm" : "h:mm AP");
-        if(isChinaLocal){
-            if(timeStr.search("AM") != -1)
-                timeStr = timeStr.replace("AM","上午");
-            if(timeStr.search("PM") != -1)
-                timeStr = timeStr.replace("PM","下午");
-        }
-        else{
-            if(timeStr.search("上午") != -1)
-                timeStr = timeStr.replace("上午","AM");
-            if(timeStr.search("下午") != -1)
-                timeStr = timeStr.replace("下午","PM");
-        }
-        return timeStr;
+    PlasmaCore.DataSource {
+        id: stSource
+        engine: "statuspanel"
+        connectedSources: ["StatusPanel"]
     }
 }

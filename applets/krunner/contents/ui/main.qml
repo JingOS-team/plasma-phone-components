@@ -1,6 +1,7 @@
 /*
  *   Copyright 2014 Aaron Seigo <aseigo@kde.org>
  *   Copyright 2015 Marco Martin <notmart@gmail.com>
+ *   Copyright 2021 Liu Bangguo <liubangguo@jingos.com>
  *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU Library General Public License as
@@ -28,6 +29,7 @@ import org.kde.plasma.components 3.0 as PlasmaComponents
 import org.kde.plasma.extras 2.0 as PlasmaExtras
 import org.kde.milou 0.1 as Milou
 import org.kde.kirigami 2.14 as Kirigami
+import jingos.display 1.0
 
 Item {
     PlasmaCore.ColorScope.colorGroup: PlasmaCore.Theme.NormalColorGroup
@@ -41,10 +43,10 @@ Item {
             left: parent.left
             right: parent.right
             verticalCenter: parent.verticalCenter
-            margins: units.gridUnit
+            margins:  units.gridUnit
         }
         radius: height/2
-        height: layout.implicitHeight + units.gridUnit
+        height:  layout.implicitHeight + units.gridUnit
         color: Qt.rgba(1,1,1, 0.3)
 
         RowLayout {
@@ -78,7 +80,7 @@ Item {
                 }
             }
             header: Controls.ToolBar {
-                height: Kirigami.Units.gridUnit * 2
+                height:  Kirigami.Units.gridUnit * 2
                 contentItem: Kirigami.SearchField {
                     id: queryField
                     focus: true
@@ -94,7 +96,7 @@ Item {
                         bottom: parent.bottom
                         right: parent.right
                     }
-                    width: Math.min(parent.width, parent.height) * 0.8
+                    width:  Math.min(parent.width, parent.height) * 0.8
                     height: width
                     opacity: 0.2
                     source: "search"
@@ -106,7 +108,7 @@ Item {
                         queryString: queryField.text
                         highlight: null
                         PlasmaCore.ColorScope.colorGroup: PlasmaCore.Theme.NormalColorGroup
-                        anchors.rightMargin: 10
+                        anchors.rightMargin: JDisplay.dp(10)
 
                         onActivated: {
                             window.visible = false;
@@ -147,8 +149,8 @@ Item {
 
                                         Kirigami.Icon{
                                             anchors.centerIn: parent
-                                            width: units.iconSizes.small
-                                            height: units.iconSizes.small
+                                            width:  JDisplay.dp(units.iconSizes.small)
+                                            height:  JDisplay.dp(units.iconSizes.small)
                                             // ToolButton cannot cope with QIcon
                                             source: modelData.icon || ""
                                             active: parent.hovered || parent.checked

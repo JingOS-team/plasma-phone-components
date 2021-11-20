@@ -24,63 +24,63 @@ import org.kde.plasma.core 2.0 as PlasmaCore
 import org.kde.plasma.components 3.0 as PlasmaComponents
 import org.kde.plasma.workspace.components 2.0 as PW
 import org.kde.plasma.private.mobileshell 1.0 as MobileShell
-
+import jingos.display 1.0
 
 RowLayout {
-    property bool showingApp: !MobileShell.HomeScreenControls.homeScreenVisible
-    Layout.alignment: Qt.AlignVCenter
+    property bool isShowWhite: root.showColorWhite //!MobileShell.HomeScreenControls.isSystemApp//
+    property bool isQuickCharging: pmSource.data["AC Adapter"] ? pmSource.data["AC Adapter"]["Quick charging"] : false;
+    property bool isCharging: pmSource.data["AC Adapter"] ? pmSource.data["AC Adapter"]["Plugged in"] : false;
+    height: JDisplay.dp(11)
     visible: pmSource.data["Battery"]["Has Cumulative"]
-    spacing: 1
+    anchors.verticalCenter: parent.verticalCenter
+    spacing: JDisplay.dp(3)
 
     PlasmaComponents.Label {
         id: batteryLabel
-        text: i18nd("plasma-phone-components", "%1%", pmSource.data["Battery"]["Percent"])
-        Layout.alignment: Qt.AlignVCenter
 
-        color: PlasmaCore.ColorScope.textColor
-        // font.pixelSize: parent.height / 2
-        font.pixelSize: root.height - root.height / 3
+        height:parent.height
+
+        text: i18nd("plasma-phone-components", "%1%", pmSource.data["Battery"]["Percent"])
+
+        color: !isShowWhite? "black" :"white"//PlasmaCore.ColorScope.textColor
+        font.pixelSize: JDisplay.sp(13)
     }
 
-    Item{
+    Item {
         id: battery
-        width: 14
-        height: 8
 
-        Image{
+        width: JDisplay.dp(21)
+        height: parent.height - JDisplay.dp(1)
+
+        Image {
             id: batteryImg
-            width: 14
-            height: 8
-            source: showingApp ? "file:///usr/share/icons/jing/jing/settings/Battery_rect.svg" : "file:///usr/share/icons/jing/jing/settings/Battery_rect_white.svg"
+            sourceSize.width: parent.width
+            sourceSize.height: parent.height
+
+            source: !isShowWhite ? "file:///usr/share/icons/jing/jing/settings/Battery_rect.svg" : "file:///usr/share/icons/jing/jing/settings/Battery_rect_white.svg"
         }
 
-
-
-        Rectangle{
+        Rectangle {
             id: batteryVolumeRect
-            property int maxWidth: 11
+            property int maxWidth: JDisplay.dp(16)
             anchors.verticalCenter: parent.verticalCenter
             anchors.left: parent.left
-            anchors.leftMargin: 1
+            anchors.leftMargin:JDisplay.dp(2)
 
             width:maxWidth * pmSource.data["Battery"]["Percent"]/100
-            height:6
-            color: isPlugInsert() ? "#6DD400" : showingApp? "black" :"white"
+            height: parent.height - JDisplay.dp(4)
+            color: isCharging ? "#6DD400" : (pmSource.data["Battery"]["Percent"]<=20) ? "red": !isShowWhite? "black" :"white"
         }
 
-
-
-        Image{
+        Image {
             id:batteryCharging
             anchors.centerIn: parent
-            width:3
-            height:6
+            width:JDisplay.dp(5)
+            height:JDisplay.dp(8)
 
-            source:showingApp?"file:///usr/share/icons/jing/jing/settings/Battery_charge.svg":"file:///usr/share/icons/jing/jing/settings/Battery_charge_white.svg"
-            visible: isPlugInsert()
+            source:chargingIcon()//!isShowWhite?"file:///usr/share/icons/jing/jing/settings/Battery_charge.svg":"file:///usr/share/icons/jing/jing/settings/Battery_charge_white.svg"
+            visible: isCharging
         }
-
-
     }
 
     PlasmaCore.DataSource {
@@ -90,11 +90,12 @@ RowLayout {
     }
 
 
-    function isPlugInsert()
-    {
-        if(!pmSource.data["AC Adapter"])
-            return fase;
-        return pmSource.data["AC Adapter"]["Plugged in"];
-    }
+    function chargingIcon(){
+        if(pmSource.data["AC Adapter"]["Quick charging"] == true)
+        {
+            return !isShowWhite?"file:///usr/share/icons/jing/jing/settings/quick_charging.svg":"file:///usr/share/icons/jing/jing/settings/quick_charging_white.svg";
+        }
 
+        return !isShowWhite?"file:///usr/share/icons/jing/jing/settings/Battery_charge.svg":"file:///usr/share/icons/jing/jing/settings/Battery_charge_white.svg";
+    }
 }

@@ -1,0 +1,63 @@
+# Translation for plasma_shell_org.kde.plasma.phone.po to Euskara/Basque (eu).
+# Copyright (C) 2019-2020 This file is copyright:
+# This file is distributed under the same license as the plasma-phone-components package.
+# KDE euskaratzeko proiektuko arduraduna <xalba@euskalnet.net>.
+#
+# Translators:
+# Iñigo Salvador Azurmendi <xalba@euskalnet.net>, 2019, 2020.
+msgid ""
+msgstr ""
+"Project-Id-Version: plasma-phone-components\n"
+"Report-Msgid-Bugs-To: https://bugs.kde.org\n"
+"POT-Creation-Date: 2020-10-30 02:41+0100\n"
+"PO-Revision-Date: 2020-12-21 21:07+0100\n"
+"Last-Translator: Iñigo Salvador Azurmendi <xalba@ni.eus>\n"
+"Language-Team: Basque <kde-i18n-eu@kde.org>\n"
+"Language: eu\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Generator: Lokalize 20.12.0\n"
+
+#: contents/views/Pin.qml:162
+msgid "No pin (error)"
+msgstr "PIN gabe (errorea)"
+
+#: contents/views/Pin.qml:163
+msgid "Enter Sim PIN"
+msgstr "Sartu SIMaren PIN"
+
+#: contents/views/Pin.qml:164
+msgid "Enter Sim PIN 2"
+msgstr "Sartu SIMaren 2. PIN"
+
+#: contents/views/Pin.qml:166
+msgid "Enter Sim PUK"
+msgstr "Sartu SIMaren PUK"
+
+#: contents/views/Pin.qml:167
+msgid "Pins don't match. Try again"
+msgstr "PINak ez datoz bat. Berriz saiatu"
+
+#: contents/views/Pin.qml:168
+msgid "Choose new Pin"
+msgstr "Aukeratu PIN berria"
+
+#: contents/views/Pin.qml:169
+msgid "Confirm new Pin"
+msgstr "Berretsi PIN berria"
+
+#: contents/views/Pin.qml:171
+msgid "Enter Sim PUK 2"
+msgstr "Sartu SIMaren 2. PUK"
+
+#: contents/views/Pin.qml:172
+msgid "Unknown PIN type: %1"
+msgstr "PIN mota ezezaguna: %1"
+
+#: contents/views/Pin.qml:186
+msgid "%1 attempt left"
+msgid_plural "%1 attempts left"
+msgstr[0] "Saiakera %1 gelditzen da"
+msgstr[1] "%1 saiakera gelditzen dira"

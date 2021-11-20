@@ -1,0 +1,118 @@
+# Copyright (C) YEAR This file is copyright:
+# This file is distributed under the same license as the plasma-phone-components package.
+# Tommi Nieminen <translator@legisign.org>, 2019, 2020.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: plasma-phone-components\n"
+"Report-Msgid-Bugs-To: https://bugs.kde.org\n"
+"POT-Creation-Date: 2021-02-02 02:55+0100\n"
+"PO-Revision-Date: 2020-12-16 13:17+0200\n"
+"Last-Translator: Tommi Nieminen <translator@legisign.org>\n"
+"Language-Team: Finnish <kde-i18n-doc@kde.org>\n"
+"Language: fi\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Generator: Lokalize 20.08.3\n"
+
+#: package/contents/ui/indicators/Battery.qml:50
+#, kde-format
+msgid "%1%"
+msgstr "%1 %"
+
+#: package/contents/ui/indicators/SignalStrength.qml:71
+#, kde-format
+msgid "Sim locked"
+msgstr "SIM on lukittu"
+
+#: package/contents/ui/indicators/Volume.qml:153
+#, kde-format
+msgid "Audio"
+msgstr "Ääni"
+
+#: package/contents/ui/indicators/Volume.qml:157
+#, kde-format
+msgid "Increase Volume"
+msgstr "Lisää äänenvoimakkuutta"
+
+#: package/contents/ui/indicators/Volume.qml:164
+#, kde-format
+msgid "Decrease Volume"
+msgstr "Vähennä äänenvoimakkuutta"
+
+#: package/contents/ui/indicators/Volume.qml:171
+#, kde-format
+msgid "Mute"
+msgstr "Vaimenna"
+
+#: package/contents/ui/quicksettings/QuickSettings.qml:167
+#, kde-format
+msgid "Settings"
+msgstr "Asetukset"
+
+#: package/contents/ui/quicksettings/QuickSettings.qml:175
+#, kde-format
+msgid "Wifi"
+msgstr "Langaton verkko"
+
+#: package/contents/ui/quicksettings/QuickSettings.qml:183
+#, kde-format
+msgid "Bluetooth"
+msgstr "Bluetooth"
+
+#: package/contents/ui/quicksettings/QuickSettings.qml:192
+#, kde-format
+msgid "Mobile Data"
+msgstr "Mobiilidata"
+
+#: package/contents/ui/quicksettings/QuickSettings.qml:200
+#, kde-format
+msgid "Battery"
+msgstr "Akku"
+
+#: package/contents/ui/quicksettings/QuickSettings.qml:208
+#, kde-format
+msgid "Sound"
+msgstr "Ääni"
+
+#: package/contents/ui/quicksettings/QuickSettings.qml:216
+#, kde-format
+msgid "Flashlight"
+msgstr "Taskulamppu"
+
+#: package/contents/ui/quicksettings/QuickSettings.qml:224
+#, kde-format
+msgid "Location"
+msgstr "Sijainti"
+
+#: package/contents/ui/quicksettings/QuickSettings.qml:231
+#, kde-format
+msgid "Screenshot"
+msgstr "Ruutukaappaus"
+
+#: package/contents/ui/quicksettings/QuickSettings.qml:239
+#, kde-format
+msgid "Auto-rotate"
+msgstr "Käännä automaattisesti"
+
+#: package/contents/ui/quicksettings/QuickSettings.qml:247
+#, kde-format
+msgid "Night Color"
+msgstr "Yöväri"
+
+#: package/contents/ui/quicksettings/QuickSettings.qml:298
+#, kde-format
+msgid "Display Brightness"
+msgstr "Näytön kirkkaus"
+
+#: phonepanel.cpp:187
+#, kde-format
+msgid "New Screenshot"
+msgstr "Uusi ruutukaappaus"
+
+#: phonepanel.cpp:189
+#, kde-format
+msgid "New screenshot saved to %1"
+msgstr "Ruutukaappaus tallennettu: %1"

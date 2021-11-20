@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="62px" height="62px" viewBox="0 0 62 62" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <title>Interface, Essential/lock-protection-checkmark</title>
+    <defs>
+        <filter id="filter-1">
+            <feColorMatrix in="SourceGraphic" type="matrix" values="0 0 0 0 1.000000 0 0 0 0 1.000000 0 0 0 0 1.000000 0 0 0 1.000000 0"></feColorMatrix>
+        </filter>
+        <filter x="-100.0%" y="-100.0%" width="300.0%" height="300.0%" filterUnits="objectBoundingBox" id="filter-2">
+            <feOffset dx="0" dy="2" in="SourceAlpha" result="shadowOffsetOuter1"></feOffset>
+            <feGaussianBlur stdDeviation="15" in="shadowOffsetOuter1" result="shadowBlurOuter1"></feGaussianBlur>
+            <feColorMatrix values="0 0 0 0 0   0 0 0 0 0   0 0 0 0 0  0 0 0 0.2 0" type="matrix" in="shadowBlurOuter1" result="shadowMatrixOuter1"></feColorMatrix>
+            <feMerge>
+                <feMergeNode in="shadowMatrixOuter1"></feMergeNode>
+                <feMergeNode in="SourceGraphic"></feMergeNode>
+            </feMerge>
+        </filter>
+    </defs>
+    <g id="页面-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="锁屏" transform="translate(-857.000000, -1199.000000)">
+            <g id="Interface,-Essential/lock-protection-checkmark" transform="translate(857.000000, 1199.000000)" filter="url(#filter-1)">
+                <g filter="url(#filter-2)">
+                    <g id="Group" transform="translate(0.987500, 0.987500)">
+                        <path d="M42.1553571,52.7661458 L17.8696429,52.7661458 C15.1871169,52.7661458 13.0125,50.568271 13.0125,47.8570549 L13.0125,33.6752367 C13.0125,30.9640207 15.1871169,28.7661458 17.8696429,28.7661458 L42.1553571,28.7661458 C44.8378831,28.7661458 47.0125,30.9640207 47.0125,33.6752367 L47.0125,47.8570549 C47.0125,50.568271 44.8378831,52.7661458 42.1553571,52.7661458 Z" id="Path" stroke="#323232" stroke-width="3.75" fill="#323232" stroke-linecap="round" stroke-linejoin="round"></path>
+                        <path d="M20.0083333,27.0104167 L20.0083333,17.5072917 C20.0083333,11.982143 24.4873513,7.503125 30.0125,7.503125 C35.5376487,7.503125 40.0166667,11.982143 40.0166667,17.5072917 L40.0166667,27.0104167" id="Path" stroke="#323232" stroke-width="3.75" stroke-linecap="round" stroke-linejoin="round"></path>
+                        <polygon id="Path" points="0 0 60.025 0 60.025 60.025 0 60.025"></polygon>
+                    </g>
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>

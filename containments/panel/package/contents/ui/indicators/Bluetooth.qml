@@ -26,16 +26,19 @@ import QtQuick.Layouts 1.4
 import org.kde.plasma.core 2.0 as PlasmaCore
 import org.kde.plasma.components 2.0 as PlasmaComponents
 import org.kde.bluezqt 1.0 as BluezQt
+import org.kde.plasma.private.bluetooth 1.0
 import org.kde.plasma.private.mobileshell 1.0 as MobileShell
+import jingos.display 1.0
 
 
 Item{
     Layout.alignment: Qt.AlignVCenter
-    width:6
-    height:10
+    width:JDisplay.dp(8)
+    height:JDisplay.dp(11)
+    property bool isShowWhite: root.showColorWhite //!MobileShell.HomeScreenControls.isSystemApp
+    visible:devicesProxyModel.connectedName!=""
 
-    Image{
-        property bool showingApp: !MobileShell.HomeScreenControls.homeScreenVisible
+    Image {
         id:imgIcon
 
         source: "file:///usr/share/icons/jing/jing/settings/Bluetooth.svg"
@@ -43,40 +46,28 @@ Item{
         sourceSize.height: parent.height
         antialiasing: true
 
-        visible:BluezQt.Manager.bluetoothOperational && showingApp
+        visible:BluezQt.Manager.bluetoothOperational && !isShowWhite
     }
 
     ColorOverlay {
-                anchors.fill: imgIcon
-                source: imgIcon
-                color: showingApp ?  "#000000" : "#ffffff"
-                antialiasing: true
-                visible: BluezQt.Manager.bluetoothOperational
-                opacity:1.0
+        anchors.fill: imgIcon
+        source: imgIcon
+        color: !isShowWhite ?  "#000000" : "#ffffff"
+        antialiasing: true
+        visible: BluezQt.Manager.bluetoothOperational
+        opacity:1.0
     }
 
-    function updateStatus()
-    {
-        var connectedDevices = [];
+    DevicesProxyModel {
+        id: devicesProxyModel
+        sourceModel: devicesModel
 
-        for (var i = 0; i < BluezQt.Manager.devices.length; ++i) {
-            var device = BluezQt.Manager.devices[i];
-            if (device.connected) {
-                connectedDevices.push(device);
-            }
-        }
-  //      deviceConnected = connectedDevices.length > 0;
+        // onConnectedNameChanged: {
+        // }
     }
 
-    Component.onCompleted: {
-        BluezQt.Manager.deviceAdded.connect(updateStatus);
-        BluezQt.Manager.deviceRemoved.connect(updateStatus);
-        BluezQt.Manager.deviceChanged.connect(updateStatus);
-        BluezQt.Manager.bluetoothBlockedChanged.connect(updateStatus);
-        BluezQt.Manager.bluetoothOperationalChanged.connect(updateStatus);
-
-        updateStatus();
+    BluezQt.DevicesModel {
+        id:devicesModel
     }
-
 }
 

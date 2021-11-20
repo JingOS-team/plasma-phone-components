@@ -26,38 +26,40 @@ import org.kde.plasma.core 2.0 as PlasmaCore
 import org.kde.plasma.components 2.0 as PlasmaComponents
 import org.kde.plasma.private.volume 0.1
 
-PlasmaCore.IconItem {
+import org.kde.plasma.private.mobileshell 1.0 as MobileShell
+import jingos.display 1.0
 
-    id: paIcon
-    Layout.fillHeight: true
-    Layout.preferredWidth: height
+
+Item{
     property bool volumeFeedback: true
     property int maxVolumeValue: Math.round(100 * PulseAudio.NormalVolume / 100.0)
     property int volumeStep: Math.round(5 * PulseAudio.NormalVolume / 100.0)
     readonly property string dummyOutputName: "auto_null"
-    source: paSinkModel.preferredSink && !isDummyOutput(paSinkModel.preferredSink)
-        ? iconName(paSinkModel.preferredSink.volume, paSinkModel.preferredSink.muted)
-        : iconName(0, true)
+    readonly property int currentVolume: paSinkModel.preferredSink? (!paSinkModel.preferredSink.muted ? paSinkModel.preferredSink.volume : 0) : 0
 
-    colorGroup: PlasmaCore.ColorScope.colorGroup
 
+    Layout.alignment: Qt.AlignVCenter
+    width:JDisplay.dp(11)
+    height:JDisplay.dp(11)
     visible: paSinkModel.preferredSink && paSinkModel.preferredSink.muted
 
+    Image {
+        id: paIcon
+
+        source: paSinkModel.preferredSink && !isDummyOutput(paSinkModel.preferredSink)
+            ? iconName(paSinkModel.preferredSink.volume, paSinkModel.preferredSink.muted)
+            : iconName(0, true)
+
+        sourceSize.width: parent.width
+        sourceSize.height: parent.height
+        antialiasing: true
+
+        visible: paSinkModel.preferredSink && paSinkModel.preferredSink.muted
+    }
+
     function iconName(volume, muted, prefix) {
-        if (!prefix) {
-            prefix = "audio-volume";
-        }
-        var icon = null;
-        var percent = volume / maxVolumeValue;
-        if (percent <= 0.0 || muted) {
-            icon = prefix + "-muted";
-        } else if (percent <= 0.25) {
-            icon = prefix + "-low";
-        } else if (percent <= 0.75) {
-            icon = prefix + "-medium";
-        } else {
-            icon = prefix + "-high";
-        }
+        var icon = "file:///usr/share/icons/jing/jing/settings/Mute_white.svg"
+
         return icon;
     }
 
@@ -112,8 +114,6 @@ PlasmaCore.IconItem {
         playFeedback();
     }
 
-
-
     function muteVolume() {
         if (!paSinkModel.preferredSink || isDummyOutput(paSinkModel.preferredSink)) {
             return;
@@ -127,6 +127,19 @@ PlasmaCore.IconItem {
         }
     }
 
+    function setVolume(num) {
+        if (!paSinkModel.preferredSink || isDummyOutput(paSinkModel.preferredSink)) {
+            return;
+        }
+
+        var volume = boundVolume(num);
+        var percent = volumePercent(volume, maxVolumeValue);
+        paSinkModel.preferredSink.muted = percent == 0;
+        paSinkModel.preferredSink.volume = volume;
+        playFeedback();
+    }
+
+
     SinkModel {
         id: paSinkModel
     }
@@ -139,38 +152,55 @@ PlasmaCore.IconItem {
         id: feedback
     }
 
-    GlobalActionCollection {
-        // KGlobalAccel cannot transition from kmix to something else, so if
-        // the user had a custom shortcut set for kmix those would get lost.
-        // To avoid this we hijack kmix name and actions. Entirely mental but
-        // best we can do to not cause annoyance for the user.
-        // The display name actually is updated to whatever registered last
-        // though, so as far as user visible strings go we should be fine.
-        // As of 2015-07-21:
-        //   componentName: kmix
-        //   actions: increase_volume, decrease_volume, mute
-        name: "kmix"
-        displayName: main.displayName
+    // GlobalActionCollection {
+    //     // KGlobalAccel cannot transition from kmix to something else, so if
+    //     // the user had a custom shortcut set for kmix those would get lost.
+    //     // To avoid this we hijack kmix name and actions. Entirely mental but
+    //     // best we can do to not cause annoyance for the user.
+    //     // The display name actually is updated to whatever registered last
+    //     // though, so as far as user visible strings go we should be fine.
+    //     // As of 2015-07-21:
+    //     //   componentName: kmix
+    //     //   actions: increase_volume, decrease_volume, mute
+    //     name: "kmix"
+    //     displayName: "kmix"//root.displayName
 
-        GlobalAction {
-            objectName: "increase_volume"
-            text: i18nd("plasma-phone-components", "Increase Volume")
-            shortcut: Qt.Key_VolumeUp
-            onTriggered: increaseVolume()
-        }
+    //     GlobalAction {
+    //         objectName: "increase_volume"
+    //         text: i18nd("plasma-phone-components", "Increase Volume")
+    //         shortcut: Qt.Key_VolumeUp
+    //         onTriggered: increaseVolume()
+    //     }
 
-        GlobalAction {
-            objectName: "decrease_volume"
-            text: i18nd("plasma-phone-components", "Decrease Volume")
-            shortcut: Qt.Key_VolumeDown
-            onTriggered: decreaseVolume()
-        }
+    //     GlobalAction {
+    //         objectName: "decrease_volume"
+    //         text: i18nd("plasma-phone-components", "Decrease Volume")
+    //         shortcut: Qt.Key_VolumeDown
+    //         onTriggered: decreaseVolume()
+    //     }
 
-        GlobalAction {
-            objectName: "mute"
-            text: i18nd("plasma-phone-components", "Mute")
-            shortcut: Qt.Key_VolumeMute
-            onTriggered: muteVolume()
-        }
-    }
+    //     GlobalAction {
+    //         objectName: "mute"
+    //         text: i18nd("plasma-phone-components", "Mute")
+    //         shortcut: Qt.Key_VolumeMute
+    //         onTriggered: muteVolume()
+    //     }
+
+    //     GlobalAction {
+    //         objectName: "meta_up_increase_volume"
+    //         text: i18nd("plasma-phone-components", "Meta Up Increase Volume")
+    //         shortcut: Qt.MetaModifier + Qt.Key_Up
+    //         onTriggered: increaseVolume()
+    //     }
+
+    //     GlobalAction {
+    //         objectName: "meta_down_decrease_volume"
+    //         text: i18nd("plasma-phone-components", "Meta Down Decrease Volume")
+    //         shortcut: Qt.MetaModifier + Qt.Key_Down
+    //         onTriggered: decreaseVolume()
+    //     }
+
+    // }
 }
+
+

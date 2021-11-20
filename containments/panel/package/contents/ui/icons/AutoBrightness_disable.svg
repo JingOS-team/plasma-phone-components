@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="44px" height="44px" viewBox="0 0 44 44" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <title>Music, Audio/Volume Half 2</title>
+    <defs>
+        <filter color-interpolation-filters="auto" id="filter-1">
+            <feColorMatrix in="SourceGraphic" type="matrix" values="0 0 0 0 0.235294 0 0 0 0 0.235294 0 0 0 0 0.262745 0 0 0 0.600000 0"></feColorMatrix>
+        </filter>
+    </defs>
+    <g id="页面-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="Music,-Audio/Volume-Half-2" transform="translate(-173.000000, -375.000000)" filter="url(#filter-1)">
+            <g transform="translate(173.000000, 375.000000)">
+                <g id="Group" transform="translate(-0.000000, -0.000000)">
+                    <g stroke-linecap="round" stroke-linejoin="round" transform="translate(3.666667, 3.666667)" id="Path" stroke="#323232" stroke-width="2.98913043">
+                        <path d="M24.8150834,11.8515284 C28.3948868,15.4313317 28.3948868,21.2353534 24.8150834,24.8151568 C21.2352801,28.3949601 15.4312584,28.3949601 11.851455,24.8151568 C8.2716517,21.2353534 8.2716517,15.4313317 11.851455,11.8515284 C15.4312584,8.27172503 21.2352801,8.27172503 24.8150834,11.8515284"></path>
+                        <line x1="18.3333334" y1="3.66666668" x2="18.3333334" y2="0"></line>
+                        <line x1="18.3333334" y1="36.6666668" x2="18.3333334" y2="33.0000001"></line>
+                        <line x1="29.9933335" y1="6.67333336" x2="31.2950001" y2="5.37166669"></line>
+                        <line x1="5.37166669" y1="31.2950001" x2="6.67333336" y2="29.9933335"></line>
+                        <line x1="33.0000001" y1="18.3333334" x2="36.6666668" y2="18.3333334"></line>
+                        <line x1="0" y1="18.3333334" x2="3.66666668" y2="18.3333334"></line>
+                        <line x1="29.9933335" y1="29.9933335" x2="31.2950001" y2="31.2950001"></line>
+                        <line x1="5.37166669" y1="5.37166669" x2="6.67333336" y2="6.67333336"></line>
+                    </g>
+                    <polygon id="Path" points="0 0 44.0000002 0 44.0000002 44.0000002 0 44.0000002"></polygon>
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>

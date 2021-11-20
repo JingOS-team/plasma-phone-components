@@ -42,16 +42,16 @@ Item {
     height: 400
 
     property Item toolBox
+    property bool componentComplete: false
+
+    onWidthChanged: recalculateMaxFavoriteCount()
+    onHeightChanged:recalculateMaxFavoriteCount()
 
     function recalculateMaxFavoriteCount() {
         if (!componentComplete) {
             return;
         }
     }
-
-    property bool componentComplete: false
-    onWidthChanged: recalculateMaxFavoriteCount()
-    onHeightChanged:recalculateMaxFavoriteCount()
 
     Component.onCompleted: {
         if (plasmoid.screen == 0) {
@@ -68,6 +68,7 @@ Item {
             MobileShell.HomeScreenControls.homeScreenWindow = root.Window.window
         }
     }
+    
     Window.onWindowChanged: {
         if (plasmoid.screen == 0) {
             MobileShell.HomeScreenControls.homeScreenWindow = root.Window.window
@@ -86,6 +87,3 @@ Item {
         anchors.fill: parent
     }
 }
-
-
-

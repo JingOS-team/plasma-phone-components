@@ -1,0 +1,60 @@
+# Copyright (C) YEAR This file is copyright:
+# This file is distributed under the same license as the plasma-phone-components package.
+#
+# Kristóf Kiszel <ulysses@kubuntu.org>, 2019, 2020.
+msgid ""
+msgstr ""
+"Project-Id-Version: plasma-phone-components\n"
+"Report-Msgid-Bugs-To: https://bugs.kde.org\n"
+"POT-Creation-Date: 2020-10-30 02:41+0100\n"
+"PO-Revision-Date: 2020-12-17 20:33+0100\n"
+"Last-Translator: Kristóf Kiszel <kiszel.kristof@gmail.com>\n"
+"Language-Team: Hungarian <kde-l10n-hu@kde.org>\n"
+"Language: hu\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Generator: Lokalize 21.03.70\n"
+
+#: contents/views/Pin.qml:162
+msgid "No pin (error)"
+msgstr "Nincs PIN (hiba)"
+
+#: contents/views/Pin.qml:163
+msgid "Enter Sim PIN"
+msgstr "Adja meg a SIM PIN kódot"
+
+#: contents/views/Pin.qml:164
+msgid "Enter Sim PIN 2"
+msgstr "Adja meg a SIM PIN2 kódot"
+
+#: contents/views/Pin.qml:166
+msgid "Enter Sim PUK"
+msgstr "Adja meg a SIM PUK kódot"
+
+#: contents/views/Pin.qml:167
+msgid "Pins don't match. Try again"
+msgstr "A PIN-kódok nem egyeznek. Próbálja újra"
+
+#: contents/views/Pin.qml:168
+msgid "Choose new Pin"
+msgstr "Válasszon új PIN-t"
+
+#: contents/views/Pin.qml:169
+msgid "Confirm new Pin"
+msgstr "Erősítse meg az új PIN-t"
+
+#: contents/views/Pin.qml:171
+msgid "Enter Sim PUK 2"
+msgstr "Adja meg a SIM PUK2 kódot"
+
+#: contents/views/Pin.qml:172
+msgid "Unknown PIN type: %1"
+msgstr "Ismeretlen PIN típus: %1"
+
+#: contents/views/Pin.qml:186
+msgid "%1 attempt left"
+msgid_plural "%1 attempts left"
+msgstr[0] "%1 próbálkozás maradt"
+msgstr[1] "%1 próbálkozás maradt"

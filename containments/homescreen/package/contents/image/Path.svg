@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="32px" height="33px" viewBox="0 0 32 33" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <title>Path</title>
+    <defs>
+        <filter color-interpolation-filters="auto" id="filter-1">
+            <feColorMatrix in="SourceGraphic" type="matrix" values="0 0 0 0 1.000000 0 0 0 0 1.000000 0 0 0 0 1.000000 0 0 0 1.000000 0"></feColorMatrix>
+        </filter>
+        <filter color-interpolation-filters="auto" id="filter-2">
+            <feColorMatrix in="SourceGraphic" type="matrix" values="0 0 0 0 0.000000 0 0 0 0 0.000000 0 0 0 0 0.000000 0 0 0 1.000000 0"></feColorMatrix>
+        </filter>
+    </defs>
+    <g id="页面-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="小组件" transform="translate(-970.000000, -515.000000)">
+            <g id="编组-6" transform="translate(171.000000, 326.000000)">
+                <g id="编组-2" transform="translate(254.000000, 97.406250)">
+                    <g id="编组-18" transform="translate(456.000000, 0.000000)" filter="url(#filter-1)">
+                        <g transform="translate(89.000000, 92.000000)" filter="url(#filter-2)" id="编组-76">
+                            <g>
+                                <path d="M29.7185973,14.397445 L17.6160331,14.397445 L17.6160331,1.8538582 C17.6160331,0.981051307 17.3404756,0 16.0080219,0 C14.6755681,0 14.4010483,0.981051307 14.4010483,1.8538582 L14.4010483,14.397445 L2.16109265,14.397445 C1.28752794,14.397445 0,14.597162 0,15.9960697 C0,17.3949773 1.28752794,17.6020707 2.16109265,17.6020707 L14.4010483,17.6020707 C14.4010483,20.4144067 14.4010483,22.5479138 14.4010483,24.0025919 C14.4010483,25.4572701 14.4010483,27.3978462 14.4010483,29.8243201 C14.4010483,30.697127 14.3690022,32 16.0080219,32 C17.6470415,32 17.6160331,30.697127 17.6160331,29.8243201 L17.6160331,17.6020707 L29.7185973,17.6020707 C30.592162,17.6020707 32,17.4357969 32,15.9960697 C32,14.5563425 30.592162,14.397445 29.7185973,14.397445 Z" id="Path" fill="#FFFFFF"></path>
+                            </g>
+                        </g>
+                    </g>
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>

@@ -5,6 +5,7 @@ set(homescreen_SRCS
     basemodel.cpp
     listmodelmanager.cpp
     launcheritem.cpp
+    negativemodel.cpp
 )
 
 add_library(plasma_containment_phone_homescreen MODULE ${homescreen_SRCS})

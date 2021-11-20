@@ -1,5 +1,6 @@
 /*
  *  Copyright 2019 Marco Martin <mart@kde.org>
+ *  Copyright 2021 Liu Bangguo <liubangguo@jingos.com>
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -23,9 +24,7 @@ import org.kde.plasma.plasmoid 2.0
 import org.kde.plasma.core 2.0 as PlasmaCore
 import org.kde.plasma.components 3.0 as PlasmaComponents
 
-
 RowLayout {
-
     property alias icon: icon.source
     property alias text: label.text
     PlasmaCore.IconItem {
@@ -35,6 +34,7 @@ RowLayout {
         Layout.fillHeight: true
         Layout.preferredWidth: height
     }
+    
     PlasmaComponents.Label {
         id: label
         visible: text.length > 0

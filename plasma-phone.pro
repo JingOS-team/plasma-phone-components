@@ -15,7 +15,8 @@ HEADERS = \
    $$PWD/containments/panel/phonepanel.h \
    $$PWD/containments/taskpanel/eventfilter.h \
    $$PWD/containments/taskpanel/gesturehandler.h \
-   $$PWD/containments/taskpanel/taskpanel.h
+   $$PWD/containments/taskpanel/taskpanel.h \
+   containments/homescreen/negativemodel.h
 
 
 SOURCES = \
@@ -28,6 +29,14 @@ SOURCES = \
    $$PWD/containments/homescreen/package/contents/ui/launcher/Delegate.qml \
    $$PWD/containments/homescreen/package/contents/ui/launcher/FavoriteStrip.qml \
    $$PWD/containments/homescreen/package/contents/ui/launcher/JingLauncher.qml \
+   $$PWD/containments/homescreen/package/contents/ui/launcher/NegativeView.qml \
+   $$PWD/containments/homescreen/package/contents/ui/launcher/Clock.qml \
+   $$PWD/containments/homescreen/package/contents/ui/launcher/ImageRadius.qml \
+   $$PWD/containments/homescreen/package/contents/ui/launcher/NegativeFilesView.qml \
+   $$PWD/containments/homescreen/package/contents/ui/launcher/HoverRectangle.qml \
+   $$PWD/containments/homescreen/package/contents/ui/launcher/NoteView.qml \
+   $$PWD/containments/homescreen/package/contents/ui/launcher/MediaControl.qml \
+   $$PWD/containments/homescreen/package/contents/ui/launcher/MediaPlayer.qml \
    $$PWD/containments/homescreen/package/contents/ui/launcher/LauncherContainer.qml \
    $$PWD/containments/homescreen/package/contents/ui/launcher/LauncherDragManager.qml \
    $$PWD/containments/homescreen/package/contents/ui/launcher/LauncherGrid.qml \
@@ -50,10 +59,12 @@ SOURCES = \
    $$PWD/containments/panel/package/contents/ui/indicators/Volume.qml \
    $$PWD/containments/panel/package/contents/ui/indicators/Wifi.qml \
    $$PWD/containments/panel/package/contents/ui/indicators/Udisk.qml \
+    $$PWD/containments/panel/package/contents/ui/indicators/FlightMode.qml \
     $$PWD/containments/panel/package/contents/ui/indicators/Headset.qml \
     $$PWD/containments/panel/package/contents/ui/indicators/Location.qml \
     $$PWD/containments/panel/package/contents/ui/indicators/Rotate.qml \
     $$PWD/containments/panel/package/contents/ui/indicators/Mute.qml \
+    $$PWD/containments/panel/package/contents/ui/indicators/VPN.qml \
     $$PWD/containments/panel/package/contents/ui/indicators/AlarmClock.qml \
    $$PWD/containments/panel/package/contents/ui/quicksettings/BrightnessItem.qml \
    $$PWD/containments/panel/package/contents/ui/quicksettings/Delegate.qml \
@@ -96,7 +107,8 @@ SOURCES = \
    $$PWD/look-and-feel/contents/logout/Logout.qml \
    $$PWD/look-and-feel/contents/lockscreen/SimpleHeaderBar.qml \
    $$PWD/look-and-feel/contents/lockscreen/LockScreenCharged.qml \
-   $$PWD/look-and-feel/contents/lockscreen/Charged.qml \
+   $$PWD/look-and-feel/contents/lockscreen/Charged.qml \ \
+    containments/homescreen/negativemodel.cpp
 
    $$PWD/look-and-feel/contents/lockscreen/MediaControls.qml \
    $$PWD/look-and-feel/contents/lockscreen/NotificationsList.qml \
@@ -118,5 +130,4 @@ INCLUDEPATH = \
 
 #DEFINES = 
 
-DISTFILES +=
 

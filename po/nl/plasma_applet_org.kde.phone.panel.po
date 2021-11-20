@@ -1,0 +1,118 @@
+# Copyright (C) YEAR This file is copyright:
+# This file is distributed under the same license as the plasma-phone-components package.
+#
+# Freek de Kruijf <freekdekruijf@kde.nl>, 2019, 2020.
+msgid ""
+msgstr ""
+"Project-Id-Version: plasma-phone-components\n"
+"Report-Msgid-Bugs-To: https://bugs.kde.org\n"
+"POT-Creation-Date: 2021-02-02 02:55+0100\n"
+"PO-Revision-Date: 2020-12-02 10:27+0100\n"
+"Last-Translator: Freek de Kruijf <freekdekruijf@kde.nl>\n"
+"Language-Team: Dutch <kde-i18n-nl@kde.org>\n"
+"Language: nl\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=n != 1;\n"
+"X-Generator: Lokalize 20.08.3\n"
+
+#: package/contents/ui/indicators/Battery.qml:50
+#, kde-format
+msgid "%1%"
+msgstr "%1%"
+
+#: package/contents/ui/indicators/SignalStrength.qml:71
+#, kde-format
+msgid "Sim locked"
+msgstr "Sim vergrendeld"
+
+#: package/contents/ui/indicators/Volume.qml:153
+#, kde-format
+msgid "Audio"
+msgstr "Geluid"
+
+#: package/contents/ui/indicators/Volume.qml:157
+#, kde-format
+msgid "Increase Volume"
+msgstr "Volume verhogen"
+
+#: package/contents/ui/indicators/Volume.qml:164
+#, kde-format
+msgid "Decrease Volume"
+msgstr "Volume verlagen"
+
+#: package/contents/ui/indicators/Volume.qml:171
+#, kde-format
+msgid "Mute"
+msgstr "Dempen"
+
+#: package/contents/ui/quicksettings/QuickSettings.qml:167
+#, kde-format
+msgid "Settings"
+msgstr "Instellingen"
+
+#: package/contents/ui/quicksettings/QuickSettings.qml:175
+#, kde-format
+msgid "Wifi"
+msgstr "Wi-Fi"
+
+#: package/contents/ui/quicksettings/QuickSettings.qml:183
+#, kde-format
+msgid "Bluetooth"
+msgstr "Bluetooth"
+
+#: package/contents/ui/quicksettings/QuickSettings.qml:192
+#, kde-format
+msgid "Mobile Data"
+msgstr "Mobiele gegevens"
+
+#: package/contents/ui/quicksettings/QuickSettings.qml:200
+#, kde-format
+msgid "Battery"
+msgstr "Batterij"
+
+#: package/contents/ui/quicksettings/QuickSettings.qml:208
+#, kde-format
+msgid "Sound"
+msgstr "Geluid"
+
+#: package/contents/ui/quicksettings/QuickSettings.qml:216
+#, kde-format
+msgid "Flashlight"
+msgstr "Zaklamp"
+
+#: package/contents/ui/quicksettings/QuickSettings.qml:224
+#, kde-format
+msgid "Location"
+msgstr "Locatie"
+
+#: package/contents/ui/quicksettings/QuickSettings.qml:231
+#, kde-format
+msgid "Screenshot"
+msgstr "Schermafdruk"
+
+#: package/contents/ui/quicksettings/QuickSettings.qml:239
+#, kde-format
+msgid "Auto-rotate"
+msgstr "Automatisch roteren"
+
+#: package/contents/ui/quicksettings/QuickSettings.qml:247
+#, kde-format
+msgid "Night Color"
+msgstr "Nachtkleur"
+
+#: package/contents/ui/quicksettings/QuickSettings.qml:298
+#, kde-format
+msgid "Display Brightness"
+msgstr "Helderheid van het beeldscherm"
+
+#: phonepanel.cpp:187
+#, kde-format
+msgid "New Screenshot"
+msgstr "Nieuwe schermafdruk"
+
+#: phonepanel.cpp:189
+#, kde-format
+msgid "New screenshot saved to %1"
+msgstr "Nieuwe schermafdruk opgeslagen naar %1"

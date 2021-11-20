@@ -11,10 +11,7 @@
  *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  *  GNU General Public License for more details.
  *
- *  You should have received a copy of the GNU General Pub
-
-        ls
-        lic License
+ *  You should have received a copy of the GNU General Public License
  *  along with this program; if not, write to the Free Software
  *  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  2.010-1301, USA.
  */
@@ -28,7 +25,7 @@ import org.kde.plasma.core 2.0 as PlasmaCore
 import org.kde.plasma.components 2.0 as PlasmaComponents
 import org.kde.kquickcontrolsaddons 2.0
 import org.kde.kirigami 2.10 as Kirigami
-import org.kde.plasma.private.containmentlayoutmanager 1.0 as ContainmentLayoutManager
+import org.kde.plasma.private.containmentlayoutmanager 1.0 as ContainmentLayoutManager 
 
 import org.kde.plasma.private.nanoshell 2.0 as NanoShell
 
@@ -54,9 +51,11 @@ LauncherContainer {
             width: 100//root.cellWidth
             height: 135//root.cellHeight
 
-            parent:  parentFromLocation
+            parent: parentFromLocation
             property Item parentFromLocation: {
                 switch (model.applicationLocation) {
+                case ApplicationListModel.Desktop:
+                    return appletsLayout;
                 case ApplicationListModel.Favorites:
                     return favoriteStrip.flow;
                 default:
@@ -64,19 +63,21 @@ LauncherContainer {
                 }
             }
             Component.onCompleted: {
-
+                if (model.applicationLocation === ApplicationListModel.Desktop) {
+                    appletsLayout.restoreItem(delegate);
+                }
             }
             onLaunch: (x, y, icon, title) => {
-                          if (icon !== "") {
-                              NanoShell.StartupFeedback.open(
-                                  icon,
-                                  title,
-                                  delegate.iconItem.Kirigami.ScenePosition.x + delegate.iconItem.width/2,
-                                  delegate.iconItem.Kirigami.ScenePosition.y + delegate.iconItem.height/2,
-                                  Math.min(delegate.iconItem.width, delegate.iconItem.height));
-                          }
-                          root.launched();
-                      }
+                if (icon !== "") {
+                    NanoShell.StartupFeedback.open(
+                            icon,
+                            title,
+                            delegate.iconItem.Kirigami.ScenePosition.x + delegate.iconItem.width/2,
+                            delegate.iconItem.Kirigami.ScenePosition.y + delegate.iconItem.height/2,
+                            Math.min(delegate.iconItem.width, delegate.iconItem.height));
+                }
+                root.launched();
+            }
             onParentFromLocationChanged: {
                 if (!launcherDragManager.active && parent != parentFromLocation) {
                     parent = parentFromLocation;
@@ -91,5 +92,4 @@ LauncherContainer {
         }
     }
 }
-
 

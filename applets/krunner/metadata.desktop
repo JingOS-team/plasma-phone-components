@@ -1,6 +1,7 @@
 [Desktop Entry]
 Encoding=UTF-8
 Name=Search And Run
+Name[ast]=Busca y execución
 Name[ca]=Cerca i executa
 Name[cs]=Vyhledat a spustit
 Name[da]=Søg og kør
@@ -19,6 +20,8 @@ Name[ko]=찾아서 실행하기
 Name[lt]=Ieškoti ir paleisti
 Name[nl]=Zoeken en uitvoeren
 Name[nn]=Søk og køyr
+Name[pa]=ਖੋਜੋ ਤੇ ਚਲਾਓ
+Name[pl]=Znajdź i uruchom
 Name[pt]=Pesquisar e Executar
 Name[pt_BR]=Pesquisar e executar
 Name[ro]=Căutare și lansare
@@ -32,6 +35,7 @@ Name[zh_CN]=搜索和运行
 Name[zh_TW]=搜尋並執行
 
 Comment=Search and run Applications and services
+Comment[ast]=Busca y executa aplicaciones y servicios
 Comment[ca]=Cerca i executa aplicacions i serveis
 Comment[cs]=Vyhledat a spustit aplikace a služby
 Comment[da]=Søg og kør programmer og tjenester
@@ -50,6 +54,8 @@ Comment[ko]=프로그램과 서비스 찾아서 실행하기
 Comment[lt]=Ieškoti ir paleisti programas bei tarnybas
 Comment[nl]=Zoeken en uitvoeren van toepassingen en services
 Comment[nn]=Søk etter og køyr program og tenester
+Comment[pa]=ਐਪਲੀਕੇਸ਼ਨਾਂ ਤੇ ਸੇਵਾਵਾਂ ਖੋਜੋ ਤੇ ਚਲਾਓ
+Comment[pl]=Znajduj i uruchamiaj aplikacje i usługi
 Comment[pt]=Pesquisa e executa aplicações e serviços
 Comment[pt_BR]=Pesquisa e executa aplicativos e serviços
 Comment[ro]=Caută și rulează aplicații și servicii

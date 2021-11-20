@@ -21,18 +21,27 @@
 #include "homescreen.h"
 #include "listmodelmanager.h"
 #include "wallpapermanager.h"
+#include "negativemodel.h"
 
 #include <QtQml>
 #include <QDebug>
 #include <QQuickItem>
+#include <QApplication>
 
 HomeScreen::HomeScreen(QObject *parent, const QVariantList &args)
     : Plasma::Containment(parent, args)
 {
+    QApplication::setStartDragDistance(0);
+
     qmlRegisterUncreatableType<ListModelManager>("org.kde.phone.homescreen", 1, 0, "ListModelManager", QStringLiteral("Cannot create item of type ApplicationListModel"));
+    qmlRegisterUncreatableType<NegativeModel>("org.kde.phone.homescreen", 1, 0, "NegativeModel", QStringLiteral("Cannot create item of type ApplicationListModel"));
     WallpaperManager::instance();
 
     setHasConfigurationInterface(true);
+
+    ListModelManager * listmodel = listModelManager();
+    QDBusConnection::sessionBus().connect(QString(), QString("/org/jingos/konsole"),
+       QString("org.jingos.konsole"), QString("konsole"), listmodel, SLOT(onOpenKonsole()));
 }
 
 HomeScreen::~HomeScreen() = default;
@@ -51,6 +60,14 @@ ListModelManager *HomeScreen::listModelManager()
         m_listModelManager = new ListModelManager(this);
     }
     return m_listModelManager;
+}
+
+NegativeModel *HomeScreen::negativeModel()
+{
+    if (!m_negativeModel) {
+        m_negativeModel = new NegativeModel(this);
+    }
+    return m_negativeModel;
 }
 
 void HomeScreen::stackBefore(QQuickItem *item1, QQuickItem *item2)

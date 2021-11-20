@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="44px" height="44px" viewBox="0 0 44 44" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <title>编组 3</title>
+    <defs>
+        <filter color-interpolation-filters="auto" id="filter-1">
+            <feColorMatrix in="SourceGraphic" type="matrix" values="0 0 0 0 0.235294 0 0 0 0 0.235294 0 0 0 0 0.262745 0 0 0 0.600000 0"></feColorMatrix>
+        </filter>
+        <filter color-interpolation-filters="auto" id="filter-2">
+            <feColorMatrix in="SourceGraphic" type="matrix" values="0 0 0 0 0.235294 0 0 0 0 0.235294 0 0 0 0 0.262745 0 0 0 0.600000 0"></feColorMatrix>
+        </filter>
+    </defs>
+    <g id="页面-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="快捷方式切图" transform="translate(-2183.000000, -488.000000)">
+            <g id="编组-3" transform="translate(2183.000000, 488.000000)">
+                <g filter="url(#filter-1)" id="Photo,-Edit/Brightness,-Photo,-Edit">
+                    <g transform="translate(-0.000000, 0.000000)" id="Group">
+                        <polygon id="Path" points="0 0 44.0000002 0 44.0000002 44.0000002 0 44.0000002"></polygon>
+                        <g stroke-linecap="round" stroke-linejoin="round" transform="translate(3.666667, 3.666667)" id="Path" stroke="#323232" stroke-width="2.97916667">
+                            <path d="M25.4633501,11.203335 C29.4011301,15.1411151 29.4011301,21.5255334 25.4633501,25.4633134 C21.5255701,29.4010935 15.1411517,29.4010935 11.2033717,25.4633134 C7.2655917,21.5255334 7.2655917,15.1411151 11.2033717,11.203335 C15.1411517,7.26555503 21.5255701,7.26555503 25.4633501,11.203335"></path>
+                            <line x1="18.3333334" y1="1.83333334" x2="18.3333334" y2="0"></line>
+                            <line x1="18.3333334" y1="36.6666668" x2="18.3333334" y2="34.8333335"></line>
+                            <line x1="29.9933335" y1="6.67333336" x2="31.2950001" y2="5.37166669"></line>
+                            <line x1="5.37166669" y1="31.2950001" x2="6.67333336" y2="29.9933335"></line>
+                            <line x1="34.8333335" y1="18.3333334" x2="36.6666668" y2="18.3333334"></line>
+                            <line x1="0" y1="18.3333334" x2="1.83333334" y2="18.3333334"></line>
+                            <line x1="5.37166669" y1="5.37166669" x2="6.67333336" y2="6.67333336"></line>
+                        </g>
+                    </g>
+                </g>
+                <g filter="url(#filter-2)" id="Photo,-Edit/Flash,-Auto" stroke-linecap="round" stroke-linejoin="round">
+                    <g transform="translate(30.000000, 30.000000)" id="Group" stroke="#323232" stroke-width="2.98">
+                        <g id="Path">
+                            <line x1="2.0043535" y1="7.34078212" x2="10.0148019" y2="7.34078212"></line>
+                            <polyline points="12 11 5.9991293 0 0 11"></polyline>
+                        </g>
+                    </g>
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>

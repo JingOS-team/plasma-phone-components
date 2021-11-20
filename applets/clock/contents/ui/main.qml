@@ -1,6 +1,7 @@
 /*
  *   Copyright 2014 Aaron Seigo <aseigo@kde.org>
  *   Copyright 2015 Marco Martin <notmart@gmail.com>
+ *   Copyright 2021 Liu Bangguo <liubangguo@jingos.com>
  *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU Library General Public License as
@@ -22,7 +23,7 @@ import QtQuick 2.1
 import QtQuick.Layouts 1.1
 import org.kde.plasma.core 2.0 as PlasmaCore
 import org.kde.plasma.components 2.0 as PlasmaComponents
-
+import jingos.display 1.0
 
 PlasmaComponents.Label {
     id: bigClock
@@ -41,7 +42,7 @@ PlasmaComponents.Label {
     color: PlasmaCore.ColorScope.textColor
     horizontalAlignment: Qt.AlignHCenter
     verticalAlignment: Qt.AlignVCenter
-    font.pointSize: 40
+    font.pointSize: JDisplay.sp(40)
     style: Text.Raised
     styleColor: "black"
 }

@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="21px" height="22px" viewBox="0 0 21 22" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <title>编组 10备份 2</title>
+    <g id="页面-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="状态栏" transform="translate(-1288.000000, -871.000000)" fill="#000000">
+            <g id="编组-10备份-2" transform="translate(1288.000000, 871.000000)">
+                <rect id="矩形" fill-opacity="0.8" x="0" y="14" width="3" height="8" rx="1"></rect>
+                <rect id="矩形备份-32" fill-opacity="0.2" x="6" y="10" width="3" height="12" rx="1"></rect>
+                <rect id="矩形备份-34" fill-opacity="0.2" x="12" y="5" width="3" height="17" rx="1"></rect>
+                <rect id="矩形备份-35" fill-opacity="0.2" x="18" y="0" width="3" height="22" rx="1"></rect>
+            </g>
+        </g>
+    </g>
+</svg>

@@ -1,0 +1,118 @@
+# Copyright (C) YEAR This file is copyright:
+# This file is distributed under the same license as the plasma-phone-components package.
+#
+# Kristóf Kiszel <ulysses@kubuntu.org>, 2019, 2020.
+msgid ""
+msgstr ""
+"Project-Id-Version: plasma-phone-components\n"
+"Report-Msgid-Bugs-To: https://bugs.kde.org\n"
+"POT-Creation-Date: 2021-02-02 02:55+0100\n"
+"PO-Revision-Date: 2020-12-17 20:32+0100\n"
+"Last-Translator: Kristóf Kiszel <kiszel.kristof@gmail.com>\n"
+"Language-Team: Hungarian <kde-l10n-hu@kde.org>\n"
+"Language: hu\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Generator: Lokalize 21.03.70\n"
+
+#: package/contents/ui/indicators/Battery.qml:50
+#, kde-format
+msgid "%1%"
+msgstr "%1%"
+
+#: package/contents/ui/indicators/SignalStrength.qml:71
+#, kde-format
+msgid "Sim locked"
+msgstr "SIM zárolva"
+
+#: package/contents/ui/indicators/Volume.qml:153
+#, kde-format
+msgid "Audio"
+msgstr "Hang"
+
+#: package/contents/ui/indicators/Volume.qml:157
+#, kde-format
+msgid "Increase Volume"
+msgstr "Hangerő növelése"
+
+#: package/contents/ui/indicators/Volume.qml:164
+#, kde-format
+msgid "Decrease Volume"
+msgstr "Hangerő csökkentése"
+
+#: package/contents/ui/indicators/Volume.qml:171
+#, kde-format
+msgid "Mute"
+msgstr "Némítás"
+
+#: package/contents/ui/quicksettings/QuickSettings.qml:167
+#, kde-format
+msgid "Settings"
+msgstr "Beállítások"
+
+#: package/contents/ui/quicksettings/QuickSettings.qml:175
+#, kde-format
+msgid "Wifi"
+msgstr "WiFi"
+
+#: package/contents/ui/quicksettings/QuickSettings.qml:183
+#, kde-format
+msgid "Bluetooth"
+msgstr "Bluetooth"
+
+#: package/contents/ui/quicksettings/QuickSettings.qml:192
+#, kde-format
+msgid "Mobile Data"
+msgstr "Mobil adatkapcsolat"
+
+#: package/contents/ui/quicksettings/QuickSettings.qml:200
+#, kde-format
+msgid "Battery"
+msgstr "Akkumulátor"
+
+#: package/contents/ui/quicksettings/QuickSettings.qml:208
+#, kde-format
+msgid "Sound"
+msgstr "Hang"
+
+#: package/contents/ui/quicksettings/QuickSettings.qml:216
+#, kde-format
+msgid "Flashlight"
+msgstr "Zseblámpa"
+
+#: package/contents/ui/quicksettings/QuickSettings.qml:224
+#, kde-format
+msgid "Location"
+msgstr "Helymeghatározás"
+
+#: package/contents/ui/quicksettings/QuickSettings.qml:231
+#, kde-format
+msgid "Screenshot"
+msgstr "Képernyőkép"
+
+#: package/contents/ui/quicksettings/QuickSettings.qml:239
+#, kde-format
+msgid "Auto-rotate"
+msgstr "Automatikus elforgatás"
+
+#: package/contents/ui/quicksettings/QuickSettings.qml:247
+#, kde-format
+msgid "Night Color"
+msgstr "Éjszakai színek"
+
+#: package/contents/ui/quicksettings/QuickSettings.qml:298
+#, kde-format
+msgid "Display Brightness"
+msgstr "Kijelző fényereje"
+
+#: phonepanel.cpp:187
+#, kde-format
+msgid "New Screenshot"
+msgstr "Új képernyőkép"
+
+#: phonepanel.cpp:189
+#, kde-format
+msgid "New screenshot saved to %1"
+msgstr "Új képernyőkép mentve ide: %1"

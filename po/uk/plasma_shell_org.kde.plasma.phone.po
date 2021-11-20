@@ -1,0 +1,65 @@
+# Translation of plasma_shell_org.kde.plasma.phone.po to Ukrainian
+# Copyright (C) 2019-2020 This_file_is_part_of_KDE
+# This file is distributed under the license LGPL version 2.1 or
+# version 3 or later versions approved by the membership of KDE e.V.
+#
+# Yuri Chornoivan <yurchor@ukr.net>, 2019, 2020.
+msgid ""
+msgstr ""
+"Project-Id-Version: plasma_shell_org.kde.plasma.phone\n"
+"Report-Msgid-Bugs-To: https://bugs.kde.org\n"
+"POT-Creation-Date: 2020-10-30 02:41+0100\n"
+"PO-Revision-Date: 2020-10-30 07:45+0200\n"
+"Last-Translator: Yuri Chornoivan <yurchor@ukr.net>\n"
+"Language-Team: Ukrainian <kde-i18n-uk@kde.org>\n"
+"Language: uk\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=4; plural=n==1 ? 3 : n%10==1 && n%100!=11 ? 0 : n"
+"%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2;\n"
+"X-Generator: Lokalize 20.11.70\n"
+
+#: contents/views/Pin.qml:162
+msgid "No pin (error)"
+msgstr "Немає PIN-коду (помилка)"
+
+#: contents/views/Pin.qml:163
+msgid "Enter Sim PIN"
+msgstr "Введіть PIN сім-картки"
+
+#: contents/views/Pin.qml:164
+msgid "Enter Sim PIN 2"
+msgstr "Введіть PIN 2 сім-картки"
+
+#: contents/views/Pin.qml:166
+msgid "Enter Sim PUK"
+msgstr "Введіть PUK сім-картки"
+
+#: contents/views/Pin.qml:167
+msgid "Pins don't match. Try again"
+msgstr "Невідповідні пін-коди. Повторіть спробу."
+
+#: contents/views/Pin.qml:168
+msgid "Choose new Pin"
+msgstr "Виберіть новий пін-код"
+
+#: contents/views/Pin.qml:169
+msgid "Confirm new Pin"
+msgstr "Підтвердьте новий пін-код"
+
+#: contents/views/Pin.qml:171
+msgid "Enter Sim PUK 2"
+msgstr "Введіть PUK 2 сім-картки"
+
+#: contents/views/Pin.qml:172
+msgid "Unknown PIN type: %1"
+msgstr "Невідомий тип PIN: %1"
+
+#: contents/views/Pin.qml:186
+msgid "%1 attempt left"
+msgid_plural "%1 attempts left"
+msgstr[0] "Лишилася %1 спроба"
+msgstr[1] "Лишилося %1 спроби"
+msgstr[2] "Лишилося %1 спроб"
+msgstr[3] "Лишилася одна спроба"

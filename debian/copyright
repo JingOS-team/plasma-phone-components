@@ -1,0 +1,227 @@
+Format: https://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
+Upstream-Name: Plasma Phone Components
+
+Files: *
+Copyright: 2015, Jonathan Riddell <jr@jriddell.org>
+  2014, Aaron Seigo <aseigo@kde.org>
+  2012-2015, Marco Martin <notmart@gmail.com>
+License: GPL-2+
+
+Files: applets/quicksettings/*
+Copyright: 2015, Marco Martin <mart@kde.org>
+License: GPL-2+
+
+Files: applets/quicksettings/Messages.sh
+Copyright: 2015, Jonathan Riddell <jr@jriddell.org>
+  2014, Aaron Seigo <aseigo@kde.org>
+  2012-2015, Marco Martin <notmart@gmail.com>
+License: GPL-2+
+
+Files: components/fullscreenpanel.cpp
+  components/fullscreenpanel.h
+Copyright: 2013, 2015, Marco Martin <mart@kde.org>
+License: LGPL-2+
+
+Files: components/mobileshellprivateplugin.cpp
+  components/mobileshellprivateplugin.h
+Copyright: 2015, Marco Martin <mart@kde.org>
+License: Expat
+ This program is free software; you can redistribute it
+ and/or modify it under the terms of the GNU General Public
+ License as published by the Free Software Foundation; either
+ version 2 of the License, or (at your option) any later
+ version.
+ .
+ This program is distributed in the hope that it will be
+ useful, but WITHOUT ANY WARRANTY; without even the implied
+ warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+ PURPOSE.  See the GNU General Public License for more
+ details.
+ .
+ You should have received a copy of the GNU General Public
+ License along with this package; if not, write to the Free
+ Software Foundation, Inc., 51 Franklin St, Fifth Floor,
+ Boston, MA  02110-1301 USA
+ .
+ On Debian systems, the full text of the GNU General Public
+ License version 2 can be found in the file
+ `/usr/share/common-licenses/GPL-2'.
+
+Files: containments/*
+Copyright: 2015, Marco Martin <mart@kde.org>
+License: GPL-2+
+
+Files: containments/homescreen/Messages.sh
+Copyright: 2015, Jonathan Riddell <jr@jriddell.org>
+  2014, Aaron Seigo <aseigo@kde.org>
+  2012-2015, Marco Martin <notmart@gmail.com>
+License: GPL-2+
+
+Files: containments/homescreen/applicationlistmodel.cpp
+  containments/homescreen/applicationlistmodel.h
+Copyright: 2014, Antonis Tsiapaliokas <antonis.tsiapaliokas@kde.org>
+License: GPL-2+
+
+Files: containments/homescreen/package/*
+Copyright: 2013, 2015, Marco Martin <mart@kde.org>
+License: LGPL-2+
+
+Files: containments/panel/package/*
+Copyright: 2013, 2015, Marco Martin <mart@kde.org>
+License: LGPL-2+
+
+Files: containments/taskpanel/Messages.sh
+Copyright: 2015, Jonathan Riddell <jr@jriddell.org>
+  2014, Aaron Seigo <aseigo@kde.org>
+  2012-2015, Marco Martin <notmart@gmail.com>
+License: GPL-2+
+
+Files: dialer/*
+Copyright: 2012, George Kiagiadakis <kiagiadakis.george@gmail.com>
+License: LGPL-2.1+
+
+Files: dialer/package/*
+Copyright: 2011, Nokia Corporation and/or its subsidiary(-ies).
+License: BSD-3-clause
+
+Files: dialer/plugin/*
+Copyright: 2015, Martin Klapetek <mklapetek@kde.org>
+License: LGPL-2.1+
+
+Files: dialer/plugin/qmldir
+Copyright: 2015, Jonathan Riddell <jr@jriddell.org>
+  2014, Aaron Seigo <aseigo@kde.org>
+  2012-2015, Marco Martin <notmart@gmail.com>
+License: GPL-2+
+
+Files: dialer/src/call-handler.cpp
+  dialer/src/call-handler.h
+Copyright: 2009-2012, George Kiagiadakis <kiagiadakis.george@gmail.com>
+License: GPL-2+
+
+Files: dialer/src/dialerutils.cpp
+  dialer/src/dialerutils.h
+Copyright: 2015, Marco Martin <mart@kde.org>
+License: GPL-2
+ This program is free software; you can redistribute it
+ and/or modify it under the terms of the GNU General Public
+ License as published by the Free Software Foundation; either
+ version 2 of the License, or (at your option) any later
+ version.
+ .
+ This program is distributed in the hope that it will be
+ useful, but WITHOUT ANY WARRANTY; without even the implied
+ warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+ PURPOSE.  See the GNU General Public License for more
+ details.
+ .
+ You should have received a copy of the GNU General Public
+ License along with this package; if not, write to the Free
+ Software Foundation, Inc., 51 Franklin St, Fifth Floor,
+ Boston, MA  02110-1301 USA
+ .
+ On Debian systems, the full text of the GNU General Public
+ License version 2 can be found in the file
+ `/usr/share/common-licenses/GPL-2'.
+
+Files: dialer/src/main.cpp
+Copyright: 2013, 2015, Marco Martin <mart@kde.org>
+License: LGPL-2+
+
+Files: dialer/src/org.freedesktop.Telepathy.Client.Plasma.Dialer.service.in
+Copyright: 2015, Jonathan Riddell <jr@jriddell.org>
+  2014, Aaron Seigo <aseigo@kde.org>
+  2012-2015, Marco Martin <notmart@gmail.com>
+License: GPL-2+
+
+Files: phonebook/*
+Copyright: 2011, Nokia Corporation and/or its subsidiary(-ies).
+License: BSD-3-clause
+
+License: GPL-2+
+ This program is free software; you can redistribute it
+ and/or modify it under the terms of the GNU General Public
+ License as published by the Free Software Foundation; either
+ version 2 of the License, or (at your option) any later
+ version.
+ .
+ This program is distributed in the hope that it will be
+ useful, but WITHOUT ANY WARRANTY; without even the implied
+ warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+ PURPOSE.  See the GNU General Public License for more
+ details.
+ .
+ You should have received a copy of the GNU General Public
+ License along with this package; if not, write to the Free
+ Software Foundation, Inc., 51 Franklin St, Fifth Floor,
+ Boston, MA  02110-1301 USA
+ .
+ On Debian systems, the full text of the GNU General Public
+ License version 2 can be found in the file
+ `/usr/share/common-licenses/GPL-2'.
+
+License: LGPL-2+
+ This program is free software; you can redistribute it
+ and/or modify it under the terms of the GNU General Public
+ License as published by the Free Software Foundation; either
+ version 2 of the License, or (at your option) any later
+ version.
+ .
+ This program is distributed in the hope that it will be
+ useful, but WITHOUT ANY WARRANTY; without even the implied
+ warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+ PURPOSE.  See the GNU General Public License for more
+ details.
+ .
+ You should have received a copy of the GNU General Public
+ License along with this package; if not, write to the Free
+ Software Foundation, Inc., 51 Franklin St, Fifth Floor,
+ Boston, MA  02110-1301 USA
+ .
+ On Debian systems, the full text of the GNU General Public
+ License version 2 can be found in the file
+ `/usr/share/common-licenses/GPL-2'.
+
+License: BSD-3-clause
+ This program is free software; you can redistribute it
+ and/or modify it under the terms of the GNU General Public
+ License as published by the Free Software Foundation; either
+ version 2 of the License, or (at your option) any later
+ version.
+ .
+ This program is distributed in the hope that it will be
+ useful, but WITHOUT ANY WARRANTY; without even the implied
+ warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+ PURPOSE.  See the GNU General Public License for more
+ details.
+ .
+ You should have received a copy of the GNU General Public
+ License along with this package; if not, write to the Free
+ Software Foundation, Inc., 51 Franklin St, Fifth Floor,
+ Boston, MA  02110-1301 USA
+ .
+ On Debian systems, the full text of the GNU General Public
+ License version 2 can be found in the file
+ `/usr/share/common-licenses/GPL-2'.
+
+License: LGPL-2.1+
+ This program is free software; you can redistribute it
+ and/or modify it under the terms of the GNU General Public
+ License as published by the Free Software Foundation; either
+ version 2 of the License, or (at your option) any later
+ version.
+ .
+ This program is distributed in the hope that it will be
+ useful, but WITHOUT ANY WARRANTY; without even the implied
+ warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+ PURPOSE.  See the GNU General Public License for more
+ details.
+ .
+ You should have received a copy of the GNU General Public
+ License along with this package; if not, write to the Free
+ Software Foundation, Inc., 51 Franklin St, Fifth Floor,
+ Boston, MA  02110-1301 USA
+ .
+ On Debian systems, the full text of the GNU General Public
+ License version 2 can be found in the file
+ `/usr/share/common-licenses/GPL-2'.

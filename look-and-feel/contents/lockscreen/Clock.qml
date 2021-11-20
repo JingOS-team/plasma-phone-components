@@ -24,6 +24,7 @@ import QtQml 2.12
 import org.kde.kirigami 2.15 as Kirigami
 import org.kde.plasma.core 2.0
 import org.kde.plasma.private.digitalclock 1.0 as DC
+import jingos.display 1.0
 
 ColumnLayout {
     readonly property bool softwareRendering: GraphicsInfo.api === GraphicsInfo.Software
@@ -41,7 +42,7 @@ ColumnLayout {
         
         Layout.alignment: alignment
         font.weight: Font.Light // this font weight may switch to regular on distros that don't have a light variant
-        font.pixelSize: 67
+        font.pixelSize: JDisplay.sp(60)
         layer.enabled: true
         layer.effect: DropShadow {
             verticalOffset: 1
@@ -57,7 +58,7 @@ ColumnLayout {
         styleColor: softwareRendering ? ColorScope.backgroundColor : "transparent" // no outline, doesn't matter
         
         Layout.alignment: alignment
-        font.pixelSize: 13
+        font.pixelSize: JDisplay.sp(17)
         layer.enabled: true
         layer.effect: DropShadow {
             verticalOffset: 1
@@ -66,27 +67,29 @@ ColumnLayout {
             color: "#757575"
         }
     }
-    Timer{
+
+    Timer {
         id:dateTimeTimer
         property string dateString : ""
         property string timeString : ""
-        //这里使用默认的locale获取的语言好像不对，这里从c++获取语言后传过来
-        property var locale : Qt.locale(wPaperSettings.localeName)
-        property string datePrefix: wPaperSettings.localeName === "zh_CN" ? i18nd("kirigami-controlkit", "day") : ""
+        property var locale : Qt.locale()
+        property string datePrefix:{
+            timezoneProxy.getRegionTimeFormat() === "zh_" ? i18nd("plasma-phone-components", "day") : ""
+        }
         running: true
         repeat: true
         interval: 1000
         triggeredOnStart:true
         onTriggered: {
             var currentDate = new Date();
-            var timeStr = currentDate.toLocaleTimeString(dateTimeTimer.locale,
-                        timezoneProxy.isSystem24HourFormat ? "hh:mm" : "hh:mm AP");
-            if(wPaperSettings.localeName === "zh_CN"){
+            var timeStr = currentDate.toLocaleTimeString(dateTimeTimer.locale,timezoneProxy.isSystem24HourFormat ?
+                                     "hh:mm" : (timezoneProxy.getRegionTimeFormat() === "zh_"? "AP hh:mm" : "hh:mm AP"));
+            if(timezoneProxy.getRegionTimeFormat() === "zh_"){
                 if(timeStr.search("AM") !== -1)
                     timeStr = timeStr.replace("AM","上午");
                 if(timeStr.search("PM") !== -1)
                     timeStr = timeStr.replace("PM","下午");
-                dateTimeTimer.dateString = currentDate.toLocaleDateString(dateTimeTimer.locale, "MMMd") + dateTimeTimer.datePrefix;
+                dateTimeTimer.dateString = currentDate.toLocaleDateString(dateTimeTimer.locale, "MMMd") + "日";
                 dateTimeTimer.dateString+=currentDate.toLocaleDateString(dateTimeTimer.locale, " dddd")
             }else{
                 if(timeStr.search("上午") !== -1)
@@ -99,9 +102,6 @@ ColumnLayout {
         }
     }
 
-    Kirigami.JWallPaperSettings{
-        id:wPaperSettings
-    }
     DC.TimeZoneFilterProxy{
         id:timezoneProxy
     }

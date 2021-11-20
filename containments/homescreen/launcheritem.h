@@ -1,21 +1,10 @@
-/***************************************************************************
- *   Copyright (C) 2021 Wang Rui <wangrui@jingos.com>                      *
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- *   This program is distributed in the hope that it will be useful,       *
- *   but WITHOUT ANY WARRANTY; without even the implied warranty of        *
- *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the         *
- *   GNU General Public License for more details.                          *
- *                                                                         *
- *   You should have received a copy of the GNU General Public License     *
- *   along with this program; if not, write to the                         *
- *   Free Software Foundation, Inc.,                                       *
- *   51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA .        *
- ***************************************************************************/
+/*
+ * Copyright (C) 2021 Beijing Jingling Information System Technology Co., Ltd. All rights reserved.
+ * 
+ * Authors: 
+ * Liu Bangguo <liubangguo@jingos.com>
+ *
+ */
 
 #ifndef LAUNCHERITEM_H
 #define LAUNCHERITEM_H
@@ -36,7 +25,6 @@ class LauncherItem : public QObject
     Q_PROPERTY(QString storageId READ storageId WRITE setStorageId NOTIFY storageIdChanged)
     Q_PROPERTY(QString entryPath READ entryPath WRITE setEntryPath NOTIFY entryPathChanged)
     Q_PROPERTY(int location READ location WRITE setLocation NOTIFY locationChanged)
-    Q_PROPERTY(KWayland::Client::PlasmaWindow *window READ window WRITE setWindow NOTIFY windowChanged)
     Q_PROPERTY(bool applicationRunning READ applicationRunning NOTIFY applicationRunningChanged)
     Q_PROPERTY(bool startupNotify READ startupNotify WRITE setStartupNotify NOTIFY startupNotifyChanged)
     Q_PROPERTY(int type READ type WRITE setType NOTIFY typeChanged)
@@ -44,6 +32,7 @@ class LauncherItem : public QObject
     Q_PROPERTY(QString execName READ execName WRITE setExecName NOTIFY execNameChanged)
     Q_PROPERTY(qint64 appPid READ appPid WRITE setAppPid NOTIFY appPidChanged)
     Q_PROPERTY(bool isSystemApp READ isSystemApp WRITE setIsSystemApp NOTIFY isSystemAppChanged)
+    Q_PROPERTY(QString categories READ categories WRITE setCategories NOTIFY categoriesChanged)
 
 public:
     explicit LauncherItem(QObject *parent = nullptr);
@@ -82,9 +71,6 @@ public:
     int location();
     int setLocation(const int &location);
 
-    KWayland::Client::PlasmaWindow *window();
-    KWayland::Client::PlasmaWindow *setWindow(KWayland::Client::PlasmaWindow *window);
-
     bool applicationRunning();
 
     bool startupNotify();
@@ -101,11 +87,11 @@ public:
 
     void setItemData(LauncherItem *itemData);
 
-    void addWindow(KWayland::Client::PlasmaWindow* window);
-    void removeWindow(KWayland::Client::PlasmaWindow* window);
-
     bool isSystemApp();
     bool setIsSystemApp(const bool &isSystemApp);
+
+    QString categories();
+    QString setCategories(const QString &categories);
 
 signals:
     void pageIndexChanged();
@@ -115,7 +101,6 @@ signals:
     void storageIdChanged();
     void entryPathChanged();
     void locationChanged();
-    void windowChanged();
     void startupNotifyChanged();
     void typeChanged();
     void itemIndexChanged();
@@ -123,7 +108,8 @@ signals:
     void execNameChanged();
     void appPidChanged();
     void isSystemAppChanged();
-
+    void categoriesChanged();
+    
 private:
     PrivateLauncherItem *p;
 };

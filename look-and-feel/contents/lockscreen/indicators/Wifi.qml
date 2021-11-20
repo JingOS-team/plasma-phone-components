@@ -25,16 +25,19 @@ import QtGraphicalEffects 1.6
 import QtQuick.Layouts 1.4
 import org.kde.plasma.core 2.0 as PlasmaCore
 import org.kde.plasma.components 2.0 as PlasmaComponents
-import org.kde.plasma.networkmanagement 0.2 as PlasmaNM
 import org.kde.plasma.private.mobileshell 1.0 as MobileShell
+import jingos.display 1.0
 
 
 
 Item{
+    id: wifi_root
+
     property bool showingApp: false
+    property string currentConnectionIcon : stSource.data["StatusPanel"]["currentConnectionIcon"]
     Layout.alignment: Qt.AlignVCenter
-    width:13
-    height:10
+    width:JDisplay.dp(13)
+    height:JDisplay.dp(11)
 
     Image{
 
@@ -57,48 +60,34 @@ Item{
                 opacity:1.0
     }
 
-    PlasmaComponents.BusyIndicator {
-        id: connectingIndicator
-
-        anchors.fill: parent
-        running: connectionIconProvider.connecting
-        visible: running
-    }
-
-    PlasmaNM.NetworkStatus {
-        id: networkStatus
-    }
-
-    PlasmaNM.NetworkModel {
-        id: connectionModel
-    }
-
-    PlasmaNM.Handler {
-        id: handler
-    }
-
-    PlasmaNM.ConnectionIcon {
-        id: connectionIconProvider
-    }
 
     function wifiIcon()
     {
         var icon = "file:///usr/share/icons/jing/jing/settings/wifi_disconnected.svg";
-        if(connectionIconProvider.connectionIcon.indexOf("network-wireless") != -1)
+        wifi_root.visible = true;
+        if(currentConnectionIcon.indexOf("network-wireless") != -1)
         {
             var prefix = "network-wireless-";
-            var volume = parseInt(connectionIconProvider.connectionIcon.substring(prefix.length));
+            var volume = parseInt(currentConnectionIcon.substring(prefix.length));
             if(volume > 75)
                 icon = "file:///usr/share/icons/jing/jing/settings/wifi_volume_100.svg";
             else if(volume > 50)
                 icon = "file:///usr/share/icons/jing/jing/settings/wifi_volume_75.svg";
             else if(volume > 25)
                 icon = "file:///usr/share/icons/jing/jing/settings/wifi_volume_25.svg";
-            else
-                icon = "file:///usr/share/icons/jing/jing/settings/wifi_disconnected.svg";
+            else{
+                //[liubangguo]WIFI未连接时，不显示图标
+                wifi_root.visible = false
+             }
         }
+        else if(currentConnectionIcon.indexOf("network-wired-activated") != -1)
+        {
+            icon = "file:///usr/share/icons/jing/jing/settings/network_wired.svg";
+        }
+
         else{
-            icon = "file:///usr/share/icons/jing/jing/settings/wifi_closed.svg";
+            //icon = "file:///usr/share/icons/jing/jing/settings/wifi_closed.svg";
+            wifi_root.visible = false
         }
         return icon;
     }

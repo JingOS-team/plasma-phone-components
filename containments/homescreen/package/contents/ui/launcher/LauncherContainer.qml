@@ -88,6 +88,7 @@ Item {
                 }
             }
         }
+        
         Behavior on implicitWidth {
             NumberAnimation {
                 duration: units.longDuration
